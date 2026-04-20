@@ -1,0 +1,79 @@
+//Legend of Saladir - rooms.h
+
+//Unit rooms: Room dungeon feature.
+
+#ifndef ROOMS_H
+#define ROOMS_H
+
+#include <string>
+#include "types.h"
+#include "shoppe.h"
+
+class Tar_Ball;
+
+#define ROOM_NORMAL1	0
+#define ROOM_NORMAL2	1
+#define ROOM_LAIR 		3
+#define ROOM_SHOP		10	// room is a shop
+#define ROOM_VAULT		11	// room is a vault
+#define ROOM_CASTLE		12
+#define ROOM_MISC		100
+
+#define ROOM_MINX		6
+#define ROOM_MINY		6
+#define ROOM_MAXX		20
+#define ROOM_MAXY		10
+
+#define ROOM_NAMEMAX	40
+#define ROOM_MAXNUM		20
+#define ROOM_MIN		4
+
+//special flags for a room
+#define ROOM_IS_VISITED	0x01
+#define ROOM_PLAYERHERE 0x80
+
+#define ROOMTMPL_SHOP1		0
+#define ROOMTMPL_SHOP2		1
+#define ROOMTMPL_SHOP3		2
+#define ROOMTMPL_SHOP4		3
+#define ROOMTMPL_SHOP5		4
+#define ROOMTMPL_SHOP6		5
+#define ROOMTMPL_CASTLE1	6
+#define ROOMTMPL_FARM		7
+#define ROOMTMPL_HOUSE1		8
+#define ROOMTMPL_HOUSE2		9
+
+struct roomdef
+{
+	std::string name;	// room name
+	int type;		// room type, shop, vault etc..
+	int x1;			// coordinates for room
+	int y1;
+	int x2;
+	int y2;
+
+	int8u flags;	// room special flags
+
+	Shoppe kauppa; //shop, if any
+
+	int doorx;		// coords for the door
+	int doory;
+
+	being *owner;	// room owner
+
+	roomdef();
+	roomdef(const char *n, int rt, int sx1, int sy1, int sx2, int sy2);
+
+	bool Is_Visited();
+
+	void Check_Visit();
+	void set_door(int a, int b);
+	void make_shop(level_type *level); //change this room to a shop
+
+	void Display_Data(int rindex);
+
+	void Save(Tar_Ball &tb, level_type *lvl);
+	void Load(Tar_Ball &tb, level_type *lvl);
+};
+
+#endif

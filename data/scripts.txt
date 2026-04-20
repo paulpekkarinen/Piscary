@@ -1,0 +1,69 @@
+[0]Squiik..|Nkrriin..|Iiiiii-iii..
+[1]munch...|Crunsk...|rousk...|yam...|gmbh...|njam...|mmmm...|burp!...|hjam...|mjousk..
+[2]Bonk!|Kilk!|Wham!|Zabam!|Ouch.
+[3]"You really should equip some weapons!", Sparhawk says.|
+"Armor is good for protection!", Sparhawk tells you.|
+Sparhawk informs: "There's a small dungeon near this city!"|
+"Go and check out the local stores," Sparhawk informs you.
+[4]curses: "There're so much thieves around these days."|
+says: "I hope you're not going to steal my stuff."|
+warns: "Watch your fingers..."|
+says: "I'm here, just in case..."|
+notes: "You can't believe how sharp my new sword is!"|
+curses: "The local police just can't keep the thieves away.
+[5]"But you have not paid for that!"|
+"That's not yours yet."|
+"Maybe you should pay for it first?"|
+"The shopkeeper would not like that!"|
+"You don't want make the shopkeeper angry!"
+[6]mumbles: "These days you just can't be too careful!"|
+curses: "There're times when I want to sell this shop.|
+says: "Adventurers life is so easy.."|
+says: "Adventurers need not to worry about thieves."|
+curses: "There just are no honest people around these days."|
+asks: "Have you seen the sword stolen from me a while ago?"|
+curses: "Someone stole my wand of thief genociding."
+[7]You hear someone cursing shoplifters.|
+Someone curses.|
+You hear from distance: "Curse, curse and #&%#!"
+[8]yells: "GET OUT OF MY SHOP YOU LOWLIFE SCUM!"|
+screams: "...AND STAY AWAY FROM MY SHOP!"|
+yells: "...AND DON'T COME BACK THIEF!"|
+swears: "#&#! NEXT TIME YOU'RE HISTORY!"
+[9]Bill Gates throws you a fact about Microsoft Corporation"|
+Bill Gates smiles to you! UGh!|
+Bill Gates tries to sell you some Microsoft stocks!|
+Bill is trying to sell you Windows 95|
+Bill Gates tries to recruit you into Microsoft!|
+Bill Gates is hideously blinking an eye to you!|
+Bill Gates says: linux is bad for your health!|
+Bill Gates weeps...buuhhuu
+[10]	"You really should pay a visit to my world!", Thomas says.|
+"Why are you wandering here?", Thomas asks.|
+Thomas says: "Obviously you are in the wrong world!"|
+"Have you played ADOM?"
+[11]The air is still.|There is a mild breeze.|It's quite windy.|It's very windy.
+[12]	Chaos is messing up the Drakalor Chain, adventurer needed! Contact Thomas for more info.|
+Salmorrian mountains needs a good world designer, contact ernomat@evitech.fi for more info.|
+Isn't it nice to have a rumour scroll in every roguelike.|
+You're being watched...|
+Some monsters can be lethal.|
+You can buy items inside shops.|
+You can sell items inside shops, just drop them.|
+Salmorrian mages are constantly developing new spells.|
+You should try naming the scrolls you find.|
+There's a huge ocean to the east.|
+Cursing a shopkeeper doesn't help a lot.|
+Don't take this note too seriously.|
+You could really use some food and coffee occasionally.|
+Try asking for a quest when talking with someone.|
+Observation is the key to survivement.
+[13]	There's no writing on this scroll.|
+The scroll is blank!|
+Empty scrolls won't do much.|
+You see absolutely nothing written on this scroll.|
+It's an empty scroll, maybe your imagination helps?
+[14]Armour Emporium|Protectionware|Fine Armour
+[15]Weapon Emporium|Blades'n Bows|Sharp Blades|Blades'n Daggers
+[16]Shop O'Goodies|General Store|Used Goodies|Worthy Equipment|Abandoned Wares
+[17]Food Emporium|Tasty Snackbite|Hack'n Snack|Rations of Life|Eat or Die
