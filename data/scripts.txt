@@ -38,12 +38,12 @@ Bill Gates tries to recruit you into Microsoft!|
 Bill Gates is hideously blinking an eye to you!|
 Bill Gates says: linux is bad for your health!|
 Bill Gates weeps...buuhhuu
-[10]	"You really should pay a visit to my world!", Thomas says.|
+[10]"You really should pay a visit to my world!", Thomas says.|
 "Why are you wandering here?", Thomas asks.|
 Thomas says: "Obviously you are in the wrong world!"|
 "Have you played ADOM?"
 [11]The air is still.|There is a mild breeze.|It's quite windy.|It's very windy.
-[12]	Chaos is messing up the Drakalor Chain, adventurer needed! Contact Thomas for more info.|
+[12]Chaos is messing up the Drakalor Chain, adventurer needed! Contact Thomas for more info.|
 Salmorrian mountains needs a good world designer, contact ernomat@evitech.fi for more info.|
 Isn't it nice to have a rumour scroll in every roguelike.|
 You're being watched...|
@@ -58,7 +58,7 @@ Don't take this note too seriously.|
 You could really use some food and coffee occasionally.|
 Try asking for a quest when talking with someone.|
 Observation is the key to survivement.
-[13]	There's no writing on this scroll.|
+[13]There's no writing on this scroll.|
 The scroll is blank!|
 Empty scrolls won't do much.|
 You see absolutely nothing written on this scroll.|
