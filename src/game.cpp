@@ -182,14 +182,21 @@ void gamedata::Menu()
 	}
 }
 
-void gamedata::noticeevents(level_type *level)
+//Returns true if gameview was completely redrawn.
+bool gamedata::noticeevents(level_type *level)
 {
-   if((GAME_NOTIFYFLAGS & GAME_DO_REDRAW))
-      display->Redraw(level);
-   else
-      display->Stats(false);
+	bool rv=false;
+	
+	if ((GAME_NOTIFYFLAGS & GAME_DO_REDRAW))
+	{
+		display->Redraw(level);
+		rv=true;
+	}
+	else
+		display->Stats(false);
 
-   GAME_NOTIFYFLAGS=0;
+	GAME_NOTIFYFLAGS=0;
+	return rv;
 }
 
 /*
@@ -200,8 +207,6 @@ void gamedata::noticeevents(level_type *level)
  */
 void gamedata::Passturn(level_type *level, bool playervis, bool foodsub)
 {
-	int ptime, spdadd, difft;
-
 	if (player.timetaken<BASE_TIMENEED)
 		player.movecount++;
 
@@ -214,10 +219,10 @@ void gamedata::Passturn(level_type *level, bool playervis, bool foodsub)
 	/* if move didn't take any time, ... */
 	if (player.timetaken>=BASE_TIMENEED)
 	{
-		noticeevents(level);
+		const bool b=noticeevents(level);
 		msg.notice();
 
-		if (playervis)
+		if (playervis && b==false)
 			gameview.Show();
 
 		return;
@@ -227,8 +232,8 @@ void gamedata::Passturn(level_type *level, bool playervis, bool foodsub)
 
 	player.Check_Inroom(level, pc);
 
-	spdadd=player.stat[STAT_SPD].Get();
-	ptime=player.stat[STAT_SPD].Get(); //note: should this be something else?
+	int spdadd=player.stat[STAT_SPD].Get();
+	int ptime=player.stat[STAT_SPD].Get(); //note: should this be something else?
 
 	if (world->Is_Outside() && !player.huntmode)
 	{
@@ -236,7 +241,7 @@ void gamedata::Passturn(level_type *level, bool playervis, bool foodsub)
 	}
 
 	/* calculate the number of used "time slots" taken by player move */
-	difft = ((int)BASE_TIMENEED - player.timetaken) / spdadd;
+	int difft = ((int)BASE_TIMENEED - player.timetaken) / spdadd;
 
 	/* advance world time and calendar */
 	advance_time(ptime * difft);
@@ -265,11 +270,11 @@ void gamedata::Passturn(level_type *level, bool playervis, bool foodsub)
 	level->crew.handle_monsters(level, difft);
 
 	player.timetaken+=(difft*spdadd);
-	noticeevents(level);
+	const bool b=noticeevents(level);
 
 	level->Remove_Dead_Monsters(); //check residue!
 
-	if (playervis)
+	if (playervis && b==false)
 		gameview.Show();
 
 	msg.notice();

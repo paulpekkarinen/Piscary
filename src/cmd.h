@@ -113,6 +113,7 @@ struct Command_Data
 	const char *name;
 	int keys[CMD_MAXLEN+1];
 	int category;
+	bool redraw_view; //redraw everything after this command
 };
 
 void read_cmd();

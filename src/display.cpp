@@ -680,9 +680,6 @@ void Display::Redraw(level_type *level)
 	clear_screen();
 	msg.update();
 
-	//Maze(level, player.lreg.x, player.lreg.y);
-	//this->Player(level);
-
 	gameview.Show();
 
 	this->Stats(false);

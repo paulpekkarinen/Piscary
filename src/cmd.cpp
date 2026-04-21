@@ -79,99 +79,95 @@ const char *command_categories[]=
 /*
  * This is a complete list of player usable commands.
  *
- * CMD_NAME, CMD_KEY_SEQUENCE, FUNCTION_TO_CALL
- *
  * Name is a plain string describing the command
  * Key sequence can contain a sequence of 1-4 keys needed to execute
- *   the command
- * Function to call is of a type "void func()"
- *
+ * the command
  */
 Command_Data cmdtable[Amt_Of_Commands]=
 {
 	//navigation
-	{"Move north", {KEY_UP, 0, 0, 0, 0}, Navigation},
-	{"Move northeast", {'9', 0, 0, 0, 0}, Navigation},
-	{"Move east", {KEY_RIGHT, 0, 0, 0, 0}, Navigation},
-	{"Move southeast", {'3', 0, 0, 0, 0}, Navigation},
-	{"Move south", {KEY_DOWN, 0, 0, 0, 0}, Navigation},
-	{"Move southwest", {'1', 0, 0, 0, 0}, Navigation},
-	{"Move west", {KEY_LEFT, 0, 0, 0, 0}, Navigation},
-	{"Move northwest", {'7', 0, 0, 0, 0}, Navigation},
+	{"Move north", {KEY_UP, 0, 0, 0, 0}, Navigation, false},
+	{"Move northeast", {'9', 0, 0, 0, 0}, Navigation, false},
+	{"Move east", {KEY_RIGHT, 0, 0, 0, 0}, Navigation, false},
+	{"Move southeast", {'3', 0, 0, 0, 0}, Navigation, false},
+	{"Move south", {KEY_DOWN, 0, 0, 0, 0}, Navigation, false},
+	{"Move southwest", {'1', 0, 0, 0, 0}, Navigation, false},
+	{"Move west", {KEY_LEFT, 0, 0, 0, 0}, Navigation, false},
+	{"Move northwest", {'7', 0, 0, 0, 0}, Navigation, false},
 
-	{"Walk north", {'w', '8', 0, 0, 0}, Navigation},
-	{"Walk northeast", {'w', '9', 0, 0, 0}, Navigation},
-	{"Walk east", {'w', '6', 0, 0, 0}, Navigation},
-	{"Walk southeast", {'w', '3', 0, 0, 0}, Navigation},
-	{"Walk south", {'w', '2', 0, 0, 0}, Navigation},
-	{"Walk southwest", {'w', '1', 0, 0, 0}, Navigation},
-	{"Walk west", {'w', '4', 0, 0, 0}, Navigation},
-	{"Walk northwest", {'w', '7', 0, 0, 0}, Navigation},
+	{"Walk north", {'w', '8', 0, 0, 0}, Navigation, false},
+	{"Walk northeast", {'w', '9', 0, 0, 0}, Navigation, false},
+	{"Walk east", {'w', '6', 0, 0, 0}, Navigation, false},
+	{"Walk southeast", {'w', '3', 0, 0, 0}, Navigation, false},
+	{"Walk south", {'w', '2', 0, 0, 0}, Navigation, false},
+	{"Walk southwest", {'w', '1', 0, 0, 0}, Navigation, false},
+	{"Walk west", {'w', '4', 0, 0, 0}, Navigation, false},
+	{"Walk northwest", {'w', '7', 0, 0, 0}, Navigation, false},
 
-	{"Enter downstairs", {'>', 0, 0, 0, 0}, Navigation},
-	{"Enter upstairs", {'<', 0, 0, 0, 0}, Navigation},
+	{"Enter downstairs", {'>', 0, 0, 0, 0}, Navigation, true},
+	{"Enter upstairs", {'<', 0, 0, 0, 0}, Navigation, true},
 
 	//items
-	{"Equip items/View equipment", {'q', 0, 0, 0, 0}, Items},
-	{"Display inventory", {'i', 0, 0, 0, 0}, Items},
-	{"Get item", {',', 0, 0, 0, 0}, Items},
-	{"Drop item", {'d', 0, 0, 0, 0}, Items},
+	{"Equip items/View equipment", {'q', 0, 0, 0, 0}, Items, true},
+	{"Display inventory", {'i', 0, 0, 0, 0}, Items, true},
+	{"Get item", {',', 0, 0, 0, 0}, Items, false},
+	{"Drop item", {'d', 0, 0, 0, 0}, Items, false},
 
 	//adventure
-	{"Game menu", {'G', 0, 0, 0, 0}, Adventure},
-	{"Quests", {':', 'q', 0, 0, 0}, Adventure},
-	{"Character status", {'@', 0, 0, 0, 0}, Adventure},
-	{"Journey log", {'J', 0, 0, 0, 0}, Adventure},
-	{"Weather report", {':', 'w', 0, 0, 0}, Adventure},
+	{"Game menu", {'G', 0, 0, 0, 0}, Adventure, true},
+	{"Quests", {':', 'q', 0, 0, 0}, Adventure, true},
+	{"Character status", {'@', 0, 0, 0, 0}, Adventure, true},
+	{"Journey log", {'J', 0, 0, 0, 0}, Adventure, true},
+	{"Weather report", {':', 'w', 0, 0, 0}, Adventure, false},
 
 	//traits
-	{"Change your tactics", {'T', 0, 0, 0, 0}, Traits},
-	{"Apply skills", {'S', 0, 0, 0, 0}, Traits},
-	{"Apply quickskill number 0", {':', '0', 0, 0, 0}, Traits},
-	{"Apply quickskill number 1", {':', '1', 0, 0, 0}, Traits},
-	{"Apply quickskill number 2", {':', '2', 0, 0, 0}, Traits},
-	{"Apply quickskill number 3", {':', '3', 0, 0, 0}, Traits},
-	{"Apply quickskill number 4", {':', '4', 0, 0, 0}, Traits},
-	{"Apply quickskill number 5", {':', '5', 0, 0, 0}, Traits},
-	{"Apply quickskill number 6", {':', '6', 0, 0, 0}, Traits},
-	{"Apply quickskill number 7", {':', '7', 0, 0, 0}, Traits},
-	{"Apply quickskill number 8", {':', '8', 0, 0, 0}, Traits},
-	{"Apply quickskill number 9", {':', '9', 0, 0, 0}, Traits},
+	{"Change your tactics", {'T', 0, 0, 0, 0}, Traits, false},
+	{"Apply skills", {'S', 0, 0, 0, 0}, Traits, false},
+	{"Apply quickskill number 0", {':', '0', 0, 0, 0}, Traits, false},
+	{"Apply quickskill number 1", {':', '1', 0, 0, 0}, Traits, false},
+	{"Apply quickskill number 2", {':', '2', 0, 0, 0}, Traits, false},
+	{"Apply quickskill number 3", {':', '3', 0, 0, 0}, Traits, false},
+	{"Apply quickskill number 4", {':', '4', 0, 0, 0}, Traits, false},
+	{"Apply quickskill number 5", {':', '5', 0, 0, 0}, Traits, false},
+	{"Apply quickskill number 6", {':', '6', 0, 0, 0}, Traits, false},
+	{"Apply quickskill number 7", {':', '7', 0, 0, 0}, Traits, false},
+	{"Apply quickskill number 8", {':', '8', 0, 0, 0}, Traits, false},
+	{"Apply quickskill number 9", {':', '9', 0, 0, 0}, Traits, false},
 
 	//actions
-	{"Push", {'p', 0, 0, 0, 0}, Actions},
-	{"Search", {'s', 0, 0, 0, 0}, Actions},
-	{"Toggle search mode", {':', 's', 0, 0, 0}, Actions},
-	{"Examine/Look", {'l', 0, 0, 0, 0}, Actions},
-	{"Read", {'r', 0, 0, 0, 0}, Actions},
-	{"Open door", {'o', 0, 0, 0, 0}, Actions},
-	{"Close door", {'c', 0, 0, 0, 0}, Actions},
-	{"Cast a spell", {'Z', 0, 0, 0, 0}, Actions},
-	{"Eat food", {'e', 0, 0, 0, 0}, Actions},
-	{"Throw/Shoot", {'t', 0, 0, 0, 0}, Actions},
-	{"Rest (pass one turn)", {'.', 0, 0, 0, 0}, Actions},
+	{"Push", {'p', 0, 0, 0, 0}, Actions, false},
+	{"Search", {'s', 0, 0, 0, 0}, Actions, false},
+	{"Toggle search mode", {':', 's', 0, 0, 0}, Actions, false},
+	{"Examine/Look", {'l', 0, 0, 0, 0}, Actions, true},
+	{"Read", {'r', 0, 0, 0, 0}, Actions, true},
+	{"Open door", {'o', 0, 0, 0, 0}, Actions, false},
+	{"Close door", {'c', 0, 0, 0, 0}, Actions, false},
+	{"Cast a spell", {'Z', 0, 0, 0, 0}, Actions, false},
+	{"Eat food", {'e', 0, 0, 0, 0}, Actions, true},
+	{"Throw/Shoot", {'t', 0, 0, 0, 0}, Actions, true},
+	{"Rest (pass one turn)", {'.', 0, 0, 0, 0}, Actions, false},
 
 	//interact
-	{"Talk with someone", {'C', 0, 0, 0, 0}, Interact},
-	{"Pay your bill", {'P', 0, 0, 0, 0}, Interact},
-	{"Check your bill", {':', 'b', 0, 0, 0}, Interact},
+	{"Talk with someone", {'C', 0, 0, 0, 0}, Interact, false},
+	{"Pay your bill", {'P', 0, 0, 0, 0}, Interact, false},
+	{"Check your bill", {':', 'b', 0, 0, 0}, Interact, false},
 
 	//view
-	{"Redraw screen", {MYKEY_CTRLR, 0, 0, 0, 0}, View},
-	{"Display previous message", {MYKEY_CTRLP, 0, 0, 0, 0}, View},
-	{"Display message buffer", {'m', 0, 0, 0, 0}, View},
-	{"Display help menu", {'?', 0, 0, 0, 0}, View},
-	{"Display keybindings", {'K', 0, 0, 0, 0}, View},
-	{"Display error log", {':', 'e', 0, 0, 0}, View},
+	{"Redraw screen", {MYKEY_CTRLR, 0, 0, 0, 0}, View, true},
+	{"Display previous message", {MYKEY_CTRLP, 0, 0, 0, 0}, View, false},
+	{"Display message buffer", {'m', 0, 0, 0, 0}, View, true},
+	{"Display help menu", {'?', 0, 0, 0, 0}, View, true},
+	{"Display keybindings", {'K', 0, 0, 0, 0}, View, true},
+	{"Display error log", {':', 'e', 0, 0, 0}, View, true},
 
 #ifdef saladir_debug
 	//debug commands
-	{"Debug: Light on", {MYKEY_CTRLH, 0, 0, 0, 0}, Debugging},
-	{"Debug: Identify item", {MYKEY_CTRLI, 0, 0, 0, 0}, Debugging},
-	{"Debug: Quit", {'Q', 0, 0, 0, 0}, Debugging},
-	{"Debug: Test something", {MYKEY_CTRLT, 0, 0, 0, 0}, Debugging},
-	{"Debug: Messages", {'M', 0, 0, 0, 0}, Debugging},
-	{"Debug: Command menu", {MYKEY_CTRLD, 0, 0, 0, 0}, Debugging},
+	{"Debug: Light on", {MYKEY_CTRLH, 0, 0, 0, 0}, Debugging, true},
+	{"Debug: Identify item", {MYKEY_CTRLI, 0, 0, 0, 0}, Debugging, true},
+	{"Debug: Quit", {'Q', 0, 0, 0, 0}, Debugging, false},
+	{"Debug: Test something", {MYKEY_CTRLT, 0, 0, 0, 0}, Debugging, true},
+	{"Debug: Messages", {'M', 0, 0, 0, 0}, Debugging, true},
+	{"Debug: Command menu", {MYKEY_CTRLD, 0, 0, 0, 0}, Debugging, true},
 #endif
 
 	//editor commands (editor was removed)
@@ -294,8 +290,6 @@ void run_command(playerinfo *plr, const int command)
 		return;
 	}
 
-	//msg.newmsg(C_WHITE, "Executing command %d.", command);
-
 	//check rest of the commands
 	switch (command)
 	{
@@ -353,7 +347,9 @@ void run_command(playerinfo *plr, const int command)
 		case Pay_Bill: paybill(plr, level); break;
 		case Check_Bill: player.Check_Bill(); break;
 
-		case Redraw_Screen: display->Redraw(level); break;
+		case Redraw_Screen:
+			//command data sets redraw for this, no need for manual call
+		break;
 		case Previous_Message: msg.showlast(); break;
 		case Show_Message_Buffer: msg.showall(); break;
 		case Show_Help_Menu: cmd_help(); break;
@@ -371,6 +367,9 @@ void run_command(playerinfo *plr, const int command)
 			msg.newmsg(C_RED, "Unknown command id %d.", command);
 		break;
 	}
+
+	if (cmdtable[command].redraw_view)
+		GAME_NOTIFYFLAGS|=GAME_DO_REDRAW;
 }
 
 void cmd_help()
