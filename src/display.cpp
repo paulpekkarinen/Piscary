@@ -21,6 +21,7 @@
 #include <array>
 #include <cmath>
 #include <cstring>
+#include <format>
 #include "avatar.h"
 #include "being.h"
 #include "caves.h"
@@ -48,6 +49,7 @@
 #include "world.h"
 
 using std::array;
+using std::format;
 using std::string;
 
 const char *condition_txt[]=
@@ -121,12 +123,6 @@ const char *txt_statdescs[]=
    0
 };
 
-char i_piletxt[40];
-char i_manytxt[20];
-char i_stattxt[100];
-char i_identxt[100];
-char i_pricetxt[100];
-char i_hugetmp[1024];
 char itempstr[100];
 
 const char *food_condition[]=
@@ -231,12 +227,12 @@ void Display::Hiscore_Header()
 //prints out some info about the item based on the identified status...
 void Display::Item_Info(item_def *iptr, int weight, int count, const char *acttxt)
 {
-	i_stattxt[0]=0;
-	i_identxt[0]=0;
-	i_piletxt[0]=0;
-	i_manytxt[0]=0;
-	i_hugetmp[0]=0;
-	i_pricetxt[0]=0;
+	string status;
+	string ident;
+	string item; //combined name
+	string many;
+	string pile;
+	string price;
 
 	/* if it's a container, modify the weight */
 	if (iptr->inv != 0)
@@ -246,42 +242,37 @@ void Display::Item_Info(item_def *iptr, int weight, int count, const char *acttx
 	{
 		Currency rupees(iptr->price);
 
-		i_identxt[0]=0;
+		price="(";
 
-		strcat(i_pricetxt, "(");
 		if (rupees.gold)
-		{
-			sprintf(i_identxt, "%dg", rupees.gold);
-			strcat(i_pricetxt, i_identxt);
-		}
+			price+=format("{}g", rupees.gold);
+
 		if (rupees.silver)
 		{
 			if (rupees.gold)
-				strcat(i_pricetxt, ",");
-			sprintf(i_identxt, "%ds", rupees.silver);
-			strcat(i_pricetxt, i_identxt);
+				price.append(",");
+			price+=format("{}s", rupees.silver);
 		}
+
 		if (rupees.copper)
 		{
 			if (rupees.gold || rupees.silver)
-				strcat(i_pricetxt, ",");
-			sprintf(i_identxt, "%dc", rupees.copper);
-			strcat(i_pricetxt, i_identxt);
+				price.append(",");
+			price+=format("{}c", rupees.copper);
 		}
-		strcat(i_pricetxt, ")");
-		i_identxt[0]=0;
+		price.append(")");
 	}
 
 	if ((iptr->status & ITEM_IDENTIFIED))
 	{
 		if ((iptr->status & ITEM_BLESSED))
 		{
-			sprintf(i_stattxt, "blessed ");
+			status="blessed ";
 			my_setcolor(CH_GREEN);
 		}
 		if ((iptr->status & ITEM_CURSED))
 		{
-			sprintf(i_stattxt, "cursed ");
+			status="cursed ";
 			my_setcolor(CH_RED);
 		}
 		/* show modifiers */
@@ -289,67 +280,61 @@ void Display::Item_Info(item_def *iptr, int weight, int count, const char *acttx
 		{
 			sprintf(itempstr, "[%dd%d,%+2d] ",
 				iptr->melee_dt, iptr->melee_ds, iptr->meldam_mod);
-			strcat(i_identxt, itempstr);
+			ident.append(itempstr);
 		}
 
 		if (iptr->missi_dt >0 || iptr->missi_ds || iptr->misdam_mod >0)
 		{
 			sprintf(itempstr, "{%dd%d,%+2d} ",
 				iptr->missi_dt, iptr->missi_ds, iptr->misdam_mod);
-			strcat(i_identxt, itempstr);
+			ident.append(itempstr);
 		}
 
 		if (iptr->ac>0)
 		{
 			sprintf(itempstr, "(AC%+2d)", iptr->ac);
-			strcat(i_identxt, itempstr);
+			ident.append(itempstr);
 		}
 
 		if (!acttxt)
 		{
 			sprintf(itempstr, "%s %4.2fkg",
-				i_pricetxt, (real)(count*weight)/WEIGHT_KILO);
-			strcat(i_identxt, itempstr);
+				price.c_str(), (real)(count*weight)/WEIGHT_KILO);
+			ident.append(itempstr);
 		}
 		else
 		{
-			strcat(i_identxt, i_pricetxt);
+			ident+=price;
 		}
 	}
 	else
 	{
 		if (!acttxt)
 		{
-			sprintf(i_identxt,
-				"%s %4.2fkg", i_pricetxt, (real)(count*weight)/WEIGHT_KILO);
+			sprintf(itempstr,
+				"%s %4.2fkg", price.c_str(), (real)(count*weight)/WEIGHT_KILO);
+			ident.append(itempstr);
 		}
 		else
-			sprintf(i_identxt, "%s", i_pricetxt);
+			ident=price;
 	}
 
 	if (count>1)
 	{
-		sprintf(i_piletxt, "a pile of %d ", count);
-		sprintf(i_manytxt, "s");
+		pile=format("a pile of {} ", count);
+		many="s";
 	}
 	else
-		sprintf(i_piletxt, "a ");
+		pile="a ";
 
 	const char *itemname=iptr->name.c_str();
 
 	if (iptr->type==IS_FOOD)
 	{
+		item=format("{}{}{}{}", pile, status, itemname, many);
+
 		if ((iptr->status & ITEM_IDENTIFIED))
-		{
-			sprintf(itempstr, "%s%s%s%s (%s)",
-				i_piletxt, i_stattxt, itemname,
-				i_manytxt, food_condition[iptr->icond]);
-		}
-		else
-		{
-			sprintf(itempstr, "%s%s%s%s",
-				i_piletxt, i_stattxt, itemname, i_manytxt);
-		}
+			item+=format(" ({})", food_condition[iptr->icond]);
 	}
 	else if (iptr->type==IS_SCROLL)
 	{
@@ -358,67 +343,60 @@ void Display::Item_Info(item_def *iptr, int weight, int count, const char *acttx
 
 		if (iptr->status & ITEM_IDENTIFIED)
 		{
-			sprintf(itempstr, "%s%s%s%s of %s (\"%s\")",
-				i_piletxt, i_stattxt,
-				itemname, i_manytxt,
-				iptr->rname.c_str(),
-				iptr->sname.c_str());
+			item=format("{}{}{}{} of {} (\"{}\")",
+				pile, status, itemname, many,
+				iptr->rname, iptr->sname);
 		}
 		else
 		{
-			sprintf(itempstr, "%s%s %s%s labeled \"%s\"",
-				i_piletxt, materials[iptr->material].name,
-				itemname, i_manytxt,
-				iptr->sname.c_str());
+			item=format("{}{} {}{} labeled \"{}\"",
+				pile, materials[iptr->material].name,
+				itemname, many, iptr->sname);
 
 			if (list_scroll[iptr->group].flags & SCFLAG_NAMED)
 			{
-				strcat(itempstr, " (\"");
-				strcat(itempstr, list_scroll[iptr->group].cname);
-				strcat(itempstr, "\")");
+				item+=format(" (\"{}\")",
+					list_scroll[iptr->group].cname);
 			}
 			else if (list_scroll[iptr->group].flags & SCFLAG_TRIED)
-				strcat(itempstr, " {tried}");
+				item.append(" {tried}");
 		}
 	}
 	else if (iptr->type==IS_MONEY)
 	{
-		sprintf(itempstr, "%s%s%s%s", i_piletxt, i_stattxt,
-			itemname, i_manytxt);
+		item=format("{}{}{}{}", pile, status, itemname, many);
 	}
 	else if (iptr->type==IS_SPECIAL)
 	{
-		sprintf(itempstr, "%s %s%s%s",
-			i_piletxt, i_stattxt,
-			itemname, i_manytxt);
+		item=format("{} {}{}{}", pile, status, itemname, many);
 	}
 	else
 	{
 		if (iptr->material>=0)
 		{
-			sprintf(itempstr, "%s%s %s%s %s%s",
-				i_piletxt, condition[iptr->icond], i_stattxt,
-				materials[iptr->material].name, itemname, i_manytxt);
+			item=format("{}{} {}{} {}{}",
+				pile, condition[iptr->icond], status,
+				materials[iptr->material].name, itemname, many);
 		}
 		else
 		{
-			sprintf(itempstr, "%s%s %s%s%s",
-				i_piletxt, condition[iptr->icond], i_stattxt,
-				itemname, i_manytxt);
+			item=format("{}{} {}{}{}",
+				pile, condition[iptr->icond], status,
+				itemname, many);
 		}
 	}
 
 	if (!acttxt)
 	{
-		my_printf(itempstr);
-		const int idenlen=(int)strlen(i_identxt);
+		my_printf(item.c_str());
+		const int idenlen=(int)ident.size();
 		gotoxy(SCREEN_COLS-idenlen, get_cursor_y());
-		my_printf(i_identxt);
+		my_printf(ident.c_str());
 	}
 	else
 	{
-		sprintf(i_hugetmp, "%s %s%s!", acttxt, itempstr, i_identxt);
-		msg.newmsg(i_hugetmp, C_WHITE);
+		string s=format("{} {}{}!", acttxt, item, ident);
+		msg.newmsg(s.c_str(), C_WHITE);
 	}
 }
 
