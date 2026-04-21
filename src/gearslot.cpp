@@ -20,7 +20,7 @@
 #include "log.h"
 #include "purse.h"
 #include "storage.h"
-
+	
 void Equipslot::Clear()
 {
 	item=0;
@@ -58,4 +58,26 @@ void Equipslot::Load(Tar_Ball &tb, inventory &inv, int slot)
 	in_use=tb.Get_Next_Bool();
 	reserv=tb.Get_Next_Value();
 	status=tb.Get_Next_Char();
+}
+
+bool Equipslot::Is_Reserved()
+{
+	if (reserv!=0)
+		return true;
+
+	return false;
+}
+
+bool Equipslot::Is_Usable()
+{
+	if (status!=EQSTAT_OK) return false;
+	return true;
+}
+
+bool Equipslot::Is_Empty()
+{
+	if (item==0)
+		return true;
+
+	return false;
 }

@@ -204,7 +204,7 @@ int equipment::equip_checkfit(int slot, item_def *item)
 
 void equipment::display_result(int what, int slot)
 {
-	const int y=SCREEN_LINES-1;
+	const int y=SCREEN_LINES-2;
 
 	if (what<0 || what>=Amt_Of_Events)
 	{
@@ -223,7 +223,7 @@ void equipment::display_result(int what, int slot)
 		case Equipped:
 		{
 			string s("Equipped ");
-			s.append(player.equips.get_equipment_name(slot));
+			s.append(get_equipment_name(slot));
 			s.append(".");
 			print_centered(y, s.c_str());
 		}
@@ -241,10 +241,10 @@ void equipment::display_description(int slot)
 
 int equipment::equipitem(int slot, playerinfo &plr)
 {
-	if (get_reserved(slot)!=0)
+	if (equip[slot].Is_Reserved())
 		return Slot_Reserved;
 
-	if (is_empty(slot))
+	if (equip[slot].Is_Empty())
 	{
 		int res=0; //note: always set to zero, see check below
 		plr.backpack->Set_Filter(-1);
@@ -274,8 +274,6 @@ int equipment::equipitem(int slot, playerinfo &plr)
 				/* identify item when equipped */
 				if (equipit->i.Is_Weapon() || equipit->i.Is_Armor())
 					equipit->i.status |= ITEM_IDENTIFIED;
-
-				equipit->slot = slot;
 
 				put_on(equipit, slot);
 
@@ -365,7 +363,12 @@ const char *equipment::get_equipment_name(int slot)
 
 item_def *equipment::get_item(int slot)
 {
-	return &equip[slot].item->i;
+	invnode *in=equip[slot].item;
+	if (in==0)
+		return 0;
+
+	//return invnode's item_def
+	return &in->i;
 }
 
 invnode *equipment::get_inventory_item(int slot)
@@ -373,21 +376,9 @@ invnode *equipment::get_inventory_item(int slot)
 	return equip[slot].item;
 }
 
-int equipment::get_reserved(int slot)
-{
-	return equip[slot].reserv;
-}
-
-bool equipment::is_empty(int slot)
-{
-	if (get_inventory_item(slot)==0) return true;
-	return false;
-}
-
 bool equipment::is_usable(int slot)
 {
-	if (equip[slot].status!=EQSTAT_OK) return false;
-	return true;
+	return equip[slot].Is_Usable();
 }
 
 void equipment::make_usable(int slot)
@@ -416,11 +407,13 @@ bool equipment::monster_equip(level_type *level, being *monster, invnode *useite
 	}
 	else if (useitem->i.type == IS_WEAPON1H)
 	{
-		if (is_empty(useslot)==false)
+		//check right hand
+		if (equip[useslot].Is_Empty()==false)
 			useslot=EQUIP_LHAND;
 
 		//note: THIS NEED TO BE FIXED ! ..wonder why.
-		if (is_empty(useslot)==false)
+		//check also left hand
+		if (equip[useslot].Is_Empty()==false)
 			return false;
 	}
 
@@ -428,7 +421,6 @@ bool equipment::monster_equip(level_type *level, being *monster, invnode *useite
 	{
 		/* equip the item */
 		put_on(useitem, useslot);
-		useitem->slot=useslot;
 
 		if (gameview.Is_Visible(monster->x, monster->y))
 		{
@@ -494,7 +486,7 @@ void equipment::player_equip()
 			continue;
 		}
 
-		if (player.equips.is_usable(slot)==false)
+		if (is_usable(slot)==false)
 		{
 			print_centered(y, "That slot is unusable!");
 			continue;
@@ -513,6 +505,7 @@ void equipment::put_on(invnode *ni, int slot)
 {
 	equip[slot].in_use=true;
 	equip[slot].item=ni;
+	ni->slot = slot;
 }
 
 void equipment::reserve(int slot, int dest_slot)
@@ -547,7 +540,7 @@ void equipment::show()
 			set_color(CH_RED);
 			my_printf(" !%c) %-10s  broken or unusable!", 'A'+i, equip_slotdesc[i]);
 		}
-		else if (get_reserved(i)==0)
+		else if (equip[i].Is_Reserved()==false)
 		{
 			set_color(CH_RED);
 			my_printf("  %c", 'A'+i);
@@ -555,7 +548,7 @@ void equipment::show()
 			my_printf(") %-10s ", equip_slotdesc[i]);
 			set_color(C_WHITE);
 			my_printf(": ");
-			item_def *idef=player.equips.get_item(i);
+			item_def *idef=get_item(i);
 
 			if (idef==0)
 				my_printf("no item");

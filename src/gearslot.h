@@ -14,10 +14,14 @@
 //One equipment slot.
 struct Equipslot
 {
-	invnode *item; //slot's item is an instance owned by equipment class
+	invnode *item;
 	bool in_use;
 	int reserv;
 	int8u status;
+
+	bool Is_Empty();
+	bool Is_Reserved();
+	bool Is_Usable();
 
 	void Clear();
 	

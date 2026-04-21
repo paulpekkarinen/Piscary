@@ -296,7 +296,7 @@ void Display::Item_Info(item_def *iptr, int weight, int count, const char *acttx
 			ident.append(itempstr);
 		}
 
-		if (!acttxt)
+		if (acttxt==0)
 		{
 			sprintf(itempstr, "%s %4.2fkg",
 				price.c_str(), (real)(count*weight)/WEIGHT_KILO);
@@ -309,7 +309,7 @@ void Display::Item_Info(item_def *iptr, int weight, int count, const char *acttx
 	}
 	else
 	{
-		if (!acttxt)
+		if (acttxt==0)
 		{
 			sprintf(itempstr,
 				"%s %4.2fkg", price.c_str(), (real)(count*weight)/WEIGHT_KILO);
@@ -386,7 +386,7 @@ void Display::Item_Info(item_def *iptr, int weight, int count, const char *acttx
 		}
 	}
 
-	if (!acttxt)
+	if (acttxt==0)
 	{
 		my_printf(item.c_str());
 		const int idenlen=(int)ident.size();

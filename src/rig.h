@@ -81,9 +81,6 @@ private:
 	
 	int equip_checkfit(int slot, item_def *item);
 	void display_result(int what, int slot);
-	int get_reserved(int slot);
-	bool is_empty(int slot);
-
 	void put_on(invnode *ni, int slot);
 	void reserve(int slot, int dest_slot);
 
