@@ -18,7 +18,14 @@ using std::string;
 /* place where options are stored */
 gameconfig CONFIGVARS;
 
-char opt_txt[80]={}; //for text input
+//for text input, need 21 characters for item categories + trailing zero
+char opt_txt[22]={};
+
+int Option::Get_Input_Offset()
+{
+	//return location where new value is input
+	return strlen(name)+6;
+}
 
 void Option::Show()
 {

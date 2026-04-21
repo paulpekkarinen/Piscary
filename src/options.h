@@ -24,6 +24,8 @@ public:
 		: name(n), desc(od), letter(which) { }
 	virtual ~Option() { }
 
+	int Get_Input_Offset();
+
 	virtual void Change() = 0;
 	void Show();
 	void Show_Description();

@@ -10,6 +10,7 @@
 #define OPTCONT_H
 
 #include <vector>
+#include "geometry.h"
 
 class Option;
 
@@ -21,6 +22,7 @@ private:
 	std::vector<Option*> opts; //list of options
 	bool changed; //if options are changed
 	int index; //points to an option in the list
+	Coord inpoint; //where to start input text
 
 	typedef std::vector<Option*>::iterator oitr;
 

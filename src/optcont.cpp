@@ -112,9 +112,10 @@ Optcont::Optcont()
 	"a target for spells or missiles.", 's',
 	CONFIGVARS.targetline));
 
+	//max value is 2800 = TIME_1MIN
 	opts.push_back(new Integer_Option("TICKSMIN",
 	"Ticks/minute, how fast time passes", 't',
-	CONFIGVARS.ticksperminute, 100, 2000));
+	CONFIGVARS.ticksperminute, 100, 2800));
 }
 
 Optcont::~Optcont()
@@ -136,7 +137,7 @@ void Optcont::Show_List()
 	const int x=10;
 	int dx=x;
 	int y=2;
-	int cur_y=2;
+	Coord cur;
 	int i=0;
 	for (oitr ii = opts.begin() ; ii != opts.end() ; ++ii)
 	{
@@ -144,7 +145,10 @@ void Optcont::Show_List()
 		if (i==index)
 		{
 			c=CH_WHITE; //show selected in white
-			cur_y=y;
+			cur.Set(dx, y);
+
+			//store input point
+			inpoint.Set(dx+(*ii)->Get_Input_Offset(), y);
 		}
 		else
 			c=CH_GREEN;
@@ -171,7 +175,7 @@ void Optcont::Show_List()
 	opts[index]->Show_Description();
 
 	//put cursor on the selected letter
-	gotoxy(x+2, cur_y);
+	gotoxy(cur.x+2, cur.y);
 }
 
 void Optcont::Edit()
@@ -187,6 +191,7 @@ void Optcont::Edit()
 		switch (k)
 		{
 			case ' ':
+				gotoxy(inpoint.x, inpoint.y);
 				opts[index]->Change();
 				//set to changed even if values stay same, because
 				//the decision was made to edit an option
