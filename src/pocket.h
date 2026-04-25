@@ -9,6 +9,7 @@
 #include "types.h"
 
 struct Currency;
+class inventory;
 
 //List of items when picking up items for example.
 class Pocket
@@ -21,7 +22,7 @@ private:
 		bool sel; //this item is selected to pick up etc.
 
 		explicit itemlistptr(invnode *i)
-			: ptr(i), sel(0) { }
+			: ptr(i), sel(false) { }
 	};
 
 	std::list<itemlistptr> items;
@@ -32,19 +33,21 @@ private:
 	void Add_Coins(Currency &c, inventory &to_inv);
 
 public:
-	bool collectmoneyptr(inventory &inv);
+	bool collectmoneyptr(inventory &from_inv);
+	int Get_Selected_Amount(); //amount of items currently selected
+	int get_weight_of_items(); //returns weight of the current items
+	bool Is_Empty();
 
-	void add_item(invnode *ptr);
+	inventory *Get_Container(int index);
+	invnode *Get_Item_Handle(int index);
+	
+	void Add_Item(invnode *ptr);
 	void Clear_Items();
 	void Show(int starting_index, int &lasttype, bool darklevel);
-
-	int Get_Selected(); //amount of items currently selected
-	int get_weight_of_items(); //returns weight of the current items in the pocket
-	bool is_empty();
-	void money_transaction
-		(inventory &from_inv, inventory &to_inv, equipment &gear,
-			int copperneed, int copperamt);
-
+	void money_transaction(inventory &from_inv, inventory &to_inv,
+		equipment &gear, int copperneed, int copperamt);
+	void Push_Item(invnode *ptr);
+	void Toggle(int index);
 	void Transfer(inventory &from_inv, inventory &to_inv); //get selected items
 };
 

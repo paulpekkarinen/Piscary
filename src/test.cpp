@@ -41,11 +41,9 @@ void test_valuables();
 
 void run_current_test()
 {
-	string s;
-	if (CONFIGVARS.autodoor) s="true";
-	else s="false";
+	int sz=player.inv.Get_Linear_Size();
 
-	msg.newmsg(CH_GREEN, "Autodoor is now %s", s.c_str());
+	msg.newmsg(CH_GREEN, "%d items in inventory.", sz);
 	
 	GAME_NOTIFYFLAGS|=GAME_DO_REDRAW;
 }

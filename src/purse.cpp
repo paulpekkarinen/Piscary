@@ -83,7 +83,7 @@ bool inventory::builditemarray(Pocket &ptrlist, int filter, int x, int y)
 {
 	const int itemcount = Count_Items(filter, x, y, false);
 
-	if(!itemcount)
+	if (itemcount==0)
 		return false;
 
 	ptrlist.Clear_Items(); //clear before adding items
@@ -109,12 +109,12 @@ bool inventory::builditemarray(Pocket &ptrlist, int filter, int x, int y)
 				continue;
 		}
 
-		ptrlist.add_item(invptr);
+		ptrlist.Push_Item(invptr);
 		amt++;
 	}
 
 	/* if no filter matches, return false */
-	if (!amt)
+	if (amt==0)
 		return false;
 
 	return true;
@@ -206,7 +206,7 @@ void inventory::collectmoneypointers_recurse(Pocket *ptrlist)
 
 		if (iptr->i.type == IS_MONEY)
 		{
-			ptrlist->add_item(iptr);
+			ptrlist->Push_Item(iptr);
 		}
 		else if (iptr->i.inv!=0)
 		{

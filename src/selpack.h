@@ -7,7 +7,7 @@
 
 #include "inventor.h"
 
-class SelectItemsPack : public SelectItems
+class SelectItemsPack : public Stockpile
 {
 private:
 	inventory &inv; //source inventory
@@ -18,7 +18,7 @@ public:
 	invnode *Get_Handle(const char *preprompt);
 
 	bool Change_Category(int select) override;
-	bool Select_Items(const char *preprompt);
+	int Select_Items(const char *preprompt);
 	void Set_Header(const char *preprompt) override;
 };
 

@@ -15,9 +15,12 @@
 #define INV_STRAIN   2
 #define INV_OVERLOAD 3
 
-class SelectItems
+//Show and select items in inventory based on filter type.
+class Stockpile
 {
 private:
+	static const int Items_Per_Page=20;
+	
 	int actfilter; //active filter
 	int filter; //original filter
 	int arrayweight; //weight of items in the pocket
@@ -32,11 +35,20 @@ protected:
 	int Get_Filter() const { return filter; }
 
 	bool Change_Item_Category(int select); //base class version
-	bool Select(const char *preprompt);
+	bool Open_Container(int key, int view_index);
+	int Select(const char *preprompt, bool oneshot);
 
 public:
-	SelectItems(int flt);
-	virtual ~SelectItems() { }
+	enum Selections
+	{
+		Empty, //this inventory is empty
+		Selected, //one or more items selected
+		Cancel,
+		Container_Selected
+	};
+	
+	Stockpile(int flt);
+	virtual ~Stockpile() { }
 
 	Pocket &Get_Pocket() { return mypocket; }
 

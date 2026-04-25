@@ -9,7 +9,7 @@
 
 class Stash;
 
-class SelectItemsGround : public SelectItems
+class SelectItemsGround : public Stockpile
 {
 private:
 	Stash &inv; //source inventory
@@ -23,7 +23,7 @@ public:
 
 	bool Change_Category(int select) override;
 	void Set_Header(const char *preprompt) override;
-	bool Select_Items(const char *preprompt, const Coord &c);
+	int Select_Items(const char *preprompt, const Coord &c);
 	void Set_Place(const Coord &c) { place=c; }
 };
 

@@ -49,7 +49,7 @@ bool inv_paymoney(inventory &from_inv, inventory &to_inv, equipment &gear,
 	Pocket dough;
 	dough.collectmoneyptr(from_inv);
 
-	if (dough.is_empty())
+	if (dough.Is_Empty())
 		return false;
 
 	//make the transaction

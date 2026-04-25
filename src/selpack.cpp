@@ -13,7 +13,7 @@
 #include "selpack.h"
 
 SelectItemsPack::SelectItemsPack(inventory &srcinv, int flt)
-	: SelectItems(flt), inv(srcinv)
+	: Stockpile(flt), inv(srcinv)
 {
 
 }
@@ -21,30 +21,41 @@ SelectItemsPack::SelectItemsPack(inventory &srcinv, int flt)
 //Get handle functions don't remove the item, only returns the handle.
 invnode *SelectItemsPack::Get_Handle(const char *preprompt)
 {
-	Set_Header(preprompt); //note: this may not be needed if base Select is called
+	invnode *rv=0;
 
-	return 0;
-}
-
-bool SelectItemsPack::Change_Category(int select)
-{
-	const bool rv=Change_Item_Category(select);
-
-	//using -1, -1 is from inventory, not on ground location
-	if (rv)
-		inv.builditemarray(mypocket, Get_Filter(), -1, -1);
+	if (inv.builditemarray(mypocket, Get_Filter(), -1, -1)==false)
+		return 0;
+			
+	switch (Select(preprompt, true))
+	{
+		case Stockpile::Selected:
+		case Stockpile::Container_Selected:
+		break;
+		default: break; 
+	}
 
 	return rv;
 }
 
-bool SelectItemsPack::Select_Items(const char *preprompt)
+bool SelectItemsPack::Change_Category(int select)
+{
+	bool rv=Change_Item_Category(select);
+
+	//using -1, -1 is from inventory, not on ground location
+	if (rv)
+		rv=inv.builditemarray(mypocket, Get_Filter(), -1, -1);
+
+	return rv;
+}
+
+int SelectItemsPack::Select_Items(const char *preprompt)
 {
 	// first build a list of items, if no items to match filter
 	// it will return false
 	if (inv.builditemarray(mypocket, Get_Filter(), -1, -1)==false)
-		return false;
+		return Stockpile::Empty;
 
-	return Select(preprompt);
+	return Select(preprompt, false);
 }
 
 void SelectItemsPack::Set_Header(const char *preprompt)

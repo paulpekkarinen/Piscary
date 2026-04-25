@@ -25,13 +25,13 @@
 using std::string;
 
 //Using player's backpack as default inventory.
-SelectItems::SelectItems(int flt)
+Stockpile::Stockpile(int flt)
 	: arrayweight(0), lasttype(-1)
 {
 	Set_Filter(flt);
 }
 
-bool SelectItems::Change_Item_Category(int select)
+bool Stockpile::Change_Item_Category(int select)
 {
 	int flt=-1; //selected category type
 	int i=0; //index to category
@@ -61,7 +61,7 @@ bool SelectItems::Change_Item_Category(int select)
 	return change;
 }
 
-void SelectItems::Show_Header()
+void Stockpile::Show_Header()
 {
 	int i=0;
 	int usefilter=-1;
@@ -76,7 +76,7 @@ void SelectItems::Show_Header()
 		i++;
 	}
 
-	display->Header(prompt.c_str(), CH_WHITE);
+	display->Header(prompt.c_str(), CH_GREEN);
 	set_color(C_WHITE);
 
 	if (usefilter >= 0)
@@ -88,135 +88,107 @@ void SelectItems::Show_Header()
 	else
 		print_text_to(SCREEN_COLS-14, 1, "[ all items ]");
 
-	goto_content();
+	display->Footer("a-w = select, Space = choose, Ctrl+O = open, x = exit", CH_GREEN);
 }
 
-/*bool inv_listitems_multi(
-	inventory &inv,
-	Pocket &mypocket,
-	const char *preprompt,
-	int filter,
-	bool resmode, //note: 'resmode' never used, but it's in some calling routines
-	bool multiselect,
-	int x, int y)*/
+bool Stockpile::Open_Container(int key, int view_index)
+{
+	const int index=get_index_from_key(key, Items_Per_Page);
+	if (index==-1)
+		return false;
 
-//Browse inventory and select items from it, they are listed in mypocket.
-bool SelectItems::Select(const char *preprompt)
+	//list items inside container
+	inventory *inv=mypocket.Get_Container(view_index+index);
+	if (inv!=0)
+	{
+		mypocket.Clear_Items();
+		inv->builditemarray(mypocket, actfilter, -1, -1);
+		return true;
+	}
+
+	return false;
+}
+
+//Browse pocket and select items from it.
+int Stockpile::Select(const char *preprompt, bool oneshot)
 {
 	arrayweight = mypocket.get_weight_of_items();
 
-	// we need to do a redraw after this
-	GAME_NOTIFYFLAGS|=GAME_DO_REDRAW;
-
-	// show screen title
 	Set_Header(preprompt);
 	Show_Header();
 
 	int pitemcount=0;
-	bool selected=false;
-	bool cancel=true;
 	int itemcount=0;
-	int lasttype=-1;
-	int i=0; //starting index
-	int j=0;
-/*
-	while (1)
+	lasttype=-1;
+	int rv=Cancel;
+	int index=0;
+	bool browsing=true;
+	
+	while (browsing)
 	{
-		//info=(ptrlist+i)->ptr;
+		//show the current filtered list (note: check darklevel parameter)
+		goto_content();
+		mypocket.Show(index, lasttype, false);
 
-		//show the current filtered inventory which is the pocket list
-		mypocket.Show(i, lasttype, darklevel);
+		//selectionprompt(arrayweight);
 
-		while (1)
+		const int key=my_getch();
+
+		if (filter < 0)
 		{
-			selectionprompt(arrayweight);
-
-			if ((ptrlist+i)->ptr)
-				display->More_Inventory(SCREEN_LINES-3);
-
-			if (j!=0)
-				display->More_Inventory(2);
-
-			if (!itemcount)
+			if (Change_Category(key))
 			{
-				gotoxy(0, 3);
-				my_printf("..Nothing...\n");
-			}
+				arrayweight = mypocket.get_weight_of_items();
 
-			const int key=my_getch();
-
-			if (filter < 0)
-			{
-				if (Change_Category(key))
-				{
-					actfilter = key;
-					arrayweight = mypocket.get_weight_of_items();
-
-					itemcount=i=j=0;
-					lasttype=-1;
-					Show_Header();
-					break;
-				}
-			}
-			if (key==MYKEY_CTRLI)
-			{
-				text_data->View(Text_Data::Inventory_Help);
-				itemcount=0;
+				//itemcount=i=j=0;
 				lasttype=-1;
 				Show_Header();
-				i=j;
-				break;
+				continue;
 			}
-			if (is_confirm_key(key))
-			{
-				cancel=false;
-				selected=true;
-				break;
-			}
-			else
-			{
-				if (key==32 || key==KEY_ESC)
+		}
+
+		switch (key)
+		{
+			case ' ':
+			case KEY_ENTER:
+				if (mypocket.Get_Selected_Amount()>0)
 				{
-					selected=true;
-					cancel=true;
-					break;
+					rv=Selected;
+					browsing=false;
 				}
-				else
+			break;
+			case 'x': rv=Cancel; browsing=false; break;
+			case MYKEY_CTRLO:
+			{
+				my_setcolor(CH_YELLOW);
+				clear_lines(SCREEN_LINES-3, SCREEN_LINES-1);
+
+				print_centered(SCREEN_LINES-2,
+					"Open which container [press item letter]?");
+				int selection = my_getch();			
+				if (Open_Container(selection, index)==false)
+					display->Footer_Failure("That is not a container.");
+
+				Show_Header();
+			}
+			break;
+			default:
+				if (key>='a' && key<='w')
 				{
-					// select item commands
-					if ((selection>='a') && (selection < ('a'+itemcount)))
+					const int i=get_index_from_key(key, Items_Per_Page);
+					if (i!=-1)
 					{
-						selptr=(ptrlist + (selection-'a')+j)->ptr;
-
-						(ptrlist + (selection-'a')+j)->sel = 1;
-						selected=true;
-						cancel=false;
-						break;
-					}
-			// multiselection
-					else if ((selection>='A') && (selection < ('A'+itemcount)))
-					{
-						// toggle selection
-						if ((ptrlist + (selection-'A')+j)->sel == 1)
-							(ptrlist + (selection-'A')+j)->sel = 0;
-						else
-							(ptrlist + (selection-'A')+j)->sel = 1;
-
-						cancel=false;
-						if (!multiselect)
+						invnode *esine=mypocket.Get_Item_Handle(i);
+						if (esine!=0)
 						{
-							selected=true;
-							break;
+							mypocket.Toggle(index+i);
 						}
-						else
-						{
-							itemcount=0;
-							lasttype=-1;
-							Show_Header();
-							i=j;
-							break;
-						}
-					}
+					}	
+				}
+			break;
+		}
+	}
+/*
 			// move to container
 					else if (selection==MYKEY_CTRLT && !darklevel)
 					{
@@ -298,54 +270,6 @@ bool SelectItems::Select(const char *preprompt)
 						break;
 					}
 			// open container commands
-	//	    else if((selection>='A') && (selection < ('A'+itemcount))) {
-					else if (selection==MYKEY_CTRLO && !darklevel)
-					{
-						my_setcolor(CH_YELLOW);
-						clear_lines(SCREEN_LINES-3, SCREEN_LINES-1);
-
-						print_centered(SCREEN_LINES-2,
-							"Open which container [press item letter]?");
-						selection = my_getch();
-
-						if (!((tolower(selection)>='a') &&
-							(tolower(selection) < ('a'+itemcount))))
-						{
-							break;
-						}
-
-						selptr=(ptrlist + (tolower(selection)-'a')+j)->ptr;
-
-						if (selptr->i.inv != NULL)
-						{
-							container = selptr;
-
-							char * newprompt=NULL;
-
-							newprompt = (char *)malloc(sizeof(char) *
-								(my_strlen(container->i.name) +
-									my_strlen(text_defaultinv) + 1));
-							if (newprompt)
-							{
-								my_strcpy(newprompt, text_defaultinv,
-									(my_strlen(container->i.name) +
-										my_strlen(text_defaultinv) + 1));
-								my_strcat(newprompt, container->i.name,
-									(my_strlen(container->i.name) +
-										my_strlen(text_defaultinv) + 1));
-
-								newlist = inv_listitems_multi(container->i.inv,
-									newprompt,
-									filter, false, true, -1, -1);
-								free(newprompt);
-							}
-							else
-							{
-								newlist = inv_listitems_multi(container->i.inv,
-									"Item inventory",
-									filter, false, true, -1, -1);
-
-							}
 
 							if (newlist)
 							{
@@ -430,19 +354,10 @@ bool SelectItems::Select(const char *preprompt)
 		if (selected) break;
 	}*/
 
-	/*
-	if (!cancel)
-		newlist = inv_buildmultilist(ptrlist);
-	else
-		newlist = NULL;
-
-	// return the multiselection list
-	return newlist;*/
-
-	return false;
+	return rv;
 }
 
-void SelectItems::Set_Filter(int flt)
+void Stockpile::Set_Filter(int flt)
 {
 	filter=flt;
 

@@ -476,6 +476,9 @@ void playerinfo::Initialize()
 	path.clear();
 
 	roleplay.Calculate_Itembonus(this);
+
+	//note: give player some starting items
+	inv.Add_Copper(10);
 }
 
 void playerinfo::Jump_To(const Coord &c)

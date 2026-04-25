@@ -14,7 +14,7 @@
 #include "stash.h"
 
 SelectItemsGround::SelectItemsGround(Stash &srcinv, int flt)
-	: SelectItems(flt), inv(srcinv), place(-1, -1), darklevel(false)
+	: Stockpile(flt), inv(srcinv), place(-1, -1), darklevel(false)
 {
 
 }
@@ -46,14 +46,14 @@ void SelectItemsGround::Set_Header(const char *preprompt)
 		darklevel=true;
 }
 
-bool SelectItemsGround::Select_Items(const char *preprompt, const Coord &c)
+int SelectItemsGround::Select_Items(const char *preprompt, const Coord &c)
 {
 	Set_Place(c);
 
 	// first build a list of items, if no items to match filter
 	// it will return false
 	if (inv.builditemarray(mypocket, Get_Filter(), c.x, c.y)==false)
-		return false;
+		return Stockpile::Empty;
 
-	return Select(preprompt);
+	return Select(preprompt, false);
 }

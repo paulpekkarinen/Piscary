@@ -75,10 +75,12 @@ void drop_here(invnode *src, level_type *level, int x, int y)
 
 void drop_item(playerinfo *plr, level_type *level)
 {
-	const bool dropped = plr->backpack->Select_Items("Select items to drop!");
+	const int v = plr->backpack->Select_Items("Select items to drop!");
 
-	if (dropped)
+	if (v==Stockpile::Selected)
+	{
 		drop_selected(plr->backpack->Get_Pocket(), level, plr->Get_Location());
+	}				
 }
 
 invnode *drop_item(inventory *inv, invnode *in_src, equipment &gear,
@@ -356,9 +358,9 @@ void pick_up_item(playerinfo *plr, level_type *level)
 	{
 		SelectItemsGround level_items(level->inv, -1);
 
-		const bool got = level_items.Select_Items("Select items to get!", pc);
+		const int got = level_items.Select_Items("Select items to get!", pc);
 
-		if (got)
+		if (got==Stockpile::Selected)
 		{
 			Pocket &tasku=level_items.Get_Pocket();
 			tasku.Transfer(level->inv, plr->inv);

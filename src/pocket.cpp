@@ -15,7 +15,7 @@
 #include "purse.h"
 #include "rig.h"
 
-void Pocket::add_item(invnode *ptr)
+void Pocket::Add_Item(invnode *ptr)
 {
 	//don't add the item if it's already in the list
 	for (pitr ii = items.begin() ; ii != items.end() ; ++ii)
@@ -27,14 +27,48 @@ void Pocket::add_item(invnode *ptr)
 	items.push_back(itemlistptr(ptr));
 }
 
-bool Pocket::collectmoneyptr(inventory &inv)
+//If this item is a container, return the container handle.
+inventory *Pocket::Get_Container(int index)
 {
-	const int itemcount = inv.Count_Items(IS_MONEY, -1, -1, true);
+	invnode *item=Get_Item_Handle(index);
+
+	if (item!=0)
+	{
+		return item->i.inv;
+	}
+	
+	return 0;
+}
+
+invnode *Pocket::Get_Item_Handle(int index)
+{
+	int ci=0;
+	
+	for (pitr ii = items.begin() ; ii != items.end() ; ++ii)
+	{
+		if (ci==index)
+			return (*ii).ptr;
+
+		ci++;
+	}
+
+	return 0;
+}
+
+//Add without checking if the item already exists.
+void Pocket::Push_Item(invnode *ptr)
+{
+	items.push_back(itemlistptr(ptr));
+}
+
+bool Pocket::collectmoneyptr(inventory &from_inv)
+{
+	const int itemcount = from_inv.Count_Items(IS_MONEY, -1, -1, true);
 
 	if (!itemcount)
 		return false;
 
-	inv.collectmoneypointers_recurse(this);
+	from_inv.collectmoneypointers_recurse(this);
 
 	return true;
 }
@@ -46,6 +80,12 @@ void Pocket::Clear_Items()
 
 void Pocket::Show(int starting_index, int &lasttype, bool darklevel)
 {
+	if (Is_Empty())
+	{
+		print_text("<Empty>");
+		return;
+	}
+
 	int itemcount=0; //keeps track of number of items displayed
 
 	//move ahead in the location of the index and start displaying from that
@@ -56,7 +96,12 @@ void Pocket::Show(int starting_index, int &lasttype, bool darklevel)
 		++ii;
 	}
 
-	//display items until the end of list reached
+	if (starting_index>0)
+		display->More_Inventory(2);
+
+	gotoxy(0, 3);
+
+	//display items until the end of list or screen reached
 	while (ii != items.end())
 	{
 		itemlistptr &iptr=(*ii);
@@ -97,12 +142,18 @@ void Pocket::Show(int starting_index, int &lasttype, bool darklevel)
 			my_printf("\n");
 			itemcount++;
 		}
+		else
+		{
+			//end of screen reached
+			display->More_Inventory(SCREEN_LINES-3);
+			break;
+		}
 
 		++ii; //next item in the list
 	}
 }
 
-int Pocket::Get_Selected()
+int Pocket::Get_Selected_Amount()
 {
 	int total=0;
 
@@ -128,7 +179,7 @@ int Pocket::get_weight_of_items()
 	return total;
 }
 
-bool Pocket::is_empty()
+bool Pocket::Is_Empty()
 {
 	return items.empty();
 }
@@ -143,9 +194,8 @@ void Pocket::Add_Coins(Currency &c, inventory &to_inv)
 		to_inv.Add_Copper(c.copper);
 }
 
-void Pocket::money_transaction
-	(inventory &from_inv, inventory &to_inv, equipment &gear,
-		int copperneed, int copperamt)
+void Pocket::money_transaction(inventory &from_inv, inventory &to_inv,
+	equipment &gear, int copperneed, int copperamt)
 {
 	/* now we have one array with all money items (coin piles)
 	 * The array must now be scanned and correct amount
@@ -218,5 +268,27 @@ void Pocket::Transfer(inventory &from_inv, inventory &to_inv)
 		}
 		if ((*ii).sel)
 			to_inv.Add_Item(n);
+	}
+}
+
+void Pocket::Toggle(int index)
+{
+	int ci=0;
+	
+	for (pitr ii = items.begin() ; ii != items.end() ; ++ii)
+	{
+		if (ci==index)
+		{
+			bool s=(*ii).sel;
+
+			if (s)
+				(*ii).sel=false;
+			else
+				(*ii).sel=true;
+
+			break;
+		}
+
+		ci++;
 	}
 }
