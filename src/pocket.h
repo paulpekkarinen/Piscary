@@ -40,6 +40,7 @@ public:
 
 	inventory *Get_Container(int index);
 	invnode *Get_Item_Handle(int index);
+	invnode *Remove_Next_Selected();
 	
 	void Add_Item(invnode *ptr);
 	void Clear_Items();
@@ -48,7 +49,7 @@ public:
 		equipment &gear, int copperneed, int copperamt);
 	void Push_Item(invnode *ptr);
 	void Toggle(int index);
-	void Transfer(inventory &from_inv, inventory &to_inv); //get selected items
+	void Transfer(inventory &from_inv, inventory &to_inv);
 };
 
 #endif

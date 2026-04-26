@@ -292,3 +292,21 @@ void Pocket::Toggle(int index)
 		ci++;
 	}
 }
+
+invnode *Pocket::Remove_Next_Selected()
+{
+	if (Is_Empty())
+		return 0;
+
+	for (pitr ii = items.begin() ; ii != items.end() ; ++ii)
+	{
+		if ((*ii).sel)
+		{
+			invnode *n=(*ii).ptr;
+			items.erase(ii);
+			return n;
+		}
+	}
+
+	return 0;
+}

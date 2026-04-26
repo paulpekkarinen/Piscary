@@ -111,7 +111,7 @@ Command_Data cmdtable[Amt_Of_Commands]=
 	{"Equip items/View equipment", {'q', 0, 0, 0, 0}, Items, true},
 	{"Display inventory", {'i', 0, 0, 0, 0}, Items, true},
 	{"Get item", {',', 0, 0, 0, 0}, Items, false},
-	{"Drop item", {'d', 0, 0, 0, 0}, Items, false},
+	{"Drop item", {'d', 0, 0, 0, 0}, Items, true},
 
 	//adventure
 	{"Game menu", {'G', 0, 0, 0, 0}, Adventure, true},
@@ -305,7 +305,7 @@ void run_command(playerinfo *plr, const int command)
 		case Equip_Item: player.equips.player_equip(); break;
 		case Show_Inventory: player.Show_Inventory(); break;
 		case Pick_Item: pick_up_item(plr, level); break;
-		case Drop_Item: drop_item(plr, level); break;
+		case Drop_Item: drop_selected(plr); break;
 
 		case Game_Menu: Game.Menu(); break;
 		case Show_Quests: player.quests.showall(); break;

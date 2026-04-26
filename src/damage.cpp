@@ -36,32 +36,31 @@ using std::string;
 void damage_checkbodyparts(level_type *level, Actor *mptr)
 {
 	int slot;
+	const bool is_player=mptr->Is_Player();
 
 	string monsname;
-	if (mptr->Is_Player()==false)
+	if (is_player==false)
 		monsname=monster_sprintf(mptr, true, true);
 
 	Equipslot *equip=mptr->equips.equip;
-	equipment &gear=mptr->equips; //change to monster's gear
 	hpslot *hpptr=mptr->hpp;
 	int race=mptr->Get_Race();
-	inventory *inv=&mptr->inv;
 	Coord pc=mptr->Get_Location();
 
 	/* when head falls below or to zero, the creature SHOULD die! */
-	if(hpptr[HPSLOT_HEAD].cur <= 0)
+	if (hpptr[HPSLOT_HEAD].cur <= 0)
 		mptr->Death();
 
 	/* when body falls below or to zero, the creature SHOULD die! */
-	if(hpptr[HPSLOT_BODY].cur <= 0)
+	if (hpptr[HPSLOT_BODY].cur <= 0)
 		mptr->Death();
 
 	/* lefthand and righthand should be disabled and weapons dropped */
-	if((hpptr[HPSLOT_LEFTHAND].cur <= 0))
+	if ((hpptr[HPSLOT_LEFTHAND].cur <= 0))
 	{
 		hpptr[HPSLOT_LEFTHAND].cur=0;
 
-		if(equip[EQUIP_LHAND].status==EQSTAT_OK)
+		if (equip[EQUIP_LHAND].status==EQSTAT_OK)
 		{
 			/* here must drop item from left hand */
 			/* and disable that hand */
@@ -69,32 +68,32 @@ void damage_checkbodyparts(level_type *level, Actor *mptr)
 
 			/* if damaged hand is reserved by another item drop the item
 			   from the hand which reserved this slot */
-			if(equip[EQUIP_LHAND].reserv)
+			if (equip[EQUIP_LHAND].reserv)
 				slot=equip[EQUIP_LHAND].reserv;
 			else
 				slot=EQUIP_LHAND;
 
-			if(!mptr)
+			if (is_player)
 			{
 				msg.newmsg("Your left hand is disabled!",C_RED);
 				player.conditions.add(CONDIT_BADLARM, 1);
 
-				if(equip[slot].item)
+				if (equip[slot].item)
 				{
 					string s("Your ");
 					s.append(equip[slot].item->i.name);
 					s.append(" fell down.");
 
 					/* drop the item */
-					if (drop_item(inv, equip[slot].item, gear, level, 1, pc))
-						msg.newmsg(s, C_RED);
+					mptr->Drop_Single_Item(equip[slot].item, pc);
+					msg.newmsg(s, C_RED);
 				}
 			}
 			else
 			{
 				mptr->conditions.add(CONDIT_BADLARM, 1);
 
-				if(npc_races[mptr->m.race].behave & BEHV_FLYING)
+				if (npc_races[mptr->m.race].behave & BEHV_FLYING)
 				{
 					string s=monsname;
 					s.append(" drops to the ground.");
@@ -103,7 +102,7 @@ void damage_checkbodyparts(level_type *level, Actor *mptr)
 						 "You hear a \"splat.\".",C_WHITE);
 					mptr->m.status|=MST_CANTMOVE;
 				}
-				if(equip[slot].item)
+				if (equip[slot].item)
 				{
 					string s=monsname;
 					s.append(" lost ");
@@ -111,18 +110,18 @@ void damage_checkbodyparts(level_type *level, Actor *mptr)
 					append_string_with(s, equip[slot].item->i.name, '.');
 
 					/* drop the item */
-					if (drop_item(inv, equip[slot].item, gear, level, 1, pc))
-						msg.add_dist(level, pc.x, pc.y, s.c_str(), C_RED, 0, CHB_CYAN);
+					mptr->Drop_Single_Item(equip[slot].item, pc);
+					msg.add_dist(level, pc.x, pc.y, s.c_str(), C_RED, 0, CHB_CYAN);
 				}
 			}
 		}
 	}
 
-	if((hpptr[HPSLOT_RIGHTHAND].cur <= 0))
+	if ((hpptr[HPSLOT_RIGHTHAND].cur <= 0))
 	{
 		hpptr[HPSLOT_RIGHTHAND].cur=0;
 
-		if(equip[EQUIP_RHAND].status==EQSTAT_OK)
+		if (equip[EQUIP_RHAND].status==EQSTAT_OK)
 		{
 			/* here must drop item from left hand */
 			/* and disable that hand */
@@ -135,19 +134,19 @@ void damage_checkbodyparts(level_type *level, Actor *mptr)
 			else
 				slot=EQUIP_RHAND;
 
-			if(!mptr)
+			if (is_player)
 			{
 				player.conditions.add(CONDIT_BADRARM, 1);
 				msg.newmsg("Your right hand is disabled!",C_RED);
-				if(equip[slot].item)
+				if (equip[slot].item)
 				{
 					string s("Your ");
 					s.append(equip[slot].item->i.name);
 					s.append(" fell down.");
 
 					/* drop it */
-					if (drop_item(inv, equip[slot].item, gear, level, 1, pc))
-						msg.newmsg(s, C_RED);
+					mptr->Drop_Single_Item(equip[slot].item, pc);
+					msg.newmsg(s, C_RED);
 				}
 			}
 			else
@@ -171,8 +170,8 @@ void damage_checkbodyparts(level_type *level, Actor *mptr)
 					append_string_with(s, equip[slot].item->i.name, '.');
 
 					/* drop the item */
-					if (drop_item(inv, equip[slot].item, gear, level, 1, pc))
-						msg.add_dist(level, pc.x, pc.y, s.c_str(), C_RED, 0, CHB_CYAN);
+					mptr->Drop_Single_Item(equip[slot].item, pc);
+					msg.add_dist(level, pc.x, pc.y, s.c_str(), C_RED, 0, CHB_CYAN);
 				}
 			}
 		}

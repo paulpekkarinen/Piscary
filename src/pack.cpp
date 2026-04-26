@@ -39,70 +39,10 @@
 
 using std::string;
 
-void drop_here(invnode *src, level_type *level, int x, int y);
 int getitem_inner(playerinfo *plr, level_type *level, invnode *lptr);
 bool player_dropitem_inner(invnode *dropit);
 
-bool drop_everything(
-	inventory *inv, equipment &gear, level_type *level, int x, int y)
-{
-	bool rv=false;
-
-	Coord c(x, y);
-
-	for (;;)
-	{
-		invnode *n=inv->Get_Last_Item();
-		if (n==0) break; //no more items to drop
-
-		if (drop_item(inv, n, gear, level, -1, c)==0)
-			break;
-
-		rv=true; //at least one item dropped
-	}
-
-	return rv;
-}
-
-void drop_here(invnode *src, level_type *level, int x, int y)
-{
-	src->x=x;
-	src->y=y;
-	src->slot = -1;
-
-	level->inv.Add_Item(src);
-}
-
-void drop_item(playerinfo *plr, level_type *level)
-{
-	const int v = plr->backpack->Select_Items("Select items to drop!");
-
-	if (v==Stockpile::Selected)
-	{
-		drop_selected(plr->backpack->Get_Pocket(), level, plr->Get_Location());
-	}				
-}
-
-invnode *drop_item(inventory *inv, invnode *in_src, equipment &gear,
-	level_type *level, int count, const Coord &c)
-{
-	/* if item is equipped */
-	if (in_src->slot!=-1)
-		gear.clear_slot(in_src->slot);
-
-	invnode *src=inv->remove_n_items(in_src, count);
-
-	if (src == 0)
-	{
-		msg.newmsg("Error: drop_item() - item not found from this inventory!", CHB_RED);
-		return 0;
-	}
-
-	drop_here(src, level, c.x, c.y);
-	return src;
-}
-
-//drop monster's items and corpse etc. when it dies
+//drop monster's items and corpse when it dies
 void drop_loot(being *mons, level_type *level)
 {
 	int prob = 100;
@@ -156,12 +96,20 @@ void drop_loot(being *mons, level_type *level)
 
 	const Coord pos=mons->Get_Location();
 
-	/* set coordinates */
-	item->x=pos.x;
-	item->y=pos.y;
-
 	/* drop everything from monster inventory */
-	drop_everything(&mons->inv, mons->equips, level, pos.x, pos.y);
+	bool dropped=false;
+	for (;;)
+	{
+		invnode *n=mons->inv.Get_Last_Item();
+		if (n==0) break; //no more items to drop
+
+		mons->Drop_Item(n, n->count, pos);
+
+		dropped=true; //at least one item dropped
+	}
+
+	if (dropped)
+		gameview.Refresh_Item_Map(pos);
 
 	/* clean the room owners, shopkeepers mainly */
 	/* go trough the room array and remove owner pointer 'mons' */
@@ -251,17 +199,9 @@ int getitem_inner(playerinfo *plr, level_type *level, invnode *lptr)
  * ** FIX **/
 bool player_dropitem_inner(invnode *dropit)
 {
-	//   Tinvpointer dropit;
-	//   Tinvpointer newitem;
-	//   int32u oldw;
-
 	bool sellmode=false;
 
 	level_type *level=c_level;
-	//   oldw=player.inv.weight;
-
-	//   dropit=inv_listitems(&player.inv, "Drop what?", -1,
-	//			  true, -1, -1);
 
 	if (dropit)
 	{
@@ -297,11 +237,10 @@ bool player_dropitem_inner(invnode *dropit)
 
 		msg.update();
 
-		dropit = drop_item(&player.inv, dropit, player.equips, level,
-			count, player.Get_Location());
+		player.Drop_Item(dropit, count, player.Get_Location());
 
-		if (dropit)
-		{
+		//if (dropit)
+		//{
 			if (dropit->i.status & ITEM_UNPAID)
 				player.bill -= count * dropit->i.price;
 
@@ -325,9 +264,9 @@ bool player_dropitem_inner(invnode *dropit)
 				stxt="You drop";
 
 			display->Item_Info(&dropit->i, dropit->i.weight, count, stxt);
-		}
-		else
-			msg.newmsg("You kept the item.", C_WHITE);
+		//}
+		//else
+		//	msg.newmsg("You kept the item.", C_WHITE);
 
 		return true;
 	}
@@ -335,10 +274,29 @@ bool player_dropitem_inner(invnode *dropit)
 	return false;
 }
 
-void drop_selected(Pocket &tasku, level_type *level, const Coord &c)
+void drop_selected(playerinfo *plr)
 {
-	//note: code routine to drop selected items (note: this could be in player class)
-	//player_dropitem_inner();
+	const int v = plr->backpack->Select_Items("Select items to drop!");
+
+	if (v!=Stockpile::Selected)
+		return;
+
+	Pocket &tasku=plr->backpack->Get_Pocket();
+	const Coord c=plr->Get_Location();
+	
+	int amt=0;
+	for (;;)
+	{
+		invnode *i=tasku.Remove_Next_Selected();
+		if (i==0)
+			break;
+
+		player.Drop_Item(i, i->count, c);
+		amt++;
+	}
+
+	if (amt>0)
+		gameview.Refresh_Item_Map(c);
 }
 
 void pick_up_item(playerinfo *plr, level_type *level)
@@ -382,14 +340,16 @@ bool shopkeeper_drop(level_type *level, being *keeper)
 {
 	invnode *i=keeper->inv.Remove_An_Unpaid_Item();
 
-	if (!i)
+	if (i==0)
 		return false;
 
-	drop_here(i, level, keeper->x, keeper->y);
+	const Coord &c=keeper->Get_Location();
+	gameview.Land_Item(i, c);
+	gameview.Refresh_Item_Map(c);
 
 	string s(keeper->m.name);
 	s.append(" just put something new for sale");
-	msg.add_dist(level, keeper->x, keeper->y, s.c_str(), C_GREEN, NULL, C_CYAN);
+	msg.add_dist(level, c.x, c.y, s.c_str(), C_GREEN, NULL, C_CYAN);
 
 	return true;
 }

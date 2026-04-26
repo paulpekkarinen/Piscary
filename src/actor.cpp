@@ -21,6 +21,8 @@
 #include "damage.h"
 #include "dice.h"
 #include "gametime.h"
+#include "gameview.h"
+#include "invnode.h"
 #include "material.h"
 #include "message.h"
 #include "roleplay.h"
@@ -363,6 +365,29 @@ bool Actor::Is_Shopkeeper()
 		return true;
 
 	return false;
+}
+
+void Actor::Drop_Item(invnode *in_src, int count, const Coord &c)
+{
+	/* if item is equipped */
+	if (in_src->slot!=-1)
+		equips.clear_slot(in_src->slot);
+
+	invnode *src=inv.remove_n_items(in_src, count);
+
+	if (src == 0)
+	{
+		msg.newmsg("Error: Item not found from this inventory!", CHB_RED);
+		return;
+	}
+
+	gameview.Land_Item(src, c);
+}
+
+void Actor::Drop_Single_Item(invnode *in_src, const Coord &c)
+{
+	Drop_Item(in_src, 1, c);
+	gameview.Refresh_Item_Map(c); //automatic for single drop
 }
 
 void Actor::Handle_Conditions(int slots)

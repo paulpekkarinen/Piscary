@@ -75,6 +75,8 @@ public:
 	void Calculate_Totalhp(); //just sum all hpslots together
 	void Damage_Issue(int element, int damage, int bodypart);
 	virtual void Damage_Message(int damage, int bodypart) = 0;
+	void Drop_Item(invnode *in_src, int count, const Coord &c);
+	void Drop_Single_Item(invnode *in_src, const Coord &c);
 	void Death(); //set death condition
 	virtual void Gain_Experience(int gain) = 0;
 	virtual void Getangry(level_type *level, Actor *target) = 0;

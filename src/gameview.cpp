@@ -439,3 +439,18 @@ void Gameview::Show_Tile(int x, int y)
 	if (data[(y*level->sizex)+x].Show()==false)
 		level->Display_Tile(y, x);
 }
+
+void Gameview::Land_Item(invnode *item, const Coord &c)
+{
+	item->x=c.x;
+	item->y=c.y;
+	item->slot = -1; //clear gear slot if it's still active
+
+	level->inv.Add_Item(item);
+}
+
+void Gameview::Refresh_Item_Map(const Coord &c)
+{
+	//refresh item map by finding top item
+	Put_Item(level->inv.Top_Item(c));	
+}

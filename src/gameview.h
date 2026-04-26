@@ -60,12 +60,14 @@ public:
 	void Clear_Fov(const Coord &c);
 	void Clear_Item(const Coord &c);
 	void Enter_New_Level(level_type *kentta);
+	void Land_Item(invnode *item, const Coord &c);
 	void Monster_Torchlos(being *b);
 	bool Notice_Something(being *b, bool items_too);
 	void Set_Fov(const Coord &c);
 	void Put_Item(invnode *i);
 	void Put_Monster(being *b, const Coord &c);
 	void Put_Trap(const Coord &c, int tt);
+	void Refresh_Item_Map(const Coord &c);
 	void Set_Room_Id(const Coord &c, int rid);
 	void Show();
 };

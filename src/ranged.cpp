@@ -81,7 +81,7 @@ int monster_ranged_attack(being *mptr, level_type *level)
 	{
 		invnode *dip=mptr->equips.get_inventory_item(EQUIP_MISSILE);
 
-		drop_item(&mptr->inv, dip, mptr->equips, level, 1, c);
+		mptr->Drop_Single_Item(dip, c);
 	}
 
 	/* equip a new item from reserve if possible */
@@ -119,8 +119,8 @@ void ranged_attack(playerinfo *plr, level_type *level)
 
 	/* OBS!
 	 *
-	 * note: Et�isyysvaikutus ja atribuuttien vaikutus osuma
-	 * tarkkuuteen ja ampumaet�isyyteen
+	 * note: Etaisyysvaikutus ja atribuuttien vaikutus osuma
+	 * tarkkuuteen ja ampumaetaisyyteen
 	 *
 	 */
 
@@ -153,7 +153,7 @@ void ranged_attack(playerinfo *plr, level_type *level)
 
 		Coord c(t_lx, t_ly);
 
-		drop_item(&plr->inv, dip, plr->equips, level, 1, c);
+		plr->Drop_Single_Item(dip, c);
 	}
 
 	/* equip a new item from reserve if possible */
@@ -302,7 +302,7 @@ bool ranged_checkhit(level_type *level, Actor *ranger,
 
 	/* drop the item to the ground near target */
 	invnode *dip=gear.get_inventory_item(EQUIP_MISSILE);
-	drop_item(inv, dip, gear, level, 1, c);
+	ranger->Drop_Single_Item(dip, c);
 
 	return true;
 }
