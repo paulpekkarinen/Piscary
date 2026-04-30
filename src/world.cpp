@@ -142,12 +142,12 @@ bool World::Player_Go_Down(level_type *level)
 	if (dungeon==0)
 	{
 		//search the dungeon player is entering (with coords)
-		int i=1; //indexes start from 1, because overworld is not in the list (should be always 0)
+		int i=1; //indexes start from 1, because overworld is 0
 		bool isdung=false;
 
 		for (locsitr ii = dunglocs.begin() ; ii != dunglocs.end() ; ++ii)
 		{
-			if (player.Is_At(*ii))
+			if (pc==(*ii))
 			{
 				Enter_New_Dungeon(i);
 				isdung=true;
@@ -176,21 +176,19 @@ bool World::Player_Go_Down(level_type *level)
 			sdir=STAIRUP2;
 			Set_Current_Node(lvldata->linkto2);
 		}
+
+		//check and set the visited flag for the level, this will also
+		//create the level if not yet visited
+		currnode->Visit();
 	}
 
-	player.sight=10;
 	player.delta=6;
-
-	//check and set the visited flag for the level, this will also create the level if not
-	//yet visited
-	currnode->Visit();
-	world->Display_Time_Events(false);
 	level=currnode->Get_Level();
 
 	if (lvldata->dtype==DTYPE_TOWN)
 	{
-		world->Display_Time_Events(true);
 		player.sight=15;
+		world->Display_Time_Events(true);
 
 		Coord c;
 		for (c.y=3; c.y<level->sizey-4; c.y++)
@@ -206,33 +204,48 @@ bool World::Player_Go_Down(level_type *level)
 		}
 	}
 	else
+	{
+		player.sight=10;
+		world->Display_Time_Events(false);
+		
 		searchstaircase(level, TYPE_STAIRUP, sdir);
+	}
 
-	GAME_NOTIFYFLAGS|=GAME_DO_REDRAW;
+	//GAME_NOTIFYFLAGS|=GAME_DO_REDRAW;
 	return true;
 }
 
 void World::Player_Go_Outworld()
 {
+	//save old dungeon location, because entering first time outworld its
+	//locations have to be created
+	const int olddung=dungeon;
+
 	Enter_New_Dungeon(0);
+
+	//find outworld entry point based on current dungeon
+	Coord arrival;
+	int index=1; //start from 1, skip overworld..
+	for (locsitr ii = dunglocs.begin() ; ii != dunglocs.end() ; ++ii)
+	{
+		if (index==olddung) //the dungeon we did exit from
+		{
+			arrival=(*ii); //store location of the dungeon
+			break;
+		}
+		index++;
+	}
 
 	player.sight=4;
 	player.delta=2;
-
-	Coord c;
 
 	if (player.huntmode)
 	{
 		player.huntmode=false;
 		//player.Reset_Location(player.wild.x, player.wild.y); //note: fix later
 	}
-	else
-	{
-		Level *lvldata=currnode->Get_Level_Data();
-		c.Set(lvldata->outx, lvldata->outy);
-	}
 
-	player.Jump_To(c);
+	player.Jump_To(arrival);
 
 	/* enable weather notifications */
 	Display_Time_Events(true);
@@ -275,8 +288,8 @@ bool World::Player_Go_Up(level_type *level)
 		sdir=STAIRDOWN2;
 	}
 	
-	//check and set the visited flag for the level, this will also create the level if not
-	//yet visited
+	//check and set the visited flag for the level, this will also create
+	//the level if not yet visited
 	currnode->Visit();
 	searchstaircase(level, TYPE_STAIRDOWN, sdir);
 
