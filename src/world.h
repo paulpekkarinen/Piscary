@@ -86,6 +86,7 @@ private:
 	void Display_Time_Events(bool v);
 	Dungeon *Get_Dungeon(int dng);
 	const char *Get_Dungeon_Name();
+	void Jump_To_Stairs(level_type *level, int stairs_type, int8u number);
 	void New_Dungeon_Location(const Plane &lvl); //determines a dungeon location
 	void Set_Current_Node(Level *dest);
 

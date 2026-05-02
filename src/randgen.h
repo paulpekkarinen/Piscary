@@ -17,7 +17,6 @@ Coord find_random_location(level_type *level, int border);
 Coord find_random_location(level_type *level, int border, bool skip_player);
 Coord get_random_location(const Plane &p, int border);
 void recurse_maze(level_type *maze, int x, int y); //creates a maze
-void searchstaircase(level_type *level, int stair, int ldir);
 void set_randomcoord(level_type *level, int *tx, int *ty);
 
 #endif

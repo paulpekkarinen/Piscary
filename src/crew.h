@@ -40,6 +40,7 @@ public:
 
 	void Debug_List(); //find out amount of monsters and special monsters
 	void Full_Debug_List(); //lists all monsters
+	void Unalive_Monsters(); //get rid of everyone
 
 	void save(Tar_Ball &tb);
 	void load(Tar_Ball &tb, level_type *lvl);

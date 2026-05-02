@@ -207,11 +207,9 @@ bool World::Player_Go_Down(level_type *level)
 	{
 		player.sight=10;
 		world->Display_Time_Events(false);
-		
-		searchstaircase(level, TYPE_STAIRUP, sdir);
+		Jump_To_Stairs(level, TYPE_STAIRUP, sdir);
 	}
 
-	//GAME_NOTIFYFLAGS|=GAME_DO_REDRAW;
 	return true;
 }
 
@@ -291,9 +289,7 @@ bool World::Player_Go_Up(level_type *level)
 	//check and set the visited flag for the level, this will also create
 	//the level if not yet visited
 	currnode->Visit();
-	searchstaircase(level, TYPE_STAIRDOWN, sdir);
-
-	GAME_NOTIFYFLAGS|=GAME_DO_REDRAW;
+	Jump_To_Stairs(level, TYPE_STAIRDOWN, sdir);
 
 	return true;
 }
@@ -478,6 +474,19 @@ bool World::Is_Outside() const
 {
 	if (dungeon==0) return true;
 	return false;
+}
+
+void World::Jump_To_Stairs(level_type *level, int stairs_type, int8u number)
+{
+	Coord dest;
+
+	if (level->Find_Stairs(dest, stairs_type, number)==false)
+	{
+		msg.newmsg("Huh, what, where am I?!");
+		dest=find_random_location(level, 1);
+	}
+	
+	player.Jump_To(dest);
 }
 
 void World::New_Dungeon_Location(const Plane &lvl)

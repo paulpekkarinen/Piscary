@@ -24,6 +24,7 @@
 #include "display.h"
 #include "gameview.h"
 #include "input.h"
+#include "message.h"
 #include "options.h"
 #include "output.h"
 #include "pack.h"
@@ -303,6 +304,24 @@ void Crew::Full_Debug_List()
 		if (list_more(y)==false)
 			break;
 	}
+}
+
+void Crew::Unalive_Monsters()
+{
+	int a=0;
+	for (mon_iter ii = monsters.begin() ; ii != monsters.end() ; ++ii)
+	{
+		(*ii)->Death();
+		a++;
+	}
+
+	if (a>0)
+	{
+		Sentenced();
+		msg.newmsg("You feel a disturbance in the force!");
+	}
+	else
+		msg.newmsg("Nothing seems to happen.");
 }
 
 void Crew::save(Tar_Ball &tb)

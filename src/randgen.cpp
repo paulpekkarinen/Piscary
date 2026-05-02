@@ -304,34 +304,6 @@ void recurse_maze(level_type *maze, int x, int y)
 	recurse_maze(maze, x, y);
 }
 
-void searchstaircase(level_type *level, int stair, int ldir)
-{
-	int stop=0;
-	Coord c, dest;
-
-	for (c.y=0; (c.y<level->sizey) && !stop; c.y++)
-	{
-		for (c.x=0; (c.x < level->sizex) && !stop; c.x++)
-		{
-			if (level->Get_Terrain(c)==stair)
-			{
-				dest=c;
-
-				if (level->loc[c.y][c.x].doorfl==ldir)
-					stop=1;
-			}
-		}
-	}
-
-	if (dest.x==0 && dest.y==0)
-	{
-		diary.Write("Error! No staircases found?!?!");
-		dest=find_random_location(level, 1);
-	}
-
-	player.Jump_To(dest);
-}
-
 //find random location of passable tile type
 void set_randomcoord(level_type *level, int *tx, int *ty)
 {

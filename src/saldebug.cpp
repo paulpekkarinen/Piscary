@@ -76,7 +76,7 @@ void Debug::Toggle_Light()
 
 void Debug::Menu()
 {
-	Window menuwin("Debug command", 30, 7, 27, 10, CH_GREEN, CH_WHITE);
+	Window menuwin("Debug command", 30, 7, 27, 11, CH_GREEN, CH_WHITE);
 
 	menuwin.Draw(
 		"c - Test colors\0"
@@ -85,10 +85,10 @@ void Debug::Menu()
 		"o - Overview of world\0"
 		"p - Program report\0"
 		"r - Re-create level\0"
+		"u - Unalive monsters\0"
 		"v - View level map\0$");
 
 	const int ch=my_getch();
-	display->Redraw(world->Get_Current_Level());
 
 	switch (ch)
 	{
@@ -98,6 +98,13 @@ void Debug::Menu()
 		case 'o': Overview(); break;
 		case 'p': uncover.Program_Data(); break;
 		case 'r': Create_Level(); break;
+		case 'u':
+		{
+			level_type *level=world->Get_Current_Level();
+			level->crew.Unalive_Monsters();
+			level->crew.Remove_Dead(level);
+		}
+		break;
 		case 'v': View_Level(); break;
 		default: break;
 	}
@@ -141,7 +148,9 @@ void Debug::View_Level()
 	c.x-=SCREEN_COLS/2;
 	c.y-=(SCREEN_LINES-1)/2;
 
-	for (;;)
+	bool looping=true;
+
+	while (looping)
 	{
 		set_color(C_WHITE);
 
@@ -169,7 +178,7 @@ void Debug::View_Level()
 			nimi=terrains[et].desc;
 		}
 				
-		mvprintw(0, 0, "Viewing level '%s' at %d, %d (%s) (x=exit)",
+		mvprintw(0, 0, "Viewing level '%s' at %d, %d (%s) (t=teleport, x=exit)",
 			world->Get_Level_Name(), e.x, e.y, nimi);
 		clrtoeol(); //clear possible trails
 
@@ -198,18 +207,30 @@ void Debug::View_Level()
 		gotoxy(SCREEN_COLS/2, (SCREEN_LINES-1)/2);
 		
 		const int k=my_getch();
-		if (k=='x') break;
-		const int dir=Way::Get_From_Keycode(k);
-		if (dir!=-1)
+
+		switch (k)
 		{
-			//this funky code section prevents cursor going over the
-			//level edges, for visual reasons
-			saved=e;
-			e.Move_Direction(dir);
-			if (level->Is_Outside(e))
-				e=saved;
-			else
-				c.Move_Direction(dir);
+			case 'x': looping=false; break;
+			case 't':
+				player.Set_Location(e.x, e.y);
+				looping=false;
+			break;
+			default:
+			{
+				const int dir=Way::Get_From_Keycode(k);
+				if (dir!=-1)
+				{
+					//this funky code section prevents cursor going over the
+					//level edges, for visual reasons
+					saved=e;
+					e.Move_Direction(dir);
+					if (level->Is_Outside(e))
+						e=saved;
+					else
+						c.Move_Direction(dir);
+				}
+			}
+			break;
 		}
 	}
 }

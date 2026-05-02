@@ -140,6 +140,28 @@ int level_type::Checkterraineffects(int x, int y)
 	return timeadd;
 }
 
+bool level_type::Find_Stairs(Coord &here, int stair_type, int8u number)
+{
+	Coord c;
+
+	for (c.y=0; c.y<sizey; c.y++)
+	{
+		for (c.x=0; c.x<sizex; c.x++)
+		{
+			if (loc[c.y][c.x].type==stair_type)
+			{
+				if (loc[c.y][c.x].doorfl==number)
+				{
+					here=c;
+					return true;
+				}
+			}
+		}
+	}
+	
+	return false;
+}
+
 bool level_type::Free_To_Walk(const Coord &c)
 {
 	if (Is_Passable(c)) return true;
