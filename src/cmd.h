@@ -63,6 +63,7 @@ namespace cmd
 		Search,
 		Toggle_Search,
 		Look,
+		Look_Around,
 		Read,
 		Open_Door,
 		Close_Door,

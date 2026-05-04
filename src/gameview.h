@@ -53,6 +53,7 @@ public:
 	being *Get_Monster(const Coord &c); //returns only monsters, not the player
 	int Get_Trap_Type(const Coord &c); //return TRAP... type of trap here
 
+	bool Is_Outside_View(const Coord &c);
 	bool Is_Visible(const Coord &c);
 	bool Is_Visible(int x, int y);
 

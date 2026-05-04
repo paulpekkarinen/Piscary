@@ -65,7 +65,13 @@ int Way::Get_From_Keycode(int k)
 		case KEY_DOWN: dir=South; break;
 		case KEY_LEFT: dir=West; break;
 		case KEY_RIGHT: dir=East; break;
-		default: dir=-1; break;
+		default:
+			if (k>='1' && k<='9')
+			{
+				dir=k-'0';
+			}		
+			else dir=-1;
+		break;
 	}
 
 	return dir;

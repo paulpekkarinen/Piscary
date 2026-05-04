@@ -20,7 +20,6 @@ private:
 
 	const size_t Max_Messages;
 	char countstr[20];
-	//char oneword[80]; //for building one word of the message
 	Coord last; //last location of a message output string
 	mitr origin; //current start of displayed message list
 

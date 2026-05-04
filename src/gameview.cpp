@@ -117,6 +117,17 @@ int Gameview::Get_Trap_Type(const Coord &c)
 	return data[i].trap_type;
 }
 
+bool Gameview::Is_Outside_View(const Coord &c)
+{
+	Coord e=Get_Screen_Location(c);
+	if (e.x<view.x || e.y<view.y)
+		return true;
+	if (e.x>=view.x+view.width || e.y>=view.y+view.height)
+		return true;
+
+	return false;	
+}
+
 bool Gameview::Is_Visible(const Coord &c)
 {
 	const int i=Get_Index(c);

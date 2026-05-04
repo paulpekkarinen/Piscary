@@ -42,8 +42,6 @@ bool reveal_secret_door(level_type *level, const Coord &c);
 
 void lookdir(playerinfo *plr, level_type *level)
 {
-	player_locationselect(level);
-
 	const int dir=dir_askdir("Look at", true);
 	if (dir>9) return;
 
@@ -55,11 +53,12 @@ void lookdir(playerinfo *plr, level_type *level)
 	{
 		being *mptr=gameview.Get_Monster(nc);
 		if (mptr)
+		{
 			display->Monster_Description(mptr);
+			GAME_NOTIFYFLAGS|=GAME_DO_REDRAW;
+		}
 		else
 			msg.newmsg("Nothing there!", C_WHITE);
-
-		GAME_NOTIFYFLAGS|=GAME_DO_REDRAW;
 	}
 }
 

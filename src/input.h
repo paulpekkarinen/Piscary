@@ -24,7 +24,6 @@ bool list_more(int &y); //check position of text, show --more-- if at end of scr
 int my_getch();
 int my_gets(char *str, int mlen); //get a string
 void player_gettarget(level_type *level, Target *target, Spell *spell);
-void player_locationselect(level_type *level); //select a location from level
 void rename_monster(monsterdef &mondef); //give a name for this monster (not for player!)
 void retitle_player(monsterdef &mondef); //change player's title
 bool ranged_gettarget(level_type *level, int *scr_x, int *scr_y, int *lev_x, int *lev_y);

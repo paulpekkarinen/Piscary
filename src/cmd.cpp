@@ -19,6 +19,7 @@
 #define _CRT_SECURE_NO_DEPRECATE 1
 
 #include <cstring>
+#include "aim.h"
 #include "avatar.h"
 #include "caves.h"
 #include "cmd.h"
@@ -138,7 +139,8 @@ Command_Data cmdtable[Amt_Of_Commands]=
 	{"Push", {'p', 0, 0, 0, 0}, Actions, false},
 	{"Search", {'s', 0, 0, 0, 0}, Actions, false},
 	{"Toggle search mode", {':', 's', 0, 0, 0}, Actions, false},
-	{"Examine/Look", {'l', 0, 0, 0, 0}, Actions, true},
+	{"Look at direction", {'l', 0, 0, 0, 0}, Actions, false},
+	{"Look around", {'L', 0, 0, 0, 0}, Actions, true},
 	{"Read", {'r', 0, 0, 0, 0}, Actions, true},
 	{"Open door", {'o', 0, 0, 0, 0}, Actions, false},
 	{"Close door", {'c', 0, 0, 0, 0}, Actions, false},
@@ -335,6 +337,12 @@ void run_command(playerinfo *plr, const int command)
 		case Search: search_surroundings(plr, level, false); break;
 		case Toggle_Search: player.Switch_Searchmode(); break;
 		case Look: lookdir(plr, level); break;
+		case Look_Around:
+		{
+			Aim a(level);
+			a.Select();			
+		}
+		break;
 		case Read: read_scroll(plr, level); break;
 		case Open_Door: open_door(plr, level); break;
 		case Close_Door: close_door(plr, level); break;
