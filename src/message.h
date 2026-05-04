@@ -14,9 +14,7 @@ class Message : public Message_Buffer
 {
 private:	
 	int msgdelay;
-	Coord last; //last location of a message output string
 
-	char oneword[80]; //for building one word of the message
 	char *mbuffer; //message buffer for one message
 
 public:
@@ -30,11 +28,9 @@ public:
 	void newmsg(const char *message, int color);
 	void newmsg(std::string &s, int color);
 	void newmsg(int color, const char *,...);
-	void notice();
 	void setdelay(int); //set a delay for printing
 	void showall();
 	void showlast();
-	void update();
 	void vadd(int,const char *,...);
 	void vaddwait(int,const char *,...);
 	void vnewdist(level_type *level,int x,int y,

@@ -6,6 +6,7 @@
 #define MESSBUFF_H
 
 #include <deque>
+#include "geometry.h"
 #include "types.h"
 
 class Msginfo;
@@ -13,32 +14,33 @@ class Msginfo;
 class Message_Buffer
 {
 private:
-	friend class Message;
-
 	std::deque<Msginfo*> messages;
 
 	typedef std::deque<Msginfo*>::iterator mitr;
 
 	const size_t Max_Messages;
-	int messages_per_turn;
+	char countstr[20];
+	//char oneword[80]; //for building one word of the message
+	Coord last; //last location of a message output string
+	mitr origin; //current start of displayed message list
 
 	static const char *Nullmsg;
 	static const char *Shortmsg;
 
-protected:
-	Msginfo *Get_Last_Message();
-
-	void Clear(); //clears all messages waiting
-
+	void Set_Origin(Msginfo *here);
+	
 public:
 	explicit Message_Buffer(int maxmess);
 	~Message_Buffer();
 
+	Msginfo *Get_Last_Message();
 	bool Is_Empty();
 
 	void Add(const char *message, int color, int delay);
-
+	void Clear(); //clears all messages waiting
+	void notice();
 	void Show_All(const char *header);
+	void update();
 };
 
 #endif

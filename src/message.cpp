@@ -21,28 +21,23 @@
 #include <cctype>
 #include <cstdarg>
 #include <cstring>
-#include "caves.h"
 #include "gameview.h"
-#include "codex.h"
 #include "input.h"
 #include "message.h"
 #include "msginfo.h"
-#include "output.h"
 
 using std::deque;
 
 Message msg;
 
 Message::Message()
-	: Message_Buffer(60),
-	msgdelay(0), last(0, 0), oneword{0}
+	: Message_Buffer(60), msgdelay(0)
 {
 	mbuffer=new char[1024];
 }
 
 Message::~Message()
 {
-	Clear();
 	delete[] mbuffer;
 }
 
@@ -188,86 +183,6 @@ void Message::newmsg(std::string &s, int color)
 	newmsg(s.c_str(), color);
 }
 
-void Message::notice()
-{
-	static char countstr[20];
-
-	deque<Msginfo*>::iterator ii = messages.end()-messages_per_turn;
-
-	//show messages that were collected in one turn
-	while (ii!=messages.end())
-	{
-		gotoxy(last.x, last.y);
-
-		const char *dptr=(*ii)->Get_Raw_String();
-		int index=0;
-		bool looping=true;
-
-		while (looping)
-		{
-			int i=0;
-
-			//first skip any spaces
-			while (isspace(dptr[index])!=0 && dptr[index]!=0)
-				index++;
-
-			//collect a word until space comes
-			while (isspace(dptr[index])==0 && dptr[index]!=0)
-				oneword[i++]=dptr[index++];
-
-			if (dptr[index]==0)
-			{
-				const int msg_count=(*ii)->Get_Count();
-
-				if (msg_count>1)
-				{
-					sprintf(countstr, "(x%d)", msg_count);
-					strcat(oneword, countstr);
-				}
-				else oneword[i]=0;
-
-				looping=false;
-			}
-			else
-				oneword[i]=0;
-
-			if (get_cursor_y()==0 && is_over_border(strlen(oneword)))
-			{
-				my_printf("\n");
-				clearline(get_cursor_y());
-			}
-
-			if ((get_cursor_x()+strlen(oneword) > (unsigned int)(SCREEN_COLS-6))
-				&& (get_cursor_y()==1))
-			{
-				showmore(false, true);
-
-				for (i=0; i<MSGLINES; i++)
-					clearline(MSGLINE+i);
-
-				gotoxy(0, MSGLINE);
-			}
-
-			(*ii)->Set_Color();
-
-			my_printf("%s ", oneword);
-		}
-
-		//my_printf(" ");
-
-		last=get_cursor();
-
-		refresh();
-
-		const int d=(*ii)->Get_Delay_Time();
-		if (d>0) delay(d);
-
-		++ii; //handle next message until the end of list
-	}
-
-	messages_per_turn=0;
-}
-
 void Message::showall()
 {
 	if (Is_Empty())
@@ -284,16 +199,6 @@ void Message::showlast()
 	{
 		update();
 		m->Show_Message();
-	}
-}
-
-void Message::update()
-{
-	if (last.x!=0 || last.y!=MSGLINE)
-	{
-		last.Set(0, MSGLINE);
-		for (int i=0; i<MSGLINES; i++)
-			clearline(MSGLINE+i);
 	}
 }
 

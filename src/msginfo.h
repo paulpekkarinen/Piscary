@@ -24,7 +24,7 @@ public:
 
 	int Get_Count() const { return count; }
 	int Get_Delay_Time() const { return delay; }
-	const char *Get_Raw_String() const { return msg.c_str(); }
+	std::string &Get() { return msg; }
 
 	bool Is_Match(const char *src);
 

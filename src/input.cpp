@@ -258,7 +258,7 @@ bool is_safe_char(int ch)
 
 bool is_quit_key(int k)
 {
-	if (k==KEY_ESC || k==PADENTER || k==KEY_ENTER)
+	if (k=='x' || k==PADENTER || k==KEY_ENTER)
 		return true;
 
 	return false;	
