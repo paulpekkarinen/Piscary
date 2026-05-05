@@ -212,7 +212,7 @@ void Debug::View_Level()
 		{
 			case 'x': looping=false; break;
 			case 't':
-				player.Set_Location(e.x, e.y);
+				player.Jump_To(e);
 				looping=false;
 			break;
 			default:

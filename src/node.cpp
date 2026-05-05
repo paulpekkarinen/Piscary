@@ -114,10 +114,11 @@ bool Levelnode::Visit()
 	}
 	else
 	{
+		c_level=level; //point global handle to current level
+
 		//when entering already created level, also have to point gameview
 		//to that level
 		gameview.Enter_New_Level(level);
-		c_level=level; //and point global handle to current level
 		rv=false;
 	}
 	

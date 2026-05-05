@@ -3,6 +3,7 @@
 //Refactored 15.7.2022 - 26.3.2026 Paul K. Pekkarinen
 
 #include "amount.h"
+#include "avatar.h"
 #include "creature.h"
 #include "gameview.h"
 #include "input.h"
@@ -24,12 +25,6 @@ namespace data
 		"Unpa", "Gene", "Arti", "Iden"};
 }
 using namespace data;
-
-void Uncover::Gameview_Data()
-{
-	my_printf("Visible view size: %d x %d.\n",
-		gameview.view.width, gameview.view.height);
-}
 
 void Uncover::Inventory_Item(invnode *iptr, int x, int y)
 {
@@ -86,6 +81,9 @@ void Uncover::Program_Data()
 	clear_screen();
 
 	my_printf("Terminal size: %d, %d\n", SCREEN_COLS, SCREEN_LINES);
+	gameview.Show_Data();
+	Coord pc=player.Get_Location();
+	my_printf("Player's location: %d, %d\n", pc.x, pc.y);
 	
 	mucho.Show_Data();
 

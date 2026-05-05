@@ -20,7 +20,6 @@ class Gameview
 {
 private:
 	friend class Pathlist;
-	friend class Uncover;
 
 	//how close to the edge until gameview is scrolled
 	static const int Horizontal_Limit=9;
@@ -71,6 +70,7 @@ public:
 	void Refresh_Item_Map(const Coord &c);
 	void Set_Room_Id(const Coord &c, int rid);
 	void Show();
+	void Show_Data();
 };
 
 extern Gameview gameview;

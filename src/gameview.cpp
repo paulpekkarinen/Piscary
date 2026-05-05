@@ -20,6 +20,7 @@
 #include "being.h"
 #include "bytegrid.h"
 #include "caves.h"
+#include "game.h"
 #include "gameview.h"
 #include "invnode.h"
 #include "log.h"
@@ -342,6 +343,7 @@ void Gameview::Center(const Coord &c)
 {
 	camera.Set(c.x-(view.width/2), c.y-(view.height/2));
 	Clamp_Camera();
+	GAME_NOTIFYFLAGS|=GAME_DO_REDRAW;
 }
 
 void Gameview::Show()
@@ -407,11 +409,7 @@ void Gameview::Show()
 	level->Show_Tile_Description(c);
 
 	Coord sc=Get_Screen_Location(c);
-
-	//debug: show location
-	//gotoxy(0, 3);
-	//my_printf("(%d, %d)(%d, %d)", c.x, c.y, sc.x, sc.y);	
-
+	
 	for (int i=0; i<level->sizex*level->sizey; i++)
 		data[i].vision=Viewtile::Dark;
 
@@ -464,4 +462,10 @@ void Gameview::Refresh_Item_Map(const Coord &c)
 {
 	//refresh item map by finding top item
 	Put_Item(level->inv.Top_Item(c));	
+}
+
+void Gameview::Show_Data()
+{
+	my_printf("Gameview size: %d, %d, camera location: %d, %d.\n",
+		view.width, view.height, camera.x, camera.y);	
 }

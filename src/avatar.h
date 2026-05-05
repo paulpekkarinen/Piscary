@@ -62,6 +62,7 @@ struct playerinfo : public Actor
 	void Shouldflee(level_type *level) override;
 	void Show_Inventory();
 	void Switch_Searchmode();
+	void Teleport();
 
 	void Display();
 

@@ -290,6 +290,7 @@ void gamedata::run(bool fast)
 	attrset(A_NORMAL);
 
 	world->Enter_New_Dungeon(5); //starting dungeon is 5
+	player.Teleport();
 	display->Redraw(c_level);
 	msg.notice();
 

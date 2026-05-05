@@ -48,6 +48,7 @@ struct level_type
 	int get_amount_of_rooms();
 	roomdef& get_last_created_room();
 	const char *Get_Name(); //does just return a "level"
+	Coord Get_Random_Good_Location();
 	int Get_Terrain(const Coord &c);
 	Trap &Get_Trap(const Coord &c);
 

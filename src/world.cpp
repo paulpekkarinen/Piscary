@@ -19,7 +19,6 @@
 #include "avatar.h"
 #include "caves.h"
 #include "dice.h"
-#include "game.h"
 #include "gametime.h"
 #include "gameview.h"
 #include "message.h"
@@ -184,24 +183,14 @@ bool World::Player_Go_Down(level_type *level)
 
 	player.delta=6;
 	level=currnode->Get_Level();
+	lvldata=currnode->Get_Level_Data(); //update level data also
 
 	if (lvldata->dtype==DTYPE_TOWN)
 	{
 		player.sight=15;
 		world->Display_Time_Events(true);
-
-		Coord c;
-		for (c.y=3; c.y<level->sizey-4; c.y++)
-		{
-			for (c.x=3; c.x<level->sizex-4; c.x++)
-			{
-				if (level->Is_Passable(c) &&
-					level->Get_Terrain(c)!=TYPE_ROOMFLOOR)
-				{
-					player.Jump_To(c);
-				}
-			}
-		}
+		//use random location for now
+		player.Teleport();
 	}
 	else
 	{
@@ -247,8 +236,6 @@ void World::Player_Go_Outworld()
 
 	/* enable weather notifications */
 	Display_Time_Events(true);
-
-	GAME_NOTIFYFLAGS|=GAME_DO_REDRAW;
 }
 
 bool World::Player_Go_Up(level_type *level)
@@ -579,7 +566,6 @@ void World::Display_Data()
 		print_text("It's daytime.\n");
 		
 	worldtime.print_worldtime();
-	uncover.Gameview_Data();
 		
 	//show dungeon locations if at overworld
 	if (dungeon==0)

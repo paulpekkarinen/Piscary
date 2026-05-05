@@ -11,7 +11,6 @@ struct item_def;
 class Uncover
 {
 public:
-	void Gameview_Data();
 	void Inventory_Item(invnode *iptr, int x, int y);
 	void Item_Data(item_def &item);
 	void Monsterdef_Info(int race);

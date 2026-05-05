@@ -126,16 +126,6 @@ void Feature_Level::Create(int dtype)
 		//create these manually
 		Shop_Init();
 		Create_Stairs(); //note: sometimes stairs are created in a shop...
-
-		Coord c(4, 5);
-		for (c.x=4; c.x<sizex-5; c.x++)
-		{
-			if (Is_Passable(c) && Get_Terrain(c)!=TYPE_ROOMFLOOR)
-			{
-				player.Set_Location(c.x, c.y);
-				break;
-			}
-		}
 		return;
 	}
 
