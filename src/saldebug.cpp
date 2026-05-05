@@ -141,7 +141,7 @@ void Debug::View_Level()
 {
 	Coord e;
 	Coord saved;
-	level_type *level=c_level;
+	level_type *level=world->Get_Current_Level();
 	Viewtile *vt=0;
 
 	Coord c=player.Get_Location();

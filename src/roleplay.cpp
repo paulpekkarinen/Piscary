@@ -127,12 +127,12 @@ int Roleplay::Get_Experience_Levels(int &level, int exp)
 	return raise;
 }
 
-void Roleplay::Advance_To_Level(level_type *level, being *b, int explvl)
+void Roleplay::Advance_To_Level(being *b, int explvl)
 {
 	b->exp=expneeded[explvl]+1;
 	b->m.level=0;
 
-	Check_Levelraise(level, b, true);
+	Check_Levelraise(b, true);
 }
 
 void Roleplay::Advance_Levels(being *mptr)
@@ -488,7 +488,7 @@ bool Roleplay::Check_Levelraise(playerinfo &plr)
 	return true;
 }
 
-bool Roleplay::Check_Levelraise(level_type *level, being *monster, bool initmode)
+bool Roleplay::Check_Levelraise(being *monster, bool initmode)
 {
 	int raise=monster->Gain_Levels();
 
@@ -501,7 +501,7 @@ bool Roleplay::Check_Levelraise(level_type *level, being *monster, bool initmode
 		{
 			string s=monster_sprintf(monster, true, true);
 			s.append(" suddenly looks more powerful.");
-			msg.add_dist(level, monster->x, monster->y, s.c_str(), C_GREEN,
+			msg.Add_Dist(monster->x, monster->y, s.c_str(), C_GREEN,
 				NULL, C_GREEN);
 		}
 		Advance_Levels(monster);

@@ -23,6 +23,8 @@ public:
 
 	void add(const char *, int); //add a message to the queue
 	void add_dist(level_type *level,int,int, const char *,int,const char *,int);
+	void Add_Dist(int x, int y, const char *mess1, int color1,
+		const char *mess2, int color2);
 	void addwait(const char *, int);
 	void newmsg(const char *message); //uses default color: white
 	void newmsg(const char *message, int color);

@@ -119,7 +119,7 @@ void gamedata::Eat_Passturns(level_type *level, item_def *item)
 		msg.setdelay(100);
 		texts->Random_Message(Script::Eating_Sound);
 		msg.setdelay(0);
-		Passturn(level, true, false);
+		Passturn(true, false);
 	}
 
 	msg.vnewmsg(C_WHITE, "That was worth %4.2fkg of food.",
@@ -205,7 +205,7 @@ bool gamedata::noticeevents(level_type *level)
  * is then divided into a number of time slots. The length of one time slot
  * is taken from player speed attribute.
  */
-void gamedata::Passturn(level_type *level, bool playervis, bool foodsub)
+void gamedata::Passturn(bool playervis, bool foodsub)
 {
 	if (player.timetaken<BASE_TIMENEED)
 		player.movecount++;
@@ -215,6 +215,8 @@ void gamedata::Passturn(level_type *level, bool playervis, bool foodsub)
 		if (CONFIGVARS.foodwarn)
 			msg.newmsg("You're starving!", CH_RED);
 	}
+
+	level_type *level=world->Get_Current_Level();
 
 	/* if move didn't take any time, ... */
 	if (player.timetaken>=BASE_TIMENEED)
@@ -291,7 +293,8 @@ void gamedata::run(bool fast)
 
 	world->Enter_New_Dungeon(5); //starting dungeon is 5
 	player.Teleport();
-	display->Redraw(c_level);
+	level_type *level=world->Get_Current_Level();
+	display->Redraw(level);
 	msg.notice();
 
 	while (state==Running)
@@ -302,7 +305,7 @@ void gamedata::run(bool fast)
 		//calculate time a turn takes
 		//std::chrono::steady_clock::time_point StartTime=std::chrono::steady_clock::now();
 
-		Passturn(c_level, true, true);
+		Passturn(true, true);
 
 		/*using namespace std::chrono;
         steady_clock::time_point EndTime = steady_clock::now();

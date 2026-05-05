@@ -243,13 +243,13 @@ void being::Damage_Message(int damage, int bodypart)
 		s.append("not damaged!");
 
 	s[0]=toupper(s[0]);
-	msg.add_dist(c_level, x, y, s.c_str(), C_RED, NULL, C_RED);
+	msg.Add_Dist(x, y, s.c_str(), C_RED, NULL, C_RED);
 }
 
 void being::Gain_Experience(int gain)
 {
 	exp+=gain;
-	roleplay.Check_Levelraise(c_level, this, false);
+	roleplay.Check_Levelraise(this, false);
 
 	target=0;
 

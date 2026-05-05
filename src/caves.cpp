@@ -33,8 +33,6 @@
 
 using std::vector;
 
-level_type *c_level; //current level
-
 level_type::level_type(int width, int height, int bt, int danger)
 	: sizex(width), sizey(height), basetile(bt), danglev(danger), loc{0}
 {

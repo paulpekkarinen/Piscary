@@ -105,7 +105,6 @@ bool Levelnode::Visit()
 
 		//set gameview stats before creating level, otherwise we init order fiasco
 		gameview.Enter_New_Level(level);
-		c_level=level; //and point global handle to current level
 
 		flevel->Create(dtype);
 		player.num_levels++;
@@ -114,8 +113,6 @@ bool Levelnode::Visit()
 	}
 	else
 	{
-		c_level=level; //point global handle to current level
-
 		//when entering already created level, also have to point gameview
 		//to that level
 		gameview.Enter_New_Level(level);

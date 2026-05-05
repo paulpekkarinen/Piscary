@@ -113,7 +113,7 @@ public:
 	void Enter_New_Dungeon(int d);
 	bool Player_Go_Down(level_type *level);
 	void Player_Go_Outworld();
-	bool Player_Go_Up(level_type *level);
+	bool Player_Go_Up();
 	void Show_Birth_Time();
 	void Show_Time();
 	void Visit_Dungeon(int index); //marks all dungeons with index 'index' visited

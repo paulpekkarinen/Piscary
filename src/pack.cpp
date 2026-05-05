@@ -36,6 +36,7 @@
 #include "selgro.h"
 #include "selpack.h"
 #include "trade.h"
+#include "world.h"
 
 using std::string;
 
@@ -201,7 +202,7 @@ bool player_dropitem_inner(invnode *dropit)
 {
 	bool sellmode=false;
 
-	level_type *level=c_level;
+	level_type *level=world->Get_Current_Level();
 
 	if (dropit)
 	{

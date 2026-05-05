@@ -238,7 +238,7 @@ void World::Player_Go_Outworld()
 	Display_Time_Events(true);
 }
 
-bool World::Player_Go_Up(level_type *level)
+bool World::Player_Go_Up()
 {
 	Level *lvldata=currnode->Get_Level_Data();
 
@@ -250,6 +250,7 @@ bool World::Player_Go_Up(level_type *level)
 	}
 
 	Coord pc=player.Get_Location();
+	level_type *level=Get_Current_Level();
 
 	if (level->Get_Terrain(pc) == TYPE_STAIRUP)
 		player.Lastdir_To_Doorflag(level);
@@ -276,6 +277,7 @@ bool World::Player_Go_Up(level_type *level)
 	//check and set the visited flag for the level, this will also create
 	//the level if not yet visited
 	currnode->Visit();
+	level=Get_Current_Level();
 	Jump_To_Stairs(level, TYPE_STAIRDOWN, sdir);
 
 	return true;

@@ -43,7 +43,7 @@ public:
 	int Get_Dex_Speed(int index);
 	int Get_Experience_Levels(int &level, int exp); //new experience levels based on points
 
-	void Advance_To_Level(level_type *level, being *b, int lvl);
+	void Advance_To_Level(being *b, int lvl);
 	void Advance_Levels(being *mptr); //advance creature ONE level up
 	void Calculate_HP(hpslot *hpack, int basehp, int race);
 	void Calculate_Itembonus(Actor *actor);
@@ -52,7 +52,7 @@ public:
 	int Calculate_Slot_PV(int bodypart, Equipslot *eqslots); //note: not used at the moment
 	void Check_Expneeded(playerinfo &plr);
 	bool Check_Levelraise(playerinfo &plr);
-	bool Check_Levelraise(level_type *level, being *monster, bool initmode);
+	bool Check_Levelraise(being *monster, bool initmode);
 };
 
 extern Roleplay roleplay; //global instance initialized in start up

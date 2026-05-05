@@ -670,7 +670,7 @@ int moveplayer(playerinfo *plr, int dir, level_type *level, bool autowalk)
 			if (confirm_yn(s.c_str(), false, true))
 			{
 				plr->lastdir=STAIROUT;
-				world->Player_Go_Up(c_level);
+				world->Player_Go_Up();
 			}
 			return 0;
 		}
@@ -876,7 +876,7 @@ void repeatmove(playerinfo *plr, int dir, level_type *level)
 	int movres=moveplayer(plr, dir, level, true);
 
 	if (movres)
-		Game.Passturn(level, CONFIGVARS.repeatupdate, true);
+		Game.Passturn(CONFIGVARS.repeatupdate, true);
 	else
 		return;
 
@@ -925,7 +925,7 @@ void repeatmove(playerinfo *plr, int dir, level_type *level)
 		/* if still alive, move on */
 		movres=moveplayer(plr, dir, level, true);
 
-		Game.Passturn(level, CONFIGVARS.repeatupdate, true);
+		Game.Passturn(CONFIGVARS.repeatupdate, true);
 
 		/* walk corridors */
 		if (movres)

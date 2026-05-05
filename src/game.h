@@ -52,7 +52,7 @@ public:
 	void Eat_Passturns(level_type *level, item_def *item); //pass turns while eating
 	void Menu(); //game menu: options, save, exit, etc.
 	bool noticeevents(level_type *level);
-	void Passturn(level_type *level, bool playervis, bool foodsub);
+	void Passturn(bool playervis, bool foodsub);
 	void run(bool fast); //run one game
 	void Set_State(int st) { state=st; }
 	void show_time();

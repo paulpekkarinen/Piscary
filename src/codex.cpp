@@ -25,6 +25,7 @@
 #include "codex.h"
 #include "output.h"
 #include "input.h"
+#include "world.h"
 
 using namespace std::chrono_literals;
 
@@ -51,7 +52,8 @@ int inv_selectsource(int s2_x, int s2_y, int type)
 	const int s1_count = player.inv.Count_Items(type, -1, -1, true);
 
 	/* check if s2 (ground) contains items of 'type', recursively */
-	const int s2_count = c_level->inv.Count_Items(type, s2_x, s2_y, true);
+	level_type *gnd=world->Get_Current_Level();
+	const int s2_count = gnd->inv.Count_Items(type, s2_x, s2_y, true);
 
 	if (s1_count && s2_count)
 	{

@@ -276,7 +276,7 @@ void read_cmd()
 
 void run_command(playerinfo *plr, const int command)
 {
-	level_type *level=c_level;
+	level_type *level=world->Get_Current_Level();
 
 	//check movement commands first
 	if (command>=Move_North && command<=Move_Northwest)
@@ -300,7 +300,7 @@ void run_command(playerinfo *plr, const int command)
 				msg.newmsg("You start foolishly digging your way down...");
 		break;
 		case Enter_Upstairs:
-			if (world->Player_Go_Up(level)==false)
+			if (world->Player_Go_Up()==false)
 				msg.newmsg("You jump very hard...");
 		break;
 

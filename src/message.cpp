@@ -137,6 +137,19 @@ void Message::add_dist(level_type *level, int x, int y, const char *message,
 			newmsg(message2, color2);
 }
 
+void Message::Add_Dist(int x, int y, const char *mess1, int color1,
+	const char *mess2, int color2)
+{
+	if (gameview.Is_Visible(x, y))
+	{
+		if (mess1)
+			newmsg(mess1, color1);
+	}
+	else
+		if (mess2)
+			newmsg(mess2, color2);	
+}
+		
 /* add a new message, notice immendiately */
 void Message::add(const char *message, int color)
 {

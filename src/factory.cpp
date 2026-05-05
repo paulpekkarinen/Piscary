@@ -120,7 +120,7 @@ void Factory::Add_Shopkeeper(level_type *level, int roomnum)
 	b->Move_To(level->rooms[roomnum].x1+2, level->rooms[roomnum].y1+2);
 	b->m.status=MST_SHOPKEEPER;
 
-	roleplay.Advance_To_Level(level, b, b->m.level);
+	roleplay.Advance_To_Level(b, b->m.level);
 
 	b->base_hp=npc_races[b->m.race].hp_base;
 	b->mana.Initialize(npc_races[b->m.race].sp_base);
@@ -279,7 +279,7 @@ void Factory::Monster_Postgeneration(level_type *level, being *mptr)
 	mptr->base_hp=npc_races[mptr->m.race].hp_base;
 	mptr->mana.Initialize(npc_races[mptr->m.race].sp_base);
 
-	roleplay.Advance_To_Level(level, mptr, mptr->m.level);
+	roleplay.Advance_To_Level(mptr, mptr->m.level);
 
 	if (classes[mptr->m.mclass].initfunc!=0)
 	{
