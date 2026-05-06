@@ -122,7 +122,7 @@ void makeborder(int x1, int y1, int wd, int hg);
 void my_center_puts(int y, const char *fmt, ...);
 void my_cputs_init(int color, bool cond, const char *str);
 void my_printf(const char *fmt, ...);
-void my_wordwraptext(const void *txt, int top, int bottom, int left, int right);
+void my_wordwraptext(const char *dptr, int top, int bottom, int left, int right);
 void print_centered(int y, const char *txt);
 void print_text(const char *txt);
 void print_text_to(int x, int y, const char *txt);

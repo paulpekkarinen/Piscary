@@ -28,6 +28,7 @@
 #include "script.h"
 #include "spawner.h"
 #include "test.h"
+#include "window.h"
 #include "world.h"
 
 using std::format;
@@ -38,12 +39,11 @@ void test_keys();
 void test_random_generator();
 void test_scripts();
 void test_valuables();
+void test_window();
 
 void run_current_test()
 {
-	int sz=player.inv.Get_Linear_Size();
-
-	msg.newmsg(CH_GREEN, "%d items in inventory.", sz);
+	test_window();
 	
 	GAME_NOTIFYFLAGS|=GAME_DO_REDRAW;
 }
@@ -89,4 +89,15 @@ void test_scripts()
 {
 	//texts->Random_Message(Script::Eating_Sound);
 	texts->Debug(Script::Sparhawk_Comments);	
+}
+
+void test_window()
+{
+	Window ikkuna("Window", 3, 3, 25, 10, CH_GREEN, CH_WHITE);
+
+	ikkuna.Draw("Testing window text output routine to see if the text "
+	"fits in the window and how it looks if the text is too long "
+	"for the window. Just a little bit more text here.");
+
+	wait_key();	
 }

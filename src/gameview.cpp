@@ -352,11 +352,11 @@ void Gameview::Show()
 
 	//check horizontal size
 	const int a=view.width-level->sizex;
-	if (a>=0) //smaller than view: center
+	if (a>0) //smaller than view: center
 	{
 		camera.x=view.x+(a/2);
 	}
-	else //bigger than view
+	else if (a<0) //bigger than view
 	{
 		//scroll view if near edges
 		const int dx=c.x-camera.x;
@@ -375,14 +375,18 @@ void Gameview::Show()
 			}
 		}
 	}
+	else
+	{
+		camera.x=0; //same size
+	}
 
 	//check vertical size
 	const int b=view.height-level->sizey;
-	if (b>=0)
+	if (b>0)
 	{
 		camera.y=view.y+(b/2);
 	}
-	else
+	else if (b<0)
 	{
 		//scroll view if near edges
 		const int dy=c.y-camera.y;
@@ -400,6 +404,10 @@ void Gameview::Show()
 				Clamp_Camera_Y();
 			}
 		}
+	}
+	else
+	{
+		camera.y=0;
 	}
 
 	//note: since Gameview is now showing monsters, monsterinsight doesn't work,

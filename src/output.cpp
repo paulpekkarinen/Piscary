@@ -238,14 +238,11 @@ void my_printf(const char *fmt, ...)
 ** This will word wrap text to the region specified by
 ** top-left <-> bottom-right  variables and ask more if needed!
 */
-void my_wordwraptext(const void *txt, int top, int bottom, int left, int right)
+void my_wordwraptext(const char *dptr, int top, int bottom, int left, int right)
 {
 	bool NOMORE, enablemore=true;
-	int8u *dptr;
 	int i, cx, cy;
-	char oneword[40]={0};
-
-	dptr=(int8u*)txt;
+	static char oneword[40]={0};
 
 	/* no NULL strings */
 	if(!dptr)
