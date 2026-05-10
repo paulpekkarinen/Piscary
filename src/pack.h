@@ -14,6 +14,7 @@ struct level_type;
 struct playerinfo;
 class Pocket;
 
+bool player_autopickup(level_type *level, const Coord &c);
 bool drop_everything(
 	inventory *inv, equipment &gear, level_type *level, int x, int y);
 void drop_loot(being *mons, level_type *level);

@@ -39,7 +39,6 @@ struct playerinfo : public Actor
 
 	bool Is_Player() override { return true; }
 
-	bool Autopickup(level_type *level, const Coord &c);
 	void Getangry(level_type *level, Actor *kohde) override;
 	void Change_Alignment(char dir, int amount);
 	void Changetactics();

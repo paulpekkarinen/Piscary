@@ -21,6 +21,7 @@
 #include "output.h"
 #include "pocket.h"
 #include "purse.h"
+#include "textdata.h"
 
 using std::string;
 
@@ -88,7 +89,7 @@ void Stockpile::Show_Header()
 	else
 		print_text_to(SCREEN_COLS-14, 1, "[ all items ]");
 
-	display->Footer("a-w = select, Space = choose, Ctrl+O = open, x = exit", CH_GREEN);
+	display->Footer("a-w = select, A-W = toggle, Space = choose, Ctrl+I = info, x = exit", CH_GREEN);
 }
 
 bool Stockpile::Open_Container(int key, int view_index)
@@ -117,8 +118,8 @@ int Stockpile::Select(const char *preprompt, bool oneshot)
 	Set_Header(preprompt);
 	Show_Header();
 
-	int pitemcount=0;
-	int itemcount=0;
+	//int pitemcount=0;
+	//int itemcount=0;
 	lasttype=-1;
 	int rv=Cancel;
 	int index=0;
@@ -152,12 +153,16 @@ int Stockpile::Select(const char *preprompt, bool oneshot)
 			case ' ':
 			case KEY_ENTER:
 				if (mypocket.Get_Selected_Amount()>0)
-				{
 					rv=Selected;
-					browsing=false;
-				}
+
+				//if nothing selected, exit
+				browsing=false;
 			break;
 			case 'x': rv=Cancel; browsing=false; break;
+			case MYKEY_CTRLI:
+				text_data->View(Text_Data::Inventory_Help);
+				Show_Header();
+			break;
 			case MYKEY_CTRLO:
 			{
 				my_setcolor(CH_YELLOW);
@@ -173,18 +178,18 @@ int Stockpile::Select(const char *preprompt, bool oneshot)
 			}
 			break;
 			default:
+				//lowercase: select one item and exit
 				if (key>='a' && key<='w')
 				{
-					const int i=get_index_from_key(key, Items_Per_Page);
-					if (i!=-1)
+					if (Select_Item(index, key))
 					{
-						invnode *esine=mypocket.Get_Item_Handle(i);
-						if (esine!=0)
-						{
-							mypocket.Toggle(index+i);
-						}
-					}	
+						rv=Selected;
+						browsing=false;
+					}
 				}
+				//uppercase: toggle items
+				if (key>='A' && key<='W')
+					Select_Item(index, key);
 			break;
 		}
 	}
@@ -355,6 +360,23 @@ int Stockpile::Select(const char *preprompt, bool oneshot)
 	}*/
 
 	return rv;
+}
+
+bool Stockpile::Select_Item(const int index, int key)
+{
+	const int i=get_index_from_key(key, Items_Per_Page);
+
+	if (i!=-1)
+	{
+		invnode *esine=mypocket.Get_Item_Handle(i);
+		if (esine!=0)
+		{
+			mypocket.Toggle(index+i);
+			return true;
+		}
+	}
+	
+	return false;
 }
 
 void Stockpile::Set_Filter(int flt)

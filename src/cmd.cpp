@@ -385,8 +385,8 @@ void cmd_help()
 	Window menuwin("Help", 30, 10, 27, 7, CH_GREEN, CH_WHITE);
 
 	menuwin.Draw(
-		"k - Keybindings\0"
-		"m - Manual\0$");
+		"k - Keybindings\n"
+		"m - Manual");
 
 	const int ch=my_getch();
 	display->Redraw(world->Get_Current_Level());

@@ -156,6 +156,9 @@ int get_index_from_key(int k, int max_items)
 	if (k>='a' && k < 'a'+max_items)
 		return k-'a';
 
+	if (k>='A' && k < 'A'+max_items)
+		return k-'A';
+		
 	return -1;
 }
 

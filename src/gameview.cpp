@@ -469,7 +469,11 @@ void Gameview::Land_Item(invnode *item, const Coord &c)
 void Gameview::Refresh_Item_Map(const Coord &c)
 {
 	//refresh item map by finding top item
-	Put_Item(level->inv.Top_Item(c));	
+	invnode *i=level->inv.Top_Item(c);
+	if (i==0)
+		Clear_Item(c);
+	else
+		Put_Item(i);	
 }
 
 void Gameview::Show_Data()

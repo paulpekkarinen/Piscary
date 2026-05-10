@@ -79,14 +79,14 @@ void Debug::Menu()
 	Window menuwin("Debug command", 30, 7, 27, 11, CH_GREEN, CH_WHITE);
 
 	menuwin.Draw(
-		"c - Test colors\0"
-		"d - Current level data\0"
-		"l - List objects\0"
-		"o - Overview of world\0"
-		"p - Program report\0"
-		"r - Re-create level\0"
-		"u - Unalive monsters\0"
-		"v - View level map\0$");
+		"c - Test colors\n"
+		"d - Current level data\n"
+		"l - List objects\n"
+		"o - Overview of world\n"
+		"p - Program report\n"
+		"r - Re-create level\n"
+		"u - Unalive monsters\n"
+		"v - View level map");
 
 	const int ch=my_getch();
 

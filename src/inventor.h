@@ -26,6 +26,7 @@ private:
 	int arrayweight; //weight of items in the pocket
 	int lasttype; //last shown item type in the pocket's list
 
+	bool Select_Item(const int index, int key);
 	void Show_Header();
 
 protected:

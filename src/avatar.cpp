@@ -38,6 +38,7 @@
 #include "names.h"
 #include "options.h"
 #include "output.h"
+#include "pack.h"
 #include "roleplay.h"
 #include "saldebug.h"
 #include "script.h"
@@ -65,58 +66,6 @@ playerinfo::~playerinfo()
 const char *playerinfo::Get_Title()
 {
 	return m.desc.c_str(); //desc is player's title data
-}
-
-bool playerinfo::Autopickup(level_type *level, const Coord &c)
-{
-	if (strlen(CONFIGVARS.pickuptypes)==0)
-		return false;
-
-	//get topmost item here
-	invnode *lptr=gameview.Get_Item(c);
-	if (lptr==0) //check anyway
-		return false;
-
-	/* check capasity first */
-	if (Can_Carry(lptr->count * lptr->i.Get_Weight())==false)
-	{
-		msg.newmsg("You tried to take an item, but it weights too much.",
-			C_WHITE);
-		return false;
-	}
-
-	/* don't get UNPAID items */
-	if (lptr->i.status & ITEM_UNPAID)
-		return false;
-
-	if (my_stricmp(CONFIGVARS.pickuptypes, "all")!=0)
-	{
-		int j=0;
-
-		/* check if the item exists in the pickup list */
-		for (int i=0; i<(int)strlen(CONFIGVARS.pickuptypes); i++)
-		{
-			if (CONFIGVARS.pickuptypes[i] == gategories[lptr->i.type].out)
-				j=1;
-		}
-
-		if (j==0)
-			return false;
-	}
-
-	//get item for player
-	lptr = level->inv.remove_n_items(lptr, lptr->count);
-	if (lptr)
-	{
-		display->Item_Info(&lptr->i, lptr->i.weight, lptr->count, "You took");
-	}
-	else
-	{
-		msg.newmsg("Autopickup: Can't get item, no memory!", CHB_RED);
-		return false;
-	}
-
-	return true;
 }
 
 void playerinfo::Change_Alignment(char dir, int amount)
@@ -551,7 +500,7 @@ void playerinfo::Noticestuff(level_type *level)
 			if (CONFIGVARS.autopickup)
 			{
 				repeatwalk=false;
-				Autopickup(level, pc);
+				player_autopickup(level, pc);
 			}
 		}
 	}

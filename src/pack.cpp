@@ -16,6 +16,7 @@
 
 //Refactored 31.10.2023 - 26.3.2026 Paul K. Pekkarinen
 
+#include <cstring>
 #include "avatar.h"
 #include "caves.h"
 #include "being.h"
@@ -25,7 +26,9 @@
 #include "gameview.h"
 #include "invnode.h"
 #include "input.h"
+#include "itemdata.h"
 #include "itempack.h"
+#include "lexicon.h"
 #include "material.h"
 #include "message.h"
 #include "names.h"
@@ -41,7 +44,63 @@
 using std::string;
 
 int getitem_inner(playerinfo *plr, level_type *level, invnode *lptr);
-bool player_dropitem_inner(invnode *dropit);
+bool player_did_drop(invnode *dropit);
+
+bool player_autopickup(level_type *level, const Coord &c)
+{
+	if (strlen(CONFIGVARS.pickuptypes)==0)
+		return false;
+
+	//get topmost item here
+	invnode *lptr=gameview.Get_Item(c);
+	if (lptr==0) //check anyway
+		return false;
+
+	/* check capasity first */
+	if (player.Can_Carry(lptr->count * lptr->i.Get_Weight())==false)
+	{
+		msg.newmsg("You tried to take an item, but it weights too much.",
+			C_WHITE);
+		return false;
+	}
+
+	/* don't get UNPAID items */
+	if (lptr->i.status & ITEM_UNPAID)
+		return false;
+
+	if (my_stricmp(CONFIGVARS.pickuptypes, "all")!=0)
+	{
+		int j=0;
+
+		/* check if the item exists in the pickup list */
+		for (int i=0; i<(int)strlen(CONFIGVARS.pickuptypes); i++)
+		{
+			if (CONFIGVARS.pickuptypes[i] == gategories[lptr->i.type].out)
+				j=1;
+		}
+
+		if (j==0)
+			return false;
+	}
+
+	//get item for player
+	lptr = level->inv.remove_n_items(lptr, lptr->count);
+	if (lptr)
+	{
+		display->Item_Info(&lptr->i, lptr->i.weight, lptr->count, "You took");
+
+		player.inv.Add_Item(lptr);
+
+		gameview.Refresh_Item_Map(c);
+	}
+	else
+	{
+		msg.newmsg("Autopickup: Can't get item, no memory!", CHB_RED);
+		return false;
+	}
+
+	return true;
+}
 
 //drop monster's items and corpse when it dies
 void drop_loot(being *mons, level_type *level)
@@ -176,10 +235,10 @@ int getitem_inner(playerinfo *plr, level_type *level, invnode *lptr)
 		if (lptr->i.status & ITEM_UNPAID)
 			plr->bill += count * lptr->i.price;
 
+		display->Item_Info(&lptr->i, lptr->i.weight, count, "You took");
+
 		//this should work after previous checks
 		plr->inv.Add_Item(lptr);
-
-		display->Item_Info(&lptr->i, lptr->i.weight, count, "You took");
 	}
 	else
 	{
@@ -190,89 +249,79 @@ int getitem_inner(playerinfo *plr, level_type *level, invnode *lptr)
 	return count;
 }
 
-//note: only called in drop_selected()
-
 /* ** FIX **
  * note: THERE'S A BUG here if the actual DROP fails but the shopkeeper agrees
  * to buy the item. This is because shopkeeper will first buy the item and
  * then this routine tries to drop it -> if drop fails, the player has
  * got the money from shopkeeper and the item he/she just sold!
+ * note: does the drop ever fail?
  * ** FIX **/
-bool player_dropitem_inner(invnode *dropit)
+//Returns true if item was ready to drop, but don't move it to level here.
+bool player_did_drop(invnode *dropit)
 {
 	bool sellmode=false;
 
 	level_type *level=world->Get_Current_Level();
 
-	if (dropit)
+	if (dropit->slot >= 0)
 	{
-		if (dropit->slot >= 0)
-		{
-			msg.vnewmsg(C_YELLOW, "Item %s %s is in use, unequip it first!",
-				materials[dropit->i.material].name, dropit->i.name.c_str());
-			return true;
-		}
-
-		int count=dropit->count;
-		if (dropit->count > 1 && !CONFIGVARS.droppiles)
-		{
-			Game.noticeevents(level);
-
-			msg.vadd(C_GREEN, "How many %s's to drop [0..%ld, ENTER for all]?",
-				dropit->i.name.c_str(), dropit->count);
-			count=get_amount_of_items(dropit->count);
-
-			if (count==0)
-			{
-				msg.newmsg("Nothing dropped.", C_WHITE);
-				return true;
-			}
-			if (count > dropit->count)
-			{
-				msg.vnewmsg(C_WHITE, "But you only have %ld %s's.",
-					dropit->count, dropit->i.name.c_str());
-
-				count=dropit->count;
-			}
-		}
-
-		msg.update();
-
-		player.Drop_Item(dropit, count, player.Get_Location());
-
-		//if (dropit)
-		//{
-			if (dropit->i.status & ITEM_UNPAID)
-				player.bill -= count * dropit->i.price;
-
-			player.Spend_Time(TIME_DROPITEM);
-
-			if (player.inroom>=0 && !(dropit->i.status & ITEM_UNPAID))
-			{
-				if (level->rooms[player.inroom].type == ROOM_SHOP)
-				{
-					Game.noticeevents(level);
-					if (shopkeeper_buy(level, level->rooms[player.inroom].owner,
-						dropit))
-						sellmode=true;
-				}
-			}
-
-			const char *stxt;
-			if (sellmode)
-				stxt="You just sold";
-			else
-				stxt="You drop";
-
-			display->Item_Info(&dropit->i, dropit->i.weight, count, stxt);
-		//}
-		//else
-		//	msg.newmsg("You kept the item.", C_WHITE);
-
-		return true;
+		msg.vnewmsg(C_YELLOW, "Item %s %s is in use, unequip it first!",
+			materials[dropit->i.material].name, dropit->i.name.c_str());
+		return false;
 	}
 
-	return false;
+	int count=dropit->count;
+
+	if (count > 1 && !CONFIGVARS.droppiles)
+	{
+		Game.noticeevents(level);
+
+		msg.vadd(C_GREEN, "How many %s's to drop [0..%d, ENTER for all]?",
+			dropit->i.name.c_str(), count);
+		count=get_amount_of_items(count);
+
+		if (count==0)
+		{
+			msg.newmsg("Nothing dropped.", C_WHITE);
+			return false;
+		}
+
+		if (count > dropit->count)
+		{
+			msg.vnewmsg(C_WHITE, "But you only have %d %s's.",
+				dropit->count, dropit->i.name.c_str());
+
+			count=dropit->count;
+		}
+	}
+
+	msg.update();
+
+	if (dropit->i.status & ITEM_UNPAID)
+		player.bill -= count * dropit->i.price;
+
+	player.Spend_Time(TIME_DROPITEM);
+
+	if (player.inroom>=0 && !(dropit->i.status & ITEM_UNPAID))
+	{
+		if (level->rooms[player.inroom].type == ROOM_SHOP)
+		{
+			Game.noticeevents(level);
+			if (shopkeeper_buy(level, level->rooms[player.inroom].owner,
+				dropit))
+					sellmode=true;
+		}
+	}
+
+	const char *stxt;
+	if (sellmode)
+		stxt="You just sold";
+	else
+		stxt="You drop";
+
+	display->Item_Info(&dropit->i, dropit->i.weight, count, stxt);
+
+	return true;
 }
 
 void drop_selected(playerinfo *plr)
@@ -292,8 +341,11 @@ void drop_selected(playerinfo *plr)
 		if (i==0)
 			break;
 
-		player.Drop_Item(i, i->count, c);
-		amt++;
+		if (player_did_drop(i))
+		{
+			player.Drop_Item(i, i->count, c);
+			amt++;
+		}
 	}
 
 	if (amt>0)
@@ -310,6 +362,8 @@ void pick_up_item(playerinfo *plr, level_type *level)
 		msg.newmsg("You fill your pockets with dust...", C_WHITE);
 		return;
 	}
+
+	int picked_up=0 ; //how many items picked up
 
 	/* if there're multiple items, call up a inventory lister */
 	/* otherwise get the item directly */
@@ -329,8 +383,11 @@ void pick_up_item(playerinfo *plr, level_type *level)
 	{
 		invnode *ptr=gameview.Get_Item(pc);
 		if (ptr)
-			getitem_inner(plr, level, ptr);
+			picked_up=getitem_inner(plr, level, ptr);
 	}
+
+	if (picked_up>0)
+		gameview.Refresh_Item_Map(pc);
 }
 
 /*

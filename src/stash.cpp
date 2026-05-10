@@ -106,8 +106,8 @@ invnode *Stash::Pick_Up(invnode *src)
 	if (i==0) return 0;
 
 	Coord c=i->Get_Location();
-	invnode *top=Top_Item(c);
-	gameview.Put_Item(top);
+	gameview.Refresh_Item_Map(c);
+
 	return i;
 }
 
