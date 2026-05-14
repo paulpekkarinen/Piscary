@@ -235,7 +235,8 @@ Coord find_random_location(level_type *level, int border, bool skip_player)
 	int panic_limit=0;
 	while (panic_limit<50000)
 	{
-		c.Set(border+RANDU(level->sizex-border-1), border+RANDU(level->sizey-border-1));
+		c.Set_Location(border+RANDU(level->sizex-border-1),
+			border+RANDU(level->sizey-border-1));
 		if (level->Is_Passable(c))
 		{
 			if (skip_player)
@@ -258,6 +259,14 @@ Coord find_random_location(level_type *level, int border, bool skip_player)
 Coord get_random_location(const Plane &p, int border)
 {
 	return Coord(border+RANDU(p.width-border-1), border+RANDU(p.height-border-1));
+}
+
+Coord get_random_location(const Area &a)
+{
+	const int x=random_number(a.nw.x, a.se.x);
+	const int y=random_number(a.nw.y, a.se.y);
+
+	return Coord(x, y);
 }
 
 /* This function builds a maze by recursively calling itself

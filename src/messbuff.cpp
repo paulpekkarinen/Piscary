@@ -204,7 +204,7 @@ void Message_Buffer::update()
 {
 	if (last.x!=0 || last.y!=MSGLINE)
 	{
-		last.Set(0, MSGLINE);
+		last.Set_Location(0, MSGLINE);
 		for (int i=0; i<MSGLINES; i++)
 			clearline(MSGLINE+i);
 

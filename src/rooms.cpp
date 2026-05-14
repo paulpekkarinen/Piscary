@@ -5,6 +5,7 @@
 #include "being.h"
 #include "caves.h"
 #include "dice.h"
+#include "gameview.h"
 #include "message.h"
 #include "names.h"
 #include "output.h"
@@ -27,15 +28,13 @@ const char *roomnames[]=
 };
 
 roomdef::roomdef()
-	: type(0), x1(0), y1(0), x2(0), y2(0), flags(0),
-	doorx(0), doory(0), owner(0)
+	: type(0), flags(0), doorx(0), doory(0), owner(0)
 {
 
 }
 
-roomdef::roomdef(int rt, int sx1, int sy1, int sx2, int sy2)
-	: type(rt), x1(sx1), y1(sy1), x2(sx2), y2(sy2), flags(0),
-	doorx(0), doory(0), owner(0)
+roomdef::roomdef(int rt, int x, int y, int a, int b)
+	: Area(x, y, a, b), type(rt), flags(0), doorx(0), doory(0), owner(0)
 {
 
 }
@@ -85,9 +84,9 @@ void roomdef::make_shop(level_type *level)
 	flags=0;
 	Spawner spw(level);
 
-	for (int j=y1; j<y2; j++)
+	for (int j=nw.y; j<se.y; j++)
 	{
-		for (int i=x1; i<x2; i++)
+		for (int i=nw.x; i<se.x; i++)
 		{
 			Coord c(i, j);
 
@@ -95,6 +94,20 @@ void roomdef::make_shop(level_type *level)
 				kauppa.Create_Item(spw, c);
 		}
 	}
+}
+
+//Copy this room's id to gameview.
+void roomdef::Project_Room_Id(int id)
+{
+	Coord c;
+	
+	for (c.y=nw.y; c.y<=se.y; c.y++)
+	{
+		for (c.x=nw.x; c.x<=se.x; c.x++)
+		{
+			gameview.Set_Room_Id(c, id);
+		}
+	}	
 }
 
 void roomdef::Display_Data(int rindex)
@@ -120,17 +133,14 @@ void roomdef::Display_Data(int rindex)
 		vis.append("(unknown)");
 
 	my_printf("%d: '%s' (%d, %d, %d, %d) %s %s\n",
-		rindex, Get_Name(), x1, y1, x2, y2, s.c_str(), vis.c_str());
+		rindex, Get_Name(), nw.x, nw.y, se.x, se.y, s.c_str(), vis.c_str());
 }
 
 void roomdef::Save(Tar_Ball &tb, level_type *lvl)
 {
+	Area::Save(tb);
+	
 	tb.Put(type);
-	tb.Put(x1);
-	tb.Put(y1);
-	tb.Put(x2);
-	tb.Put(y2);
-
 	tb.Put_Char(flags);
 
 	kauppa.Save(tb);
@@ -150,12 +160,9 @@ void roomdef::Save(Tar_Ball &tb, level_type *lvl)
 
 void roomdef::Load(Tar_Ball &tb, level_type *lvl)
 {
+	Area::Load(tb);
+	
 	type=tb.Get_Next_Value();
-	x1=tb.Get_Next_Value();
-	y1=tb.Get_Next_Value();
-	x2=tb.Get_Next_Value();
-	y2=tb.Get_Next_Value();
-
 	flags=tb.Get_Next_Char();
 
 	kauppa.Load(tb);

@@ -101,23 +101,17 @@ void Factory::Add_Shopkeeper(level_type *level, int roomnum)
 	b->m.name[0]=toupper(b->m.name[0]);
 
 	/* set movement limits */
-	b->rev_x1=level->rooms[roomnum].x1;
-	b->rev_x2=level->rooms[roomnum].x2;
-	b->rev_y1=level->rooms[roomnum].y1;
-	b->rev_y2=level->rooms[roomnum].y2;
-
+	Area ar=level->rooms[roomnum].Get_Area();
+	ar.Shrink(); //limit inside walls
+	b->myarea=ar;
+	
 	b->sindex=0;
-
-	//   level->rooms[roomnum].sellp=100;
-	//   level->rooms[roomnum].buyp=75;
 
 	level->set_room_owner(roomnum, b);
 
 	/* set initial coordinates to the room in case */
-//     newptr->x=1+level->rooms[roomnum].x1+RANDU(level->rooms[roomnum].x2-level->rooms[roomnum].x1-1);
-//     newptr->y=1+level->rooms[roomnum].y1+RANDU(level->rooms[roomnum].y2-level->rooms[roomnum].y1-1);
-
-	b->Move_To(level->rooms[roomnum].x1+2, level->rooms[roomnum].y1+2);
+	Coord c=get_random_location(ar);
+	b->Move_To(c.x, c.y);
 	b->m.status=MST_SHOPKEEPER;
 
 	roleplay.Advance_To_Level(b, b->m.level);

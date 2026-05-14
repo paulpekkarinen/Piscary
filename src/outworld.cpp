@@ -418,7 +418,7 @@ bool Outworld::Dolakes(int percentage)
 			prev_set=false;
 
 		if (Advnext_Point(DIR_RIGHT, &c.x, &c.y))
-			c.Reset();
+			c.Set_Location(0, 0);
 
 		if(level->Get_Terrain(c) == TYPE_GRASS)
 			now_clear=true;

@@ -227,11 +227,7 @@ bool level_type::Has_Stairs(const Coord &c)
 
 bool level_type::Inside_Room(int roomnum, const Coord &c)
 {
-	if ((c.x > rooms[roomnum].x1 && c.x < rooms[roomnum].x2) &&
-		(c.y > rooms[roomnum].y1 && c.y < rooms[roomnum].y2))
-		return true;
-
-	return false;
+	return rooms[roomnum].Encloses(c);
 }
 
 //Routine for FOV to check if light can pass this tile.
@@ -356,7 +352,7 @@ Coord level_type::Get_Random_Good_Location()
 
 	for (int t=0; t<10000; t++)
 	{
-		c.Set(RANDU(sizex), RANDU(sizey));
+		c.Set_Location(RANDU(sizex), RANDU(sizey));
 		if (Is_Passable(c) && Get_Terrain(c)!=TYPE_ROOMFLOOR)
 		{
 			return c;
@@ -369,18 +365,10 @@ Coord level_type::Get_Random_Good_Location()
 
 void level_type::Refresh_Gameview()
 {
-	Coord c;
-
-	//set room ids
+	//set room ids of this level to gameview
 	for (int rc=0; rc<get_amount_of_rooms(); rc++)
 	{
-		for (c.y=rooms[rc].y1; c.y<=rooms[rc].y2; c.y++)
-		{
-			for (c.x=rooms[rc].x1; c.x<=rooms[rc].x2; c.x++)
-			{
-				gameview.Set_Room_Id(c, rc);
-			}
-		}
+		rooms[rc].Project_Room_Id(rc);
 	}
 
 	//place traps to gameview

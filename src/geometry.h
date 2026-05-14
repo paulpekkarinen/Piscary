@@ -30,8 +30,7 @@ struct Coord
 		return false;
 	}
 
-	void Reset();
-	void Set(int sx, int sy);
+	void Set_Location(int sx, int sy);
 	void Move_Direction(int dir);
 
 	void Save(Tar_Ball &tb);
@@ -71,20 +70,35 @@ struct Plane
 	Plane() : width(0), height(0) { }
 	Plane(int w, int h) : width(w), height(h) { }
 
-	void Set(int sw, int sh);
+	void Resize(int sw, int sh);
 };
 
 //Rectangle has location and size.
-struct Rectangle
+struct Rectangle : public Plane
 {
 	int x;
 	int y;
-	int width;
-	int height;
 
-	Rectangle() : x(0), y(0), width(5), height(5) { }
+	Rectangle() : Plane(5, 5), x(0), y(0) { }
 	Rectangle(int sx, int sy, int sw, int sh)
-		: x(sx), y(sy), width(sw), height(sh) { }	
+		: Plane(sw, sh), x(sx), y(sy) { }	
+};
+
+//Area has northwest and southeast points.
+struct Area
+{
+	Coord nw;
+	Coord se;
+
+	Area() { }
+	Area(int x, int y, int a, int b)
+		: nw(x, y), se(a, b) { }
+
+	bool Encloses(const Coord &c);
+	void Shrink();
+
+	void Save(Tar_Ball &tb);
+	void Load(Tar_Ball &tb);		
 };
 
 #endif

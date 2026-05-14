@@ -155,7 +155,7 @@ void Debug::View_Level()
 		set_color(C_WHITE);
 
 		//show the object or terrain name at the cursor
-		e.Set(c.x+SCREEN_COLS/2, c.y+(SCREEN_LINES-1)/2);
+		e.Set_Location(c.x+SCREEN_COLS/2, c.y+(SCREEN_LINES-1)/2);
 
 		const char *nimi=0;
 		

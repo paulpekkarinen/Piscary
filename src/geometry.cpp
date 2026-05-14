@@ -7,13 +7,7 @@
 #include "move.h"
 #include "storage.h"
 
-void Coord::Reset()
-{
-	x=0;
-	y=0;
-}
-
-void Coord::Set(int sx, int sy)
+void Coord::Set_Location(int sx, int sy)
 {
 	x=sx;
 	y=sy;
@@ -69,8 +63,44 @@ void Coordist::Load(Tar_Ball &tb)
 	dist=tb.Get_Next_Value();
 }
 
-void Plane::Set(int sw, int sh)
+void Plane::Resize(int sw, int sh)
 {
 	width=sw;
 	height=sh;
+}
+
+//Returns true if coordinate c is inside this area.
+bool Area::Encloses(const Coord &c)
+{
+	if ((c.x >= nw.x && c.x <= se.x) && (c.y >= nw.y && c.y <= se.y))
+		return true;
+
+	return false;	
+}
+
+void Area::Shrink()
+{
+	nw.x++;
+	nw.y++;
+	se.x--;
+	se.y--;
+
+	//check if area size becomes negative
+	if (se.x<nw.x)
+		se.x=nw.x;
+
+	if (se.y<nw.y)
+		se.y=nw.y;
+}
+
+void Area::Save(Tar_Ball &tb)
+{
+	nw.Save(tb);
+	se.Save(tb);
+}
+
+void Area::Load(Tar_Ball &tb)
+{
+	nw.Load(tb);
+	se.Load(tb);
 }

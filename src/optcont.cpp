@@ -145,10 +145,10 @@ void Optcont::Show_List()
 		if (i==index)
 		{
 			c=CH_WHITE; //show selected in white
-			cur.Set(dx, y);
+			cur.Set_Location(dx, y);
 
 			//store input point
-			inpoint.Set(dx+(*ii)->Get_Input_Offset(), y);
+			inpoint.Set_Location(dx+(*ii)->Get_Input_Offset(), y);
 		}
 		else
 			c=CH_GREEN;

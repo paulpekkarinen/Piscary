@@ -17,10 +17,7 @@ struct being : public Actor
 	Actor *target; // who is the monster attacking
 	Coord spot; //last known target location
 
-	int rev_x1;	// monster location limits, shopkeepers
-	int rev_x2;
-	int rev_y1;
-	int rev_y2;
+	Area myarea; //monster location limits, shopkeepers
 	int roomnum; // shopkeeper room index
 	int sindex; // special index, ie for shopkeepers guard route
 

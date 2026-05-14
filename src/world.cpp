@@ -506,7 +506,7 @@ void World::New_Dungeon_Location(const Plane &lvl)
 	if (banana==false)
 	{
 		const int x=(int)dunglocs.size(); //each stairs has a unique x location
-		c.Set(x, 3);
+		c.Set_Location(x, 3);
 	}
 
 	dunglocs.push_back(c);

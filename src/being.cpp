@@ -39,8 +39,7 @@
 using std::string;
 
 being::being()
-	: base_hp(0), target(0),
-	rev_x1(0), rev_x2(0), rev_y1(0), rev_y2(0), roomnum(-1), sindex(-1)
+	: base_hp(0), target(0), roomnum(-1), sindex(-1)
 {
 	Reset();
 
@@ -473,7 +472,7 @@ void being::Regenerate(level_type *level, int ctime, int slots)
 
 void being::Set_Target_Spot(int dx, int dy)
 {
-	spot.Set(dx, dy);
+	spot.Set_Location(dx, dy);
 }
 
 void being::Shouldflee(level_type *level)
@@ -566,10 +565,7 @@ void being::Save(Tar_Ball &tb)
 
 	spot.Save(tb);
 
-	tb.Put(rev_x1);
-	tb.Put(rev_x2);
-	tb.Put(rev_y1);
-	tb.Put(rev_y2);
+	myarea.Save(tb);
 	tb.Put(roomnum);
 	tb.Put(sindex);
 }
@@ -589,10 +585,7 @@ void being::Load(Tar_Ball &tb, level_type *lvl)
 	else
 		target=0;
 
-	rev_x1=tb.Get_Next_Value();
-	rev_x2=tb.Get_Next_Value();
-	rev_y1=tb.Get_Next_Value();
-	rev_y2=tb.Get_Next_Value();
+	myarea.Load(tb);
 
 	//restore room owner id if monster has one
 	roomnum=tb.Get_Next_Value();

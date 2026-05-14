@@ -5,6 +5,6 @@
 void Target::clear()
 {
 	invitem=0;
-	pos.Reset();
+	pos.Set_Location(0, 0);
 	direction=0;
 }

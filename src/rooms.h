@@ -6,10 +6,8 @@
 #define ROOMS_H
 
 #include <string>
-#include "types.h"
+#include "geometry.h"
 #include "shoppe.h"
-
-class Tar_Ball;
 
 //room types in roomdef's 'type'
 #define ROOM_DUNGEON 0 //regular rectangular dungeon room
@@ -44,14 +42,9 @@ class Tar_Ball;
 #define ROOMTMPL_HOUSE1		8
 #define ROOMTMPL_HOUSE2		9
 
-struct roomdef
+struct roomdef : public Area
 {
 	int type;		// room type, shop, vault etc..
-	int x1;			// coordinates for room
-	int y1;
-	int x2;
-	int y2;
-
 	int8u flags;	// room special flags
 
 	Shoppe kauppa; //shop, if any
@@ -62,14 +55,16 @@ struct roomdef
 	being *owner;	// room owner
 
 	roomdef();
-	roomdef(int rt, int sx1, int sy1, int sx2, int sy2);
+	roomdef(int rt, int x, int y, int a, int b);
 
+	Area &Get_Area() { return *this; }
 	const char *Get_Name();
 	bool Is_Visited();
 
 	void Check_Visit();
 	void set_door(int a, int b);
 	void make_shop(level_type *level); //change this room to a shop
+	void Project_Room_Id(int id);
 
 	void Display_Data(int rindex);
 

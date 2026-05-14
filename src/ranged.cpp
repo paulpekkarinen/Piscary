@@ -372,7 +372,7 @@ bool ranged_line(level_type *level, int out, int output_delay, bool single,
 
 			if (x==x2) return false;
 
-			old.Set(x, y);
+			old.Set_Location(x, y);
 
 			if (d>=0)
 			{
@@ -424,7 +424,7 @@ bool ranged_line(level_type *level, int out, int output_delay, bool single,
 
 			if (y==y2) return false;
 
-			old.Set(x, y);
+			old.Set_Location(x, y);
 
 			if (d>=0)
 			{

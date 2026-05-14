@@ -412,7 +412,7 @@ void player_gettarget(level_type *level, Target *target, Spell *spell)
 
 				if(spell->levitem >= 0)
 				{
-					target->pos.Set(rx+tx-1, ry+ty-1);
+					target->pos.Set_Location(rx+tx-1, ry+ty-1);
 
 					if(items==1)
 					{
@@ -433,7 +433,7 @@ void player_gettarget(level_type *level, Target *target, Spell *spell)
 				target->clear();
 				if(spell->self >= 0)
 				{
-					target->pos.Set(rx+tx-1, ry+ty-1);
+					target->pos.Set_Location(rx+tx-1, ry+ty-1);
 					msg.newmsg("Target = yourself.", C_WHITE);
 				}
 				else

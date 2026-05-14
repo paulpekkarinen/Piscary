@@ -339,7 +339,7 @@ void Gameview::Clamp_Camera()
 
 void Gameview::Center(const Coord &c)
 {
-	camera.Set(c.x-(view.width/2), c.y-(view.height/2));
+	camera.Set_Location(c.x-(view.width/2), c.y-(view.height/2));
 	Clamp_Camera();
 	GAME_NOTIFYFLAGS|=GAME_DO_REDRAW;
 }

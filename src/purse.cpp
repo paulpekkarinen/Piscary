@@ -128,11 +128,9 @@ void inventory::clean_shop_items(level_type *level, being *owner)
 	for (oitr ii = items.begin() ; ii != items.end() ; ++ii)
 	{
 		invnode *iptr=(*ii);
+		Coord ic=iptr->Get_Location();
 
-		if ((iptr->x > level->rooms[owner->roomnum].x1 &&
-			iptr->x < level->rooms[owner->roomnum].x2) &&
-			(iptr->y > level->rooms[owner->roomnum].y1 &&
-				iptr->y < level->rooms[owner->roomnum].y2))
+		if (level->rooms[owner->roomnum].Encloses(ic))
 			iptr->i.status &= mask;
 	}
 }
