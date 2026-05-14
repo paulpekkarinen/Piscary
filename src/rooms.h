@@ -11,20 +11,21 @@
 
 class Tar_Ball;
 
-#define ROOM_NORMAL1	0
-#define ROOM_NORMAL2	1
-#define ROOM_LAIR 		3
-#define ROOM_SHOP		10	// room is a shop
-#define ROOM_VAULT		11	// room is a vault
-#define ROOM_CASTLE		12
-#define ROOM_MISC		100
+//room types in roomdef's 'type'
+#define ROOM_DUNGEON 0 //regular rectangular dungeon room
+#define ROOM_LAIR 1
+#define ROOM_SHOP 2
+#define ROOM_VAULT 3
+#define ROOM_CASTLE 4
+#define ROOM_FARM 5
+#define ROOM_HOUSE 6
+#define ROOM_SMALL_CAVE 7
 
 #define ROOM_MINX		6
 #define ROOM_MINY		6
 #define ROOM_MAXX		20
 #define ROOM_MAXY		10
 
-#define ROOM_NAMEMAX	40
 #define ROOM_MAXNUM		20
 #define ROOM_MIN		4
 
@@ -45,7 +46,6 @@ class Tar_Ball;
 
 struct roomdef
 {
-	std::string name;	// room name
 	int type;		// room type, shop, vault etc..
 	int x1;			// coordinates for room
 	int y1;
@@ -62,8 +62,9 @@ struct roomdef
 	being *owner;	// room owner
 
 	roomdef();
-	roomdef(const char *n, int rt, int sx1, int sy1, int sx2, int sy2);
+	roomdef(int rt, int sx1, int sy1, int sx2, int sy2);
 
+	const char *Get_Name();
 	bool Is_Visited();
 
 	void Check_Visit();

@@ -182,8 +182,6 @@ void Gameview::Enter_New_Level(level_type *kentta)
 	data=new Viewtile[w*h];
 	dirgrid->Resize(w, h);
 
-	//copy objects, room ids etc. to gameview
-	level->Refresh_Gameview();
 	fov.Set_Level(level);
 }
 
@@ -480,4 +478,28 @@ void Gameview::Show_Data()
 {
 	my_printf("Gameview size: %d, %d, camera location: %d, %d.\n",
 		view.width, view.height, camera.x, camera.y);	
+}
+
+void Gameview::Show_Tile_Data(const Coord &c)
+{
+	Viewtile *vt=Get(c);
+
+	if (vt==0)
+	{
+		my_printf("Outside level.");
+		return;
+	}
+	
+	const char *vs;
+	if (vt->vision==Viewtile::Visible) vs="Visible";
+	else vs="Darkness";
+
+	my_printf("%s\nRoom id: %d\nTrap: %d\n",
+		vs,
+		vt->room_id,
+		vt->trap_type);
+
+	level->Show_Leveltile_Data(c);
+
+	my_printf("-press a key-");	
 }

@@ -178,7 +178,7 @@ void Debug::View_Level()
 			nimi=terrains[et].desc;
 		}
 				
-		mvprintw(0, 0, "Viewing level '%s' at %d, %d (%s) (t=teleport, x=exit)",
+		mvprintw(0, 0, "Viewing level '%s' at %d, %d (%s) (t=teleport, d=tile data, x=exit)",
 			world->Get_Level_Name(), e.x, e.y, nimi);
 		clrtoeol(); //clear possible trails
 
@@ -214,6 +214,12 @@ void Debug::View_Level()
 			case 't':
 				player.Jump_To(e);
 				looping=false;
+			break;
+			case 'd':
+				gotoxy(0, 1);
+				set_color(C_WHITE);
+				gameview.Show_Tile_Data(e);
+				wait_key();
 			break;
 			default:
 			{

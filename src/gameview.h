@@ -71,6 +71,7 @@ public:
 	void Set_Room_Id(const Coord &c, int rid);
 	void Show();
 	void Show_Data();
+	void Show_Tile_Data(const Coord &c);
 };
 
 extern Gameview gameview;

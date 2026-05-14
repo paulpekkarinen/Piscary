@@ -13,7 +13,6 @@ struct Roomtemplate
 	int sy;
 	int doordir;
 	int roomtype;
-	const char *name;
 	const char *room;
 };
 

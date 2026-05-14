@@ -101,6 +101,7 @@ struct level_type
 	void List_Rooms();
 	void List_Terrain();
 	void Show_Tile_Description(const Coord &c);
+	void Show_Leveltile_Data(const Coord &c);
 
 	void save(Tar_Ball &tb);
 };

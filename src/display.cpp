@@ -762,9 +762,6 @@ void Display::Stats(bool showmove)
 	gotoxy(0, 4);
 	my_printf("Moves: %-6d", player.movecount);
 
-	//gotoxy(0, 5);
-	//my_printf("Rid: %d ", gameview.Get_Room_Id(player.Get_Location()));
-
 	/* does money amount need a redraw ? */
 	if (GAME_NOTIFYFLAGS & GAME_MONEYCHG)
 	{

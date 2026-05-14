@@ -107,6 +107,7 @@ bool Levelnode::Visit()
 		gameview.Enter_New_Level(level);
 
 		flevel->Create(dtype);
+			
 		player.num_levels++;
 
 		rv=true;
@@ -118,6 +119,10 @@ bool Levelnode::Visit()
 		gameview.Enter_New_Level(level);
 		rv=false;
 	}
+
+	//copy objects, room ids etc. to gameview after the level is created
+	//or visited again
+	level->Refresh_Gameview();
 	
 	return rv;
 }

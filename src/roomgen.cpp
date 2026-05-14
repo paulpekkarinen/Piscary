@@ -22,10 +22,10 @@
 #include "factory.h"
 #include "genlevel.h"
 #include "lexicon.h"
-#include "log.h"
 #include "randgen.h"
 #include "roomgen.h"
 #include "rooms.h"
+#include "saldebug.h"
 #include "terrain.h"
 
 /* directions of movement (for level generator)
@@ -52,29 +52,11 @@
    a-Z specific monster
 */
 
-const char *roomnames[]={ //note: unused
-  "an ordinary room",
-  "a dull looking room",
-  "a dull looking room",
-  "lair",
-  "dull looking room",
-  "dull looking room",
-  "dull looking room",
-  "dull looking room",
-  "dull looking room",
-  "dull looking room",
-  "a shop",
-  "dangerous looking room",
-  "a castle",
-  0
-};
-
 Roomtemplate lairtemplates[]=
 {
   { 	7, 7,
    	DIR_EAST,
 	ROOM_SHOP,
-	"a shop",
 	"#######" /* small shop */
 	"#.....#"
 	"#.....#"
@@ -86,7 +68,6 @@ Roomtemplate lairtemplates[]=
   { 	7, 7,
    	DIR_WEST,
 	ROOM_SHOP,
-	"a shop",
 	"#######"	/* small shop */
 	"#.....#"
 	"#.....#"
@@ -98,7 +79,6 @@ Roomtemplate lairtemplates[]=
   { 	7, 7,
    	DIR_SOUTH,
 	ROOM_SHOP,
-	"a shop",
 	"#######"	/* small shop */
 	"#.....#"
 	"#.....#"
@@ -110,7 +90,6 @@ Roomtemplate lairtemplates[]=
   { 	7, 7,
    	DIR_NORTH,
 	ROOM_SHOP,
-	"a shop",
 	"###!###"	/* small shop */
 	"#.....#"
 	"#.....#"
@@ -122,7 +101,6 @@ Roomtemplate lairtemplates[]=
   { 	10, 10,
    	DIR_WEST,
 	ROOM_LAIR,
-	"lair",
 	"##&&&&&&##"
 	"##&,,,,&##"
 	"#&&,,,,&&#"
@@ -137,7 +115,6 @@ Roomtemplate lairtemplates[]=
   { 	10, 10,
    	DIR_WEST,
 	ROOM_LAIR,
-	"lair",
 	"##########"	/* zoo */
 	"#........#"
 	"#.b..b...#"
@@ -152,7 +129,6 @@ Roomtemplate lairtemplates[]=
   { 	15, 10,
    	DIR_EAST,
 	ROOM_LAIR,
-	"lair",
 	"###############"
 	"###....###....#"
 	"###....###....#"
@@ -166,8 +142,7 @@ Roomtemplate lairtemplates[]=
   },
   { 	15, 10,
    	DIR_NORTH,
-	ROOM_LAIR,
-	"small cave",
+	ROOM_SMALL_CAVE,
 	"####!##########"
 	"####.#####....#"
 	"###..k.###....#"
@@ -182,7 +157,6 @@ Roomtemplate lairtemplates[]=
   { 	15, 10,
    	DIR_EAST,
 	ROOM_LAIR,
-	"lair",
 	"&&&&&&&&&&&&&&&" /* very dark lair of monsters */
 	"&,,,g,&&&,,s,,&"
 	"&&,G,&&,&,&,&&&"
@@ -197,7 +171,6 @@ Roomtemplate lairtemplates[]=
   { 	11, 15,
    	DIR_SOUTH,
 	ROOM_LAIR,
-	"lair",
 	"###########"
 	"#.........#"
 	"#.#######.#"
@@ -217,7 +190,6 @@ Roomtemplate lairtemplates[]=
   { 	15, 15,
    	DIR_NORTH,
 	ROOM_LAIR,
-	"lair",
 	"############!##"
 	"#.....#.####.##"
 	"#####.#.......#"
@@ -237,7 +209,6 @@ Roomtemplate lairtemplates[]=
   { 	30, 30,
    	DIR_EAST,
 	ROOM_LAIR,
-	"lair",
 	"##############################"	   /* big lair */
 	"##,,,,,##########..####,,,,,,#"
 	"#,,,,,,,########....###,,,,,,#"
@@ -272,7 +243,6 @@ Roomtemplate lairtemplates[]=
   { 	30, 22,
    	DIR_SOUTH,
 	ROOM_LAIR,
-	"lair",
 	"##############################"	   /* big lair */
 	"##.########################.##"
 	"#....##..######..####.......##"
@@ -296,7 +266,7 @@ Roomtemplate lairtemplates[]=
 	"###...######,,,,,,,###########"
 	"################!#############"
   },
-  { 0, 0, 0, 0, NULL, NULL }	/* end of the list */
+  { 0, 0, 0, 0, NULL }	/* end of the list */
 };
 
 /* desc:
@@ -312,7 +282,6 @@ Roomtemplate towntemplates[]=
   { 	15, 6,
    	DIR_SOUTH,
 	ROOM_SHOP,
-	"a shop",
 	"###############"	/* shop */
 	"#.............#"
 	"#.............#"
@@ -323,7 +292,6 @@ Roomtemplate towntemplates[]=
   { 	15, 6,
    	DIR_NORTH,
 	ROOM_SHOP,
-	"a shop",
 	"######&&&######"	/* shop */
 	"#....##!##....#"
 	"#.............#"
@@ -334,7 +302,6 @@ Roomtemplate towntemplates[]=
   { 	11, 6,
    	DIR_NORTH,
 	ROOM_SHOP,
-	"a shop",
 	"#####!#####"	/* small shop */
 	"#.........#"
 	"#.........#"
@@ -345,7 +312,6 @@ Roomtemplate towntemplates[]=
   { 	11, 6,
    	DIR_SOUTH,
 	ROOM_SHOP,
-	"a shop",
 	"###########"	/* small shop */
 	"#.........#"
 	"#.........#"
@@ -356,7 +322,6 @@ Roomtemplate towntemplates[]=
   { 	8, 6,
    	DIR_EAST,
 	ROOM_SHOP,
-	"a shop",
 	"########"	/* small shop */
 	"#......#"
 	"#......!"
@@ -367,7 +332,6 @@ Roomtemplate towntemplates[]=
   { 	8, 6,
    	DIR_WEST,
 	ROOM_SHOP,
-	"a shop",
 	"########"	/* small shop */
 	"#......#"
 	"!......#"
@@ -378,7 +342,6 @@ Roomtemplate towntemplates[]=
   { 	21, 17,
    	DIR_NORTH,
 	ROOM_CASTLE,
-	"a castle",
 	"&========|||========&"  /* small castle */
 	"==########!########=="
 	"=##......#.#......##="
@@ -399,8 +362,7 @@ Roomtemplate towntemplates[]=
   },
   { 	15, 10,
    	DIR_SOUTH,
-	ROOM_MISC,
-	"a farm",
+	ROOM_FARM,
 	"#######&#######"
 	"#.....#&#.....#"
 	"#.....#&#.....#"
@@ -414,8 +376,7 @@ Roomtemplate towntemplates[]=
   },
   { 	7, 6,
    	DIR_SOUTH,
-	ROOM_MISC,
-	"a house",
+	ROOM_HOUSE,
 	"#######"
 	"#.....#"
 	"#.....#"
@@ -425,8 +386,7 @@ Roomtemplate towntemplates[]=
   },
   { 	7, 8,
    	DIR_NORTH,
-	ROOM_MISC,
-	"a house",
+	ROOM_HOUSE,
 	"&##!##&"
 	"##...##"
 	"#.....#"
@@ -436,7 +396,7 @@ Roomtemplate towntemplates[]=
 	"##...##"
 	"&#####&"
   },
-  { 0, 0, 0, 0, NULL, NULL }	/* end of the list */
+  { 0, 0, 0, 0, NULL }	/* end of the list */
 };
 
 const int delta_x[]={0, 1, 0, -1, 0};
@@ -486,7 +446,7 @@ bool createroom(Genlevel *level, int *rx1, int *ry1, int *sizex, int *sizey)
 		return false;
 	}
 
-	roomdef ordroom("an ordinary room", ROOM_NORMAL1, x1+1, y1+1, x1+rsizex-2, y1+rsizey-2);
+	roomdef ordroom(ROOM_DUNGEON, x1+1, y1+1, x1+rsizex-2, y1+rsizey-2);
 	level->rooms.push_back(ordroom);
 
 	for (j=0; j<rsizey; j++)
@@ -518,17 +478,12 @@ bool generatelair(Genlevel *level)
 	if (level->max_rooms_created())
 		return false;
 
-	int x1, y1, i, j;
-	const char *tmplptr;
-
 	Roomtemplate *rooms=lairtemplates+RANDU(mucho.num_lairs);
-
+	int x1, y1, i, j;
 	int wd=rooms->sx;
 	int hg=rooms->sy;
-
-	tmplptr=rooms->room;
-
 	int maxr=0;
+
 	while (1)
 	{
 		x1=4+RANDU(level->sizex-8-wd);
@@ -543,13 +498,15 @@ bool generatelair(Genlevel *level)
 			return false;
 	}
 
-	roomdef lairroom(rooms->name, rooms->roomtype, x1, y1, x1+wd-1, y1+hg-1);
+	roomdef lairroom(rooms->roomtype, x1, y1, x1+wd-1, y1+hg-1);
 
-	//note: sets to no shop, but this is a default value so not necessarily needed
+	//sets to 'no shop', this is the default value so it's set just in case
 	if (rooms->roomtype == ROOM_SHOP)
 		lairroom.kauppa.Shopify(Shoppe::None);
 
 	int16u lastattr=terrains[TYPE_ROOMFLOOR].flags;
+	int32u index=0;
+		
 	for (j=0; j<hg; j++)
 	{
 		for (i=0; i<wd; i++)
@@ -559,49 +516,44 @@ bool generatelair(Genlevel *level)
 			/* create passable areas (floor) */
 			level->Create_Floor(c, TYPE_ROOMFLOOR, lastattr);
 
-			/* or replace by something else */
-			/* impassable walls */
-			if (*tmplptr=='#')
+			const char tile=rooms->room[index++];
+
+			switch (tile)
 			{
-				level->Create_Wall(c, TYPE_WALLIP, true, false);
+				case '#': //impassable wall
+					level->Create_Wall(c, TYPE_WALLIP, true, false);
+				break;
+				case '&': //non-lit wall
+					level->Create_Wall(c, TYPE_WALLIP, true, true);
+				break;
+				case ',':
+					level->Clear_Flag(c, CAVE_LIGHT);
+					clear_flag_bit(lastattr, CAVE_LIGHT);				
+				break;
+				case '.':
+					level->Set_Flag(c, terrains[TYPE_ROOMFLOOR].flags);
+					lastattr=terrains[TYPE_ROOMFLOOR].flags;				
+				break;
+				case '?': //add room owner
+					factory.Add_Monster(level, c.x, c.y, 0);
+				break;
+				case '!': //door
+					level->Create_Door(c.x, c.y, false);
+					lairroom.set_door(c.x, c.y);				
+				break;
+				default:
+				{
+					//note: works only if each monster has a unique letter, because
+					//Add_Monster's 'type' parameter is the ascii letter of
+					//the monster (should probably replace with enum for types)
+					if (is_alpha(tile))
+						factory.Add_Monster(level, c.x, c.y, tile);
+					else
+						debug->Message(
+							"Lair generator, unknown type: %c.", tile);
+				}
+				break;
 			}
-			else if (*tmplptr=='&') //non-lit wall
-			{
-				level->Create_Wall(c, TYPE_WALLIP, true, true);
-			}
-			else if (*tmplptr==',')
-			{
-				level->Clear_Flag(c, CAVE_LIGHT);
-				//note: create (and test) flag setting/clearing routine
-				clear_flag_bit(lastattr, CAVE_LIGHT);
-				//lastattr=terrains[TYPE_ROOMFLOOR].flags | CAVE_NOLIT;
-			}
-			else if (*tmplptr=='.')
-			{
-				level->Set_Flag(c, terrains[TYPE_ROOMFLOOR].flags);
-				lastattr=terrains[TYPE_ROOMFLOOR].flags;
-			}
-			else if (*tmplptr=='?')
-			{
-				/* add room owner */
-				factory.Add_Monster(level, x1+i, y1+j, 0);
-			}
-			/* exitpoint (door) */
-			else if (*tmplptr=='!')
-			{
-				level->Create_Door(x1+i, y1+j, false);
-				lairroom.set_door(x1+i, y1+j);
-			}
-			else if (is_alpha(*tmplptr))
-			{
-				factory.Add_Monster(level, x1+i, y1+j, *tmplptr); //note: this casts ascii to int type, doesn't work?
-			}
-			else
-			{
-				diary.Write("Lair generator, unknown type: %c\n",
-					*tmplptr);
-			}
-			tmplptr++;
 		}
 	}
 
@@ -627,18 +579,12 @@ bool generate_townroom(Genlevel *level, int roomtype)
 	if (level->max_rooms_created())
 		return false;
 
-	int x1, y1, i, j;
-
-	const char *tmplptr;
-
 	Roomtemplate *rooms=towntemplates+roomtype;
-
+	int x1, y1, i, j;
 	int wd=rooms->sx;
 	int hg=rooms->sy;
-
-	tmplptr=rooms->room;
-
 	int maxr=0;
+
 	while (1)
 	{
 		x1=4+RANDU(level->sizex-8-wd);
@@ -653,70 +599,44 @@ bool generate_townroom(Genlevel *level, int roomtype)
 			return false;
 	}
 
-	roomdef townroom(rooms->name, rooms->roomtype, x1, y1, x1+wd-1, y1+hg-1);
+	roomdef townroom(rooms->roomtype, x1, y1, x1+wd-1, y1+hg-1);
+	int32u index=0;
 
 	for (j=0; j<hg; j++)
 	{
 		for (i=0; i<wd; i++)
 		{
 			int tt = -1; //-1 if no terrain created
+			Coord c(x1+i, y1+j);
+			const int tile=rooms->room[index++];
 
-			/* or replace by something else */
-			/* impassable walls */
-			if (*tmplptr=='#')
+			switch (tile)
 			{
-				tt=TYPE_WALLIP;
+				case '#': tt=TYPE_WALLIP; break;
+				case '&': break; //skip
+				case '=': tt=TYPE_WATER; break;
+				case '.':
+				case ',':
+					tt=TYPE_ROOMFLOOR;
+				break;
+				case '|': tt=TYPE_BRIDGEV; break;
+				case '-': tt=TYPE_BRIDGEH; break;
+				case '+': //normal door
+					level->Create_Door(c.x, c.y, false);
+				break;
+				case 'T': tt=TYPE_TREE; break;
+				case '!': // exitpoint (door)
+					//generate door and add its coordinates to the roomlist
+					level->Create_Door(x1+i, y1+j, false);
+					townroom.set_door(x1+i, y1+j);				
+				break;
+				default:
+					debug->Message("Lair generator, unknown type: %c.", tile);
+				break;
 			}
-			else if (*tmplptr=='&')
-			{
-				/* skip */
-			}
-			else if (*tmplptr=='=')
-			{
-				tt=TYPE_WATER;
-			}
-			else if (*tmplptr=='.')
-			{
-				tt=TYPE_ROOMFLOOR;
-			}
-			else if (*tmplptr==',')
-			{
-				tt=TYPE_ROOMFLOOR;
-			}
-			else if (*tmplptr=='|')
-			{
-				tt=TYPE_BRIDGEV;
-			}
-			else if (*tmplptr=='-')
-			{
-				tt=TYPE_BRIDGEH;
-			}
-			else if (*tmplptr=='+')
-			{
-				/* generate a normal door */
-				level->Create_Door(x1+i, y1+j, false);
-			}
-			else if (*tmplptr=='T')
-			{
-				tt=TYPE_TREE;
-			}
-			/* exitpoint (door) */
-			else if (*tmplptr=='!')
-			{
-				/* generate door and add its coordinates to the roomlist */
-				level->Create_Door(x1+i, y1+j, false);
-				townroom.set_door(x1+i, y1+j);
-			}
-			else
-			{
-				diary.Write("Lair generator, unknown type: %d (%c)\n",
-					*tmplptr, *tmplptr);
-			}
-
+			
 			if (tt!=-1)
-				level->Set_Terrain(x1+i, y1+j, tt);
-
-			tmplptr++;
+				level->Set_Terrain(c.x, c.y, tt);
 		}
 	}
 	level->rooms.push_back(townroom);
@@ -899,50 +819,44 @@ void makeroom(Genlevel *level, int x1, int y1, int dir, int recd)
 
 	if (checkregion(level, x2, y2, wd, hg))
 	{
-		//note: could have a bug, didn't check location parameters before cut-pasting this to here
-		roomdef ordroom("an ordinary room", ROOM_NORMAL1, x1, y1, x1+wd-1, y1+hg-1);
+		//note: could have a bug, didn't check location parameters
+		//before cut-pasting this to here
+		roomdef ordroom(ROOM_DUNGEON, x1, y1, x1+wd-1, y1+hg-1);
 		level->rooms.push_back(ordroom);
 
+		//carve floor area of the room into bedrock
 		for (int j=0; j<hg; j++)
 		{
 			for (int i=0; i<wd; i++)
 			{
 				Coord c(x2+i, y2+j);
-				level->Create_Floor(c, TYPE_ROOMFLOOR, terrains[TYPE_ROOMFLOOR].flags | newflags);
-
-				//note: no walls?
-				//	    if(j==0 || i==0 || j==hg-1 || i==wd-1) {
-				//		level->Set_Terrain(c, TYPE_WALLIP);
-				//		level->Set_Flag(c, newflags);
-				//	    }
+				level->Create_Floor(c, TYPE_ROOMFLOOR,
+					terrains[TYPE_ROOMFLOOR].flags | newflags);
 			}
 		}
 
 		for (dir=0; dir<4; dir++)
 		{
+			//determine doorway location for each wall facings
 			x1=x2;
 			y1=y2;
 			if (dir==0)
 			{
-				//		   	x1+=wd/2;
 				x1+=1+RANDU(wd-2);
 			}
 			else if (dir==1)
 			{
 				x1+=wd-1;
 				y1+=1+RANDU(hg-2);
-				//		      y1+=hg/2;
 			}
 			else if (dir==2)
 			{
 				x1+=1+RANDU(wd-2);
-				//		   	x1+=wd/2;
 				y1+=hg-1;
 			}
 			else if (dir==3)
 			{
 				y1+=1+RANDU(hg-2);
-				//		      y1+=hg/2;
 			}
 			makehall(level, x1, y1, dir, recd+1);
 		}

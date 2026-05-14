@@ -14,6 +14,18 @@
 
 using std::string;
 
+const char *roomnames[]=
+{
+	"a dungeon room",
+	"a lair",
+	"a shop",
+	"a vault",
+	"a castle",
+	"a farm",
+	"a house",
+	"a small cave"
+};
+
 roomdef::roomdef()
 	: type(0), x1(0), y1(0), x2(0), y2(0), flags(0),
 	doorx(0), doory(0), owner(0)
@@ -21,11 +33,16 @@ roomdef::roomdef()
 
 }
 
-roomdef::roomdef(const char *n, int rt, int sx1, int sy1, int sx2, int sy2)
-	: name(n), type(rt), x1(sx1), y1(sy1), x2(sx2), y2(sy2), flags(0),
+roomdef::roomdef(int rt, int sx1, int sy1, int sx2, int sy2)
+	: type(rt), x1(sx1), y1(sy1), x2(sx2), y2(sy2), flags(0),
 	doorx(0), doory(0), owner(0)
 {
 
+}
+
+const char *roomdef::Get_Name()
+{
+	return roomnames[type];
 }
 
 bool roomdef::Is_Visited()
@@ -38,8 +55,7 @@ void roomdef::Check_Visit()
 	if (Is_Visited()==false)
 	{
 		flags|=ROOM_IS_VISITED;
-		msg.vnewmsg(C_WHITE, "This looks like %s.",
-			name.c_str());
+		msg.vnewmsg(C_WHITE, "This looks like %s.", Get_Name());
 	}
 }
 
@@ -104,12 +120,11 @@ void roomdef::Display_Data(int rindex)
 		vis.append("(unknown)");
 
 	my_printf("%d: '%s' (%d, %d, %d, %d) %s %s\n",
-		rindex, name.c_str(), x1, y1, x2, y2, s.c_str(), vis.c_str());
+		rindex, Get_Name(), x1, y1, x2, y2, s.c_str(), vis.c_str());
 }
 
 void roomdef::Save(Tar_Ball &tb, level_type *lvl)
 {
-	tb.Put_String(name);
 	tb.Put(type);
 	tb.Put(x1);
 	tb.Put(y1);
@@ -135,7 +150,6 @@ void roomdef::Save(Tar_Ball &tb, level_type *lvl)
 
 void roomdef::Load(Tar_Ball &tb, level_type *lvl)
 {
-	name=tb.Get_Next_String();
 	type=tb.Get_Next_Value();
 	x1=tb.Get_Next_Value();
 	y1=tb.Get_Next_Value();

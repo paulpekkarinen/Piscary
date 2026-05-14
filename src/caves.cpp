@@ -635,6 +635,16 @@ void level_type::Show_Tile_Description(const Coord &c)
 	my_printf("%-15s", terrains[loc[c.y][c.x].type].desc);
 }
 
+void level_type::Show_Leveltile_Data(const Coord &c)
+{
+	//assumes c is a valid location, this is a debug routine so it should be
+	cave_type &d=loc[c.y][c.x];
+
+	my_printf("%s\nSval: %d\n",
+		terrains[d.type].desc,
+		d.sval);
+}
+
 void level_type::save(Tar_Ball &tb)
 {
 	tb.Put(sizex);

@@ -122,6 +122,7 @@ void playerinfo::Check_Inroom(level_type *level, const Coord &pc)
 		if (rc!=-1)
 		{
 			level->rooms[rc].Check_Visit();
+			inroom=rc;
 		}
 	}
 	else
@@ -129,10 +130,9 @@ void playerinfo::Check_Inroom(level_type *level, const Coord &pc)
 		if (rc==-1)
 		{
 			//leave room, note: code for shops
+			inroom=-1;
 		}
 	}
-
-	inroom=rc;
 }
 
 void playerinfo::Checkstat(level_type *level, bool lower, bool showmsg)
