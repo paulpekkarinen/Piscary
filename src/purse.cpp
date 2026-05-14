@@ -508,18 +508,21 @@ void inventory::List_Items()
 	static int xpos=0;
 	static int ypos=0;
 	static int rec=0;
+	static int amt=0;
 
 	if (rec==0) //reset if at first recursion level
 	{
 		xpos=0;
 		ypos=0;
+		amt=0;
 	}
 
 	for (oitr ii = items.begin() ; ii != items.end() ; ++ii)
 	{
 		invnode *iptr=(*ii);
 
-		uncover.Inventory_Item(iptr, xpos, ypos);
+		uncover.Inventory_Item(iptr, amt, xpos, ypos);
+		amt++;
 
 		if (list_more(ypos)==false)
 			break;

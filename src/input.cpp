@@ -276,7 +276,7 @@ bool list_more(int &y)
 	{
 		rv=wait_more(); //ESC to cancel listing
 		clear_screen();
-		y=1;
+		y=0;
 	}
 
 	return rv;

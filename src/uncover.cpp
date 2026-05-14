@@ -26,9 +26,11 @@ namespace data
 }
 using namespace data;
 
-void Uncover::Inventory_Item(invnode *iptr, int x, int y)
+void Uncover::Inventory_Item(invnode *iptr, int index, int x, int y)
 {
 	gotoxy(x, y);
+
+	my_printf("%d) ", index);
 
 	const int ic=iptr->count;
 	
