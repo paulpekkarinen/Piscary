@@ -24,6 +24,7 @@
 #include "randgen.h"
 #include "roomgen.h"
 #include "spawner.h"
+#include "spot.h"
 #include "terrain.h"
 #include "world.h"
 

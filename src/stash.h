@@ -22,7 +22,7 @@ public:
 	void crush_items(int x, int y, invnode *nothis);
 	invnode *Pick_Up(invnode *src);
 	void Refresh_Item_Map(); //put items on gameview map
-	void teleport_items(level_type *level, Target *target);
+	bool teleport_items(level_type *level, Target *target);
 };
 
 #endif

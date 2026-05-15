@@ -22,11 +22,12 @@
 #include "gametime.h"
 #include "gameview.h"
 #include "message.h"
+#include "move.h"
 #include "node.h"
 #include "output.h"
 #include "outworld.h"
-#include "randgen.h"
 #include "salamath.h"
+#include "spot.h"
 #include "storage.h"
 #include "terrain.h"
 #include "world.h"
@@ -190,7 +191,7 @@ bool World::Player_Go_Down(level_type *level)
 		player.sight=15;
 		world->Display_Time_Events(true);
 		//use random location for now
-		player.Teleport();
+		teleport_player(level, false, true);
 	}
 	else
 	{

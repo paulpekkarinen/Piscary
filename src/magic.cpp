@@ -362,52 +362,22 @@ bool spell_bless(level_type *level, being *caster,
 
 //Teleport spell
 bool spell_teleport(level_type *level, being *caster,
-		    Target *target, int skill)
+	Target *target, int skill)
 {
-	int tx, ty;
-
-	/* find a new coordinate from the level */
-	set_randomcoord(level, &tx, &ty);
+	bool rv=true;
 
 	if (player.Is_At(target->pos))
-	{
-		msg.newmsg("You're displaced by strange forces.", C_GREEN);
-		GAME_NOTIFYFLAGS |= GAME_DO_REDRAW;
-
-		player.Set_Location(tx, ty);
-
-		Game.noticeevents(level);
-	}
+		teleport_player(level, true, false);
 	else
 	{
 		being *mptr=gameview.Get_Monster(target->pos);
-
 		if (mptr)
-		{
-			set_randomcoord(level, &tx, &ty);
-
-			string moname=monster_sprintf(mptr, true, true);
-			string s=moname;
-			s.append(" disappears.");
-
-			msg.add_dist(level, mptr->x, mptr->y, s.c_str(), C_CYAN,
-				"You hear a distant \"swoosh\"-sound.", C_CYAN);
-
-			mptr->x=tx;
-			mptr->y=ty;
-
-			string q=moname;
-			q.append(" appears in your sight.");
-			msg.add_dist(level, mptr->x, mptr->y, q.c_str(), C_CYAN,
-				"You hear a distant \"Zap!\".", C_CYAN);
-
-			//gameview.Show(); //note: test if needed
-		}
+			rv=teleport_monster(level, mptr);
 		else
-			level->inv.teleport_items(level, target);
+			rv=level->inv.teleport_items(level, target);
 	}
 
-	return true;
+	return rv;
 }
 
 bool spell_confuze(level_type *level, Target *target, int skill)

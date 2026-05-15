@@ -28,6 +28,9 @@ void repeatmove(playerinfo *plr, int dir, level_type *level);
 int shopkeeper_move(level_type *level, being *keeper);
 int sur_countall(level_type *level, int x, int y);
 int sur_countpass_dia(level_type *level, int x, int y);
+bool teleport_item(level_type *level, invnode *iptr);
+bool teleport_monster(level_type *level, being *mptr);
+void teleport_player(level_type *level, bool inform, bool not_in_room);
 
 extern const int move_dx[];
 extern const int move_dy[];

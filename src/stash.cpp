@@ -23,6 +23,7 @@
 #include "display.h"
 #include "invnode.h"
 #include "message.h"
+#include "move.h"
 #include "names.h"
 #include "randgen.h"
 #include "salamath.h"
@@ -117,10 +118,11 @@ void Stash::Refresh_Item_Map()
 		gameview.Put_Item(*ii);
 }
 
-void Stash::teleport_items(level_type *level, Target *target)
+//Returns true if teleported at least one item.
+bool Stash::teleport_items(level_type *level, Target *target)
 {
-	int tx, ty;
-
+	bool rv=false;
+	
 	for (oitr ii = items.begin() ; ii != items.end() ; ++ii)
 	{
 		invnode *iptr=(*ii);
@@ -128,25 +130,10 @@ void Stash::teleport_items(level_type *level, Target *target)
 
 		if (ic == target->pos)
 		{
-			set_randomcoord(level, &tx, &ty);
-			string iname=item_name(iptr);
-
-			string s=iname;
-			s.append(" disappears.");
-
-			msg.add_dist(level, iptr->x, iptr->y, s.c_str(), C_CYAN,
-				"You hear a distant \"swoosh\"-sound.", C_CYAN);
-
-			iptr->x=tx;
-			iptr->y=ty;
-
-			string q=iname;
-			q.append(" appears in your sight.");
-
-			msg.add_dist(level, iptr->x, iptr->y, q.c_str(), C_CYAN,
-				"You hear a distant \"Zap!\".", C_CYAN);
-
-			//gameview.Show(); //note: test if needed
+			if (teleport_item(level, iptr))
+				rv=true;
 		}
 	}
+
+	return rv;
 }

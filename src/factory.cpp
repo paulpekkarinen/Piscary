@@ -30,9 +30,9 @@
 #include "material.h"
 #include "message.h"
 #include "names.h"
-#include "randgen.h"
 #include "roleplay.h"
 #include "scrolls.h"
+#include "spot.h"
 #include "world.h"
 
 Factory factory; //global instance

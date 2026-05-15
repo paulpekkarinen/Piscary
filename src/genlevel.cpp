@@ -19,8 +19,8 @@
 #include "avatar.h"
 #include "dice.h"
 #include "genlevel.h"
-#include "randgen.h"
 #include "rooms.h"
+#include "spot.h"
 #include "terrain.h"
 #include "world.h"
 
@@ -179,29 +179,9 @@ void Genlevel::Create_Stairs()
 
 Coord Genlevel::Create_Stairs_Down(int8u number, bool first_town_level)
 {
-	bool READY=false;
-	Coord c;
-	while (!READY)
-	{
-		c=find_random_location(this, 1);
+	Coord c=find_downstairs_place(this, first_town_level);
 
-		if (first_town_level)
-		{
-			if (Get_Terrain(c)==TYPE_ROOMFLOOR)
-			{
-				loc[c.y][c.x].stairs_down(number);
-				READY=true;
-			}
-		}
-		else
-		{
-			if (Is_Passable(c))
-			{
-				loc[c.y][c.x].stairs_down(number);
-				READY=true;
-			}
-		}
-	}
+	loc[c.y][c.x].stairs_down(number);
 
 	return c;
 }

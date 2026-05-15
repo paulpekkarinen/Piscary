@@ -19,12 +19,23 @@ SelectItemsGround::SelectItemsGround(Stash &srcinv, int flt)
 
 }
 
+//Get handle functions don't remove the item, only returns the handle.
 invnode *SelectItemsGround::Get_Handle(const char *preprompt, const Coord &c)
 {
-	Set_Place(c);
-	Set_Header(preprompt); //note: this may not be needed if base Select is called
+	invnode *rv=0;
 
-	return 0;
+	if (inv.builditemarray(mypocket, Get_Filter(), c.x, c.y)==false)
+		return 0;
+			
+	switch (Select(preprompt, true))
+	{
+		case Stockpile::Selected:
+		case Stockpile::Container_Selected:
+		break;
+		default: break; 
+	}
+
+	return rv;
 }
 
 bool SelectItemsGround::Change_Category(int select)

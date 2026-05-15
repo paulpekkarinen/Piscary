@@ -549,13 +549,6 @@ void playerinfo::Switch_Searchmode()
 	}
 }
 
-void playerinfo::Teleport()
-{
-	level_type *level=world->Get_Current_Level();
-	Coord c=level->Get_Random_Good_Location();
-	Jump_To(c);
-}
-
 void playerinfo::Display()
 {
 	put_char('@', color);

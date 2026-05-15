@@ -7,6 +7,7 @@
 #include "dice.h"
 #include "log.h"
 #include "randgen.h"
+#include "spot.h"
 #include "terrain.h"
 
 void carvepassage(level_type *level, int sx, int sy, int tx, int ty)
@@ -222,53 +223,6 @@ void create_terrain_on_passable(level_type *level, int type)
 	}
 }
 
-//Search floor place until it's passable for creation.
-Coord find_random_location(level_type *level, int border)
-{
-	return find_random_location(level, border, false);
-}
-
-Coord find_random_location(level_type *level, int border, bool skip_player)
-{
-	Coord c;
-
-	int panic_limit=0;
-	while (panic_limit<50000)
-	{
-		c.Set_Location(border+RANDU(level->sizex-border-1),
-			border+RANDU(level->sizey-border-1));
-		if (level->Is_Passable(c))
-		{
-			if (skip_player)
-			{
-				if (player.Is_At(c))
-				{
-					panic_limit++;
-					continue;
-				}
-			}
-			return c;
-		}
-
-		panic_limit++;
-	}
-
-	return Coord(-1, -1);
-}
-
-Coord get_random_location(const Plane &p, int border)
-{
-	return Coord(border+RANDU(p.width-border-1), border+RANDU(p.height-border-1));
-}
-
-Coord get_random_location(const Area &a)
-{
-	const int x=random_number(a.nw.x, a.se.x);
-	const int y=random_number(a.nw.y, a.se.y);
-
-	return Coord(x, y);
-}
-
 /* This function builds a maze by recursively calling itself
 ** there is only one solution for this maze
 */
@@ -311,16 +265,4 @@ void recurse_maze(level_type *maze, int x, int y)
 		default: break;
 	}
 	recurse_maze(maze, x, y);
-}
-
-//find random location of passable tile type
-void set_randomcoord(level_type *level, int *tx, int *ty)
-{
-	while (1)
-	{
-		*tx=RANDU(level->sizex);
-		*ty=RANDU(level->sizey);
-		if (level->Is_Passable(*tx, *ty))
-			break;
-	}
 }

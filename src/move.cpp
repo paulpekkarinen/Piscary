@@ -39,6 +39,7 @@
 #include "quote.h"
 #include "salamath.h"
 #include "script.h"
+#include "spot.h"
 #include "terrain.h"
 #include "use.h"
 #include "way.h"
@@ -1235,4 +1236,86 @@ int sur_countpass_dia(level_type *level, int x, int y)
 	}
 
 	return count;
+}
+
+//Returns true if did teleport.
+bool teleport_item(level_type *level, invnode *iptr)
+{
+	Coord c=get_random_coord(level);
+	Coord old=iptr->Get_Location();
+
+	//in rare cases if the location is the old one
+	if (c==old)
+		return false;
+
+	string iname=item_name(iptr);
+
+	string s=iname;
+	s.append(" disappears.");
+
+	msg.add_dist(level, iptr->x, iptr->y, s.c_str(), C_CYAN,
+		"You hear a distant \"swoosh\"-sound.", C_CYAN);
+
+	gameview.Refresh_Item_Map(old); //remove from old location
+	iptr->Set_Location(c);
+	gameview.Refresh_Item_Map(c); //add to new location
+
+	string q=iname;
+	q.append(" appears in your sight.");
+
+	msg.add_dist(level, iptr->x, iptr->y, q.c_str(), C_CYAN,
+		"You hear a distant \"Zap!\".", C_CYAN);
+
+	GAME_NOTIFYFLAGS|=GAME_DO_REDRAW;
+	return true;
+}
+
+//Returns true if did teleport.
+bool teleport_monster(level_type *level, being *mptr)
+{
+	Coord c=get_random_coord(level);
+
+	//in rare cases if the location is the old one
+	if (c==mptr->Get_Location())
+		return false;
+
+	string moname=monster_sprintf(mptr, true, true);
+	string s=moname;
+	s.append(" disappears.");
+
+	msg.add_dist(level, mptr->x, mptr->y, s.c_str(), C_CYAN,
+		"You hear a distant \"swoosh\"-sound.", C_CYAN);
+
+	mptr->Move_To(c.x, c.y);
+
+	string q=moname;
+	q.append(" appears in your sight.");
+	msg.add_dist(level, mptr->x, mptr->y, q.c_str(), C_CYAN,
+		"You hear a distant \"Zap!\".", C_CYAN);
+
+	GAME_NOTIFYFLAGS|=GAME_DO_REDRAW;
+	return true;
+}
+
+void teleport_player(level_type *level, bool inform, bool not_in_room)
+{
+	Coord c;
+	Coord old=player.Get_Location();
+
+	if (not_in_room) //skip room floors
+		c=get_random_good_location(level);
+	else
+		c=get_random_coord(level);
+		
+	if (inform)
+	{
+		if (old==c)
+			msg.newmsg("You feel disoriented for a moment.", C_GREEN);
+		else
+			msg.newmsg("You're displaced by strange forces.", C_GREEN);
+	}
+
+	player.Jump_To(c);
+
+	Game.noticeevents(level);	
 }

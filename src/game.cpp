@@ -30,6 +30,7 @@
 #include "hiscore.h"
 #include "input.h"
 #include "message.h"
+#include "move.h"
 #include "names.h"
 #include "optcont.h"
 #include "options.h"
@@ -292,8 +293,8 @@ void gamedata::run(bool fast)
 	attrset(A_NORMAL);
 
 	world->Enter_New_Dungeon(5); //starting dungeon is 5
-	player.Teleport();
 	level_type *level=world->Get_Current_Level();
+	teleport_player(level, false, true);
 	display->Redraw(level);
 	msg.notice();
 

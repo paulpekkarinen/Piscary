@@ -346,23 +346,6 @@ bool level_type::Close_Door(const Coord &c)
 	return rv;
 }
 
-Coord level_type::Get_Random_Good_Location()
-{
-	Coord c;
-
-	for (int t=0; t<10000; t++)
-	{
-		c.Set_Location(RANDU(sizex), RANDU(sizey));
-		if (Is_Passable(c) && Get_Terrain(c)!=TYPE_ROOMFLOOR)
-		{
-			return c;
-		}
-	}
-
-	//failure returns 0,0
-	return c;
-}
-
 void level_type::Refresh_Gameview()
 {
 	//set room ids of this level to gameview
