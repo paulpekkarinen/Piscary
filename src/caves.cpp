@@ -183,6 +183,11 @@ const char *level_type::Get_Name()
 	return "level";
 }
 
+being *level_type::Get_Room_Owner(int roomnum)
+{
+	return rooms[roomnum].owner;
+}
+
 int level_type::Get_Terrain(const Coord &c)
 {
 	if (Is_Outside(c)) return TYPE_DARK;
@@ -228,6 +233,11 @@ bool level_type::Has_Stairs(const Coord &c)
 bool level_type::Inside_Room(int roomnum, const Coord &c)
 {
 	return rooms[roomnum].Encloses(c);
+}
+
+bool level_type::Is_Shop(int roomnum)
+{
+	return rooms[roomnum].kauppa.Is_Open();
 }
 
 //Routine for FOV to check if light can pass this tile.

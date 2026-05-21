@@ -62,212 +62,162 @@ std::string get_ordinal_of_time(int n)
 	return "th";
 }
 
-void keeper_greet(level_type *level, being *owner, being *creat)
+void keeper_farewell(level_type *level, being *owner, being *creat)
 {
-	/* do not greet myself :-) */
 	if (creat==owner)
 		return;
 
-	const char *shopname=level->rooms[owner->roomnum].kauppa.Get_Name();
-
-	bool greet;
-	if (creat)
-	{
-		Coord cc=creat->Get_Location();
-
-		/* ungreet if goes to door */
-		if (creat->m.status & MST_INSIDESHOP)
-		{
-			if (level->Inside_Room(owner->roomnum, cc))
-				return;
-
-			creat->m.status^=MST_INSIDESHOP;
-			greet=false;
-		}
-		else
-		{
-			/* do not greet until walks on the floor */
-			if (!level->Inside_Room(owner->roomnum, cc))
-				return;
-
-			creat->m.status|=MST_INSIDESHOP;
-			greet=true;
-		}
-	}
-	else
-	{
-		Coord pc=player.Get_Location();
-
-		/* player ungreet ? */
-		if (level->rooms[owner->roomnum].flags & ROOM_PLAYERHERE)
-		{
-			if (level->Inside_Room(owner->roomnum, pc))
-				return;
-
-			level->rooms[owner->roomnum].flags^=ROOM_PLAYERHERE;
-			greet=false;
-		}
-		else
-		{
-			/* no greet until walks on the floor */
-			if (!level->Inside_Room(owner->roomnum, pc))
-				return;
-
-			level->rooms[owner->roomnum].flags|=ROOM_PLAYERHERE;
-			greet=true;
-		}
-
-	}
-
 	const char *ownername=owner->m.name.c_str();
 
-	if (greet)
+	if (creat->Is_Player()==false)
 	{
-		if (creat)
+		if (creat->bill>0)
 		{
-			string moname=monster_sprintf(creat, false, true);
-			string s(owner->m.name);
+			if (owner->m.status & MST_GUARDDOOR)
+				owner->m.status^=MST_GUARDDOOR;
 
-			if (creat->m.status & MST_KEEPERHATES)
-			{
-				s.append(" yells to ");
-				s.append(moname);
-				s.append(" :\"Get out of here...NOW!\"");
+			creat->m.status |= MST_KEEPERHATES;
 
-				msg.add_dist(level, owner->x, owner->y, s.c_str(), CH_MAGENTA,
-					"You hear from distance: \"Get out of here...NOW!\".",
-					C_MAGENTA);
-				owner->m.status|=MST_ATTACKMODE;
-				owner->target=creat;
-			}
-			else
-			{
-				s.append(" welcomes ");
-				s.append(moname);
+			string s=someone_screams(owner->Get_Name(),
+				"THIEEEEEEEF! WHERE'S THE SHERIFF!?!");
 
-				string welcome(" :\"Welcome to ");
-				welcome.append(owner->m.name);
-				welcome.append("'s ");
-				welcome.append(shopname);
-				welcome.append(".\"");
+			msg.add_dist(level, owner->x, owner->y,
+				s.c_str(), C_GREEN, "You hear someone calling for sheriff!", C_WHITE);
+			creat->bill=0;
+			creat->inv.mark_unpaid();
 
-				s.append(welcome);
-
-				string dist("You hear from distance");
-				dist.append(welcome);
-
-				msg.add_dist(level, owner->x, owner->y,
-					s.c_str(), C_WHITE, dist.c_str(), C_WHITE);
-			}
-		}
-		else
-		{
-			if (owner->m.status & MST_HATEPLAYER)
-			{
-				owner->m.status|=MST_ATTACKMODE;
-				owner->target=NULL;
-				msg.newmsg(CH_MAGENTA,
-					"%s yells: \"Get OUT of here, thief!\".",
-					ownername);
-				return;
-			}
-			else
-			{
-				bool visited;
-				if (!(owner->m.status & MST_KNOWN))
-				{
-					// make shopkeeper known!
-					owner->m.status|=MST_KNOWN;
-					visited=false;
-				}
-				else
-				{
-					// if hates player, attack !
-					visited=true;
-				}
-				string s=shopkeeper_greeting(owner->Get_Name(), shopname, visited);
-				msg.newmsg(s, CH_GREEN);
-			}
+			return;
 		}
 
+		if (!(creat->m.status & MST_KEEPERHATES))
+		{
+			string s=someone_says(owner->Get_Name(), "Come again soon, stranger!");
+			msg.add_dist(level, owner->x, owner->y, s.c_str(), C_GREEN,
+				"You hear from distance: \"Come again soon, stranger!\".", C_WHITE);
+		}
 	}
 	else
 	{
-		if (creat)
+		/* if bill>0 then it's a successfull steal */
+		if (player.bill>0)
 		{
-			if (creat->bill>0)
-			{
+			/* mark owner to hate player */
+			owner->m.status |= MST_HATEPLAYER;
 
-				if (owner->m.status & MST_GUARDDOOR)
-					owner->m.status^=MST_GUARDDOOR;
+			if (owner->m.status & MST_GUARDDOOR)
+				owner->m.status^=MST_GUARDDOOR;
 
-				creat->m.status |= MST_KEEPERHATES;
+			// clear the bill, succesfull steal
+			player.bill=0;
 
-				string s=someone_screams(owner->Get_Name(), "THIEEEEEEEF! WHERE'S THE SHERIFF!?!");
+				/* handle all player items and remove unpaid mark */
+			player.inv.mark_unpaid();
 
-				msg.add_dist(level, owner->x, owner->y,
-					s.c_str(), C_GREEN,
-					"You hear someone calling for sheriff!", C_WHITE);
-				creat->bill=0;
-				creat->inv.mark_unpaid();
+			msg.newmsg(CH_RED,
+				"%s screams: \"THIEEEEEEEF! WHERE'S THE SHERIFF!?!\".",
+				owner->Get_Name());
+			return;
+		}
 
-				return;
-			}
-
-			if (!(creat->m.status & MST_KEEPERHATES))
-			{
-				string s=someone_says(owner->Get_Name(), "Come again soon, stranger!");
-				msg.add_dist(level, owner->x, owner->y, s.c_str(), C_GREEN,
-					"You hear from distance: \"Come again soon, stranger!\".", C_WHITE);
-			}
+		/* friendly bye-msg if doesn't hate player */
+		if (!(owner->m.status & MST_HATEPLAYER))
+		{
+			msg.newmsg(C_WHITE, "%s says: \"Come again soon, %s!\".",
+				ownername, player.Get_Name());
 		}
 		else
 		{
-			/* if bill>0 then it's a successfull steal */
-			if (player.bill>0)
+			//if keeper is in attack mode yell an unfriendly phrase when
+			//target leaves shop
+			const char *throw_mess=texts->Get_Random(Script::Keeper_Throw);
+			
+			string distant("Someone ");
+			distant.append(throw_mess);
+
+			string seen(owner->m.name);
+			seen.append(" ");
+			seen.append(throw_mess);
+
+			msg.add_dist(level, owner->x, owner->y, seen.c_str(), CH_MAGENTA,
+				distant.c_str(), C_MAGENTA);
+		}
+		//	 owner->m.status^=MST_ATTACKMODE;
+	}
+}
+
+void keeper_greet(level_type *level, being *owner, being *creat)
+{
+	if (creat==owner)
+		return;
+
+	const int ronum=owner->roomnum;
+	const char *shopname=level->rooms[ronum].kauppa.Get_Name();
+	const char *ownername=owner->m.name.c_str();
+
+	if (creat->Is_Player()==false)
+	{
+		string moname=monster_sprintf(creat, false, true);
+		string s(owner->m.name);
+
+		if (creat->m.status & MST_KEEPERHATES)
+		{
+			s.append(" yells to ");
+			s.append(moname);
+			s.append(" :\"Get out of here...NOW!\"");
+
+			msg.add_dist(level, owner->x, owner->y, s.c_str(), CH_MAGENTA,
+				"You hear from distance: \"Get out of here...NOW!\".",
+				C_MAGENTA);
+			owner->m.status|=MST_ATTACKMODE;
+			owner->target=creat;
+		}
+		else
+		{
+			s.append(" welcomes ");
+			s.append(moname);
+
+			string welcome(" :\"Welcome to ");
+			welcome.append(owner->m.name);
+			welcome.append("'s ");
+			welcome.append(shopname);
+			welcome.append(".\"");
+
+			s.append(welcome);
+
+			string dist("You hear from distance");
+			dist.append(welcome);
+
+			msg.add_dist(level, owner->x, owner->y,
+				s.c_str(), C_WHITE, dist.c_str(), C_WHITE);
+		}
+	}
+	else
+	{
+		if (owner->m.status & MST_HATEPLAYER)
+		{
+			owner->m.status|=MST_ATTACKMODE;
+			owner->target=NULL;
+			msg.newmsg(CH_MAGENTA,
+				"%s yells: \"Get OUT of here, thief!\".",
+				ownername);
+			return;
+		}
+		else
+		{
+			bool visited;
+			if (!(owner->m.status & MST_KNOWN))
 			{
-				/* mark owner to hate player */
-				owner->m.status |= MST_HATEPLAYER;
-
-				if (owner->m.status & MST_GUARDDOOR)
-					owner->m.status^=MST_GUARDDOOR;
-
-				// clear the bill, succesfull steal
-				player.bill=0;
-
-				/* handle all player items and remove unpaid mark */
-				player.inv.mark_unpaid();
-
-				msg.newmsg(CH_RED,
-					"%s screams: \"THIEEEEEEEF! WHERE'S THE SHERIFF!?!\".",
-					owner->Get_Name());
-				return;
+				// make shopkeeper known!
+				owner->m.status|=MST_KNOWN;
+				visited=false;
 			}
-
-			/* friendly bye-msg if doesn't hate player */
-			if (!(owner->m.status & MST_HATEPLAYER))
-			{
-				msg.newmsg(C_WHITE, "%s says: \"Come again soon, %s!\".",
-					ownername, player.Get_Name());
-			}
-			/* if keeper is in attack mode
-			 * yell an unfriendly phrase when target leaves shop
-			 */
 			else
 			{
-				const char *throw_mess=texts->Get_Random(Script::Keeper_Throw);
-			
-				string distant("Someone ");
-				distant.append(throw_mess);
-
-				string seen(owner->m.name);
-				seen.append(" ");
-				seen.append(throw_mess);
-
-				msg.add_dist(level, owner->x, owner->y, seen.c_str(), CH_MAGENTA,
-					distant.c_str(), C_MAGENTA);
+				// if hates player, attack !
+				visited=true;
 			}
-			//	 owner->m.status^=MST_ATTACKMODE;
+			string s=shopkeeper_greeting(owner->Get_Name(), shopname, visited);
+			msg.newmsg(s, CH_GREEN);
 		}
 	}
 }

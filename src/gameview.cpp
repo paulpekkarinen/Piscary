@@ -198,56 +198,51 @@ bool Gameview::Notice_Something(being *b, bool items_too)
 	Coord d(-1, -1);
 	Coord plr=player.Get_Location();
 	bool saw_item=false;
-	bool saw_creature=false;
 	const int distance=10;
 	being *otus=0;
 
 	//check player's location always, without direction checking
-	const bool saw_player=Cansee(mon, plr, distance);
-
-	//note: use random direction to check for now
-	const int dir=Way::Get_Random_Main_Direction();
-
-	//check other stuff at direction for 10 tiles, 'b' will
-	//remember first creature and item it saw
-	for (int i=0; i<10; i++)
+	if (Cansee(mon, plr, distance))
+		otus=&player;
+	else
 	{
-		c.Move_Direction(dir);
+		//note: use random direction to check for now
+		const int dir=Way::Get_Random_Main_Direction();
 
-		//find only first item, 'items_too' is for creatures that
-		//are interested about items
-		if (items_too && saw_item==false)
+		//check other stuff at direction for 10 tiles, 'b' will
+		//remember first creature and item it saw
+		for (int i=0; i<10; i++)
 		{
-			invnode *item=Get_Item(c);
-			if (item!=0)
-				saw_item=Cansee(mon, c, distance);
+			c.Move_Direction(dir);
 
-			if (saw_item)
-				d=c; //store item location for targeting
+			//find only first item, 'items_too' is for creatures that
+			//are interested about items
+			if (items_too && saw_item==false)
+			{
+				invnode *item=Get_Item(c);
+				if (item!=0)
+					saw_item=Cansee(mon, c, distance);
+
+				if (saw_item)
+					d=c; //store item location for targeting
+			}
+
+			being *o=Get_Monster(c);
+			if (o!=0)
+			{
+				if (Cansee(mon, c, distance))
+					otus=o;
+			}
+
+			//break only if creature noticed, items are secondary target
+			if (otus!=0)
+				break;
 		}
-
-		otus=Get_Monster(c);
-		if (otus!=0)
-			saw_creature=Cansee(mon, c, distance);
-
-		//break only if creature noticed, items are secondary target
-		if (saw_creature)
-			break;
 	}
 
 	//determine which object is the most interesting to this creature,
 	//at this point however it's always player first etc.
-	
-	if (saw_player)
-	{
-		if (b->Gets_Angry_To_Player())
-		{
-			b->Getangry(level, &player);
-			return true;
-		}
-	}
-
-	if (saw_creature)
+	if (otus!=0)
 	{
 		if (b->Gets_Angry_To(otus))
 		{

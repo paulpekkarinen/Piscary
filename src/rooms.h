@@ -29,7 +29,7 @@
 
 //special flags for a room
 #define ROOM_IS_VISITED	0x01
-#define ROOM_PLAYERHERE 0x80
+#define ROOM_PLAYERHERE 0x80 //note: can be removed later
 
 #define ROOMTMPL_SHOP1		0
 #define ROOMTMPL_SHOP2		1

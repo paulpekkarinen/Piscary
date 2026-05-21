@@ -5,14 +5,14 @@
 #ifndef AVATAR_H
 #define AVATAR_H
 
-#include "actor.h"
+#include "being.h"
 #include "qskills.h"
 #include "venture.h"
 
 class Levelnode;
 class SelectItemsPack;
 
-struct playerinfo : public Actor
+struct playerinfo : public being
 {
 	int color;      // color of player char
 	int nutr;       // food status
@@ -65,7 +65,7 @@ struct playerinfo : public Actor
 	void Display();
 
 	void Save(Tar_Ball &tb);
-	void Load(Tar_Ball &tb);
+	void Load(Tar_Ball &tb, level_type *level);
 };
 
 extern playerinfo player;

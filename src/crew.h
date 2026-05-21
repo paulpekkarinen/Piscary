@@ -35,7 +35,6 @@ public:
 	void removeall();
 	void Remove_Dead(level_type *level); //remove at the end of turn
 	void Sentenced() { clean_up=true; } //notify that there are dead monsters
-	void shopkeeper_greet(level_type *lvl, being *owner);
 	int Target_Nearest(level_type *level, int *cx, int *cy, int lastidx);
 
 	void Debug_List(); //find out amount of monsters and special monsters

@@ -556,7 +556,7 @@ void playerinfo::Display()
 
 void playerinfo::Save(Tar_Ball &tb)
 {
-	Actor::Save(tb);
+	being::Save(tb);
 
 	tb.Put(color);
 	tb.Put(nutr);
@@ -577,9 +577,9 @@ void playerinfo::Save(Tar_Ball &tb)
 	quests.save(tb);
 }
 
-void playerinfo::Load(Tar_Ball &tb)
+void playerinfo::Load(Tar_Ball &tb, level_type *level)
 {
-	Actor::Load(tb);
+	being::Load(tb, level);
 
 	color=tb.Get_Next_Value();
 	nutr=tb.Get_Next_Value();

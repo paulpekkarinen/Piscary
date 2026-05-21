@@ -29,6 +29,7 @@
 #include "message.h"
 #include "move.h"
 #include "names.h"
+#include "quote.h"
 #include "ranged.h"
 #include "roleplay.h"
 #include "salamath.h"
@@ -39,7 +40,7 @@
 using std::string;
 
 being::being()
-	: base_hp(0), target(0), roomnum(-1), sindex(-1)
+	: base_hp(0), target(0), roomnum(-1), sindex(-1), last_room(-1)
 {
 	Reset();
 
@@ -99,6 +100,49 @@ void being::Checkbody()
 	{
 		if ((hpp[HPSLOT_LEGS].cur>0) && (m.status & MST_CANTMOVE))
 			m.status ^= MST_CANTMOVE;
+	}
+}
+
+void being::Check_Room(level_type *level)
+{
+	Coord c=Get_Location();
+	const int r=gameview.Get_Room_Id(c);
+
+	//if inside a room, could exit it
+	if (m.status & MST_INSIDESHOP)
+	{
+		if (r!=-1)
+			return;
+
+		//exits a shop
+		m.status^=MST_INSIDESHOP;
+
+		being *owner=level->Get_Room_Owner(last_room);
+
+		if (owner!=0)
+			keeper_farewell(level, owner, this);
+
+		last_room=-1;		
+	}
+	else //if outside room, possibly entering one
+	{
+		if (r==-1)
+			return;
+
+		//enters a shop
+		if (last_room!=r)
+		{
+			if (level->Is_Shop(r))
+			{
+				m.status|=MST_INSIDESHOP;
+
+				being *owner=level->Get_Room_Owner(r);
+				if (r!=0)
+					keeper_greet(level, owner, this);
+			}
+			
+			last_room=r;
+		}
 	}
 }
 
@@ -372,36 +416,23 @@ bool being::Gets_Angry_To(being *other)
 	if (Is_Peaceful())
 		return false;
 
-	/* at this point, special monsters do not attack each other */
-	if ((m.special!=0) && (other->m.special!=0))
-		return true;
+	/* special monsters do not attack each other or player */
+	if (Get_Special_Id()!=0)
+	{
+		if (other->Is_Player())
+			return false;
+			
+		if (other->Get_Special_Id()!=0)
+			return false;
+	}
 
 	/* if attacker has same race as target */
-	if (m.race == other->m.race)
-		return true;
+	if (m.race == other->m.race && other->Is_Player()==false)
+		return false;
 
 	int align=ABS(m.align - other->m.align) / (LAWFUL/100);
 	align+=m.attitude;
 
-	if (RANDU(100) < align)
-		return true;
-
-	return false;	
-}
-
-bool being::Gets_Angry_To_Player()
-{
-	if (Is_Peaceful())
-		return false;
-
-	/* at this point, special monsters do not get angry spontaneously */
-	if (Get_Special_Id()!=0)
-		return false;
-
-	int align=ABS(m.align - player.m.align) / (LAWFUL/100);
-	align+=m.attitude;
-
-	/* in here I must check the conditions for getting angry to player*/
 	if (RANDU(100) < align)
 		return true;
 

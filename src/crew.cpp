@@ -201,22 +201,6 @@ void Crew::Remove_Dead(level_type *level)
 	clean_up=false;
 }
 
-void Crew::shopkeeper_greet(level_type *lvl, being *owner)
-{
-	if (!owner)
-		return;
-
-	/* greet every monster who enters the shop */
-	for (mon_iter i=monsters.begin(); i!=monsters.end(); ++i)
-	{
-		being *creat=(*i);
-		if (creat->inroom==owner->roomnum && creat!=owner)
-			keeper_greet(lvl, owner, creat);
-	}
-
-	keeper_greet(lvl, owner, 0); //0 = player
-}
-
 int Crew::Target_Nearest(level_type *level, int *cx, int *cy, int lastidx)
 {
 	Coord pc=player.Get_Location();

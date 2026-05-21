@@ -976,8 +976,6 @@ int shopkeeper_move(level_type *level, being *keeper)
 	Coord pc=player.Get_Location();
 	const int player_distance=distance(drx, dry, pc.x, pc.y);
 
-	level->crew.shopkeeper_greet(level, keeper);
-
 	/* current coords */
 	int nx=keeper->x;
 	int ny=keeper->y;

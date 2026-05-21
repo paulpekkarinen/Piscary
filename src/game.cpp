@@ -398,7 +398,8 @@ int gamedata::Load(const char *plrname)
 	monid=tb.Get_Next_Unsigned();
 	passedtime.load(tb);
 	world->Load(tb);
-	player.Load(tb);
+	level_type *curle=world->Get_Current_Level();
+	player.Load(tb, curle);
 
 	//delete savefile after loading
 	if (deletefile(fn.c_str())==false)

@@ -48,6 +48,7 @@ struct level_type
 	int get_amount_of_rooms();
 	roomdef& get_last_created_room();
 	const char *Get_Name(); //does just return a "level"
+	being *Get_Room_Owner(int roomnum);
 	int Get_Terrain(const Coord &c);
 	Trap &Get_Trap(const Coord &c);
 
@@ -69,6 +70,7 @@ struct level_type
 	bool Is_Passable(const Coord &c);
 	bool Is_Passable(int x, int y);
 	bool Is_Secretdoor(const Coord &c);
+	bool Is_Shop(int roomnum);
 	bool Is_Wall(const Coord &c);
 	bool Is_Wall(int x, int y);
 	bool max_rooms_created();

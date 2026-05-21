@@ -20,6 +20,7 @@ struct being : public Actor
 	Area myarea; //monster location limits, shopkeepers
 	int roomnum; // shopkeeper room index
 	int sindex; // special index, ie for shopkeepers guard route
+	int last_room; //last room visited
 
 	being();
 	~being();
@@ -27,9 +28,9 @@ struct being : public Actor
 	bool Is_Spotting() const; //monster has a target location
 	bool Is_Peaceful();
 	bool Gets_Angry_To(being *other);
-	bool Gets_Angry_To_Player();
 
 	void Checkbody();
+	void Check_Room(level_type *level);
 	void Checkstat(level_type *level);
 	void Checkturn(level_type *level);
 	void Damage_Message(int damage, int bodypart) override;
