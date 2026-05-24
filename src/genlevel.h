@@ -14,8 +14,8 @@ class Genlevel : public level_type
 {
 private:
 	void Add_Room(roomdef &r);
-	Coord Create_Stairs_Down(int8u number, bool first_town_level);
-	Coord Create_Stairs_Up(int8u number);
+	void Create_Stairs_Down(int8u number, bool first_town_level);
+	void Create_Stairs_Up(int8u number);
 	void Create_Trap(int type, const Coord &c);
 
 protected:

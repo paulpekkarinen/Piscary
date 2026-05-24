@@ -110,7 +110,7 @@ int Crew::Get_Index(being *b)
 	return -1; //monster not in this list
 }
 
-void Crew::Refresh_Gameview(Gameview *gv)
+void Crew::Refresh_Creature_Map(Gameview *gv)
 {
 	for (mon_iter i=monsters.begin(); i!=monsters.end(); ++i)
 	{

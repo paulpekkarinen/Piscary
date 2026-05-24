@@ -368,6 +368,7 @@ void level_type::Refresh_Gameview()
 	traps.Refresh();
 
 	inv.Refresh_Item_Map();
+	crew.Refresh_Creature_Map(&gameview);
 }
 
 bool level_type::Open_Door(const Coord &c)

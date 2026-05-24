@@ -590,7 +590,7 @@ int move_monster(being *monster, level_type *level)
 			legs, legless monsters move with their body! */
 		if (!(monster->m.status & MST_CANTMOVE))
 		{
-			monster->Move_To(nx, ny);
+			monster->Move_To(nc);
 		}
 		else
 		{
@@ -964,11 +964,8 @@ void repeatmove(playerinfo *plr, int dir, level_type *level)
 
 int shopkeeper_move(level_type *level, being *keeper)
 {
-	invnode *iptr;
-
 	int tx, ty;
 	int gx1=-1, gy1=-1, gx2=-1, gy2=-1, gx3=-1, gy3=-1, gx4=-1, gy4=-1;
-	int dir;
 
 	int drx=level->rooms[keeper->roomnum].doorx;
 	int dry=level->rooms[keeper->roomnum].doory;
@@ -1042,7 +1039,7 @@ int shopkeeper_move(level_type *level, being *keeper)
 	/* check for items in the door area */
 	if (keeper->Is_Spotting()==false)
 	{
-		for (dir=1; dir<10; dir++)
+		for (int dir=1; dir<10; dir++)
 		{
 			tx=drx+move_dx[dir];
 			ty=dry+move_dy[dir];
@@ -1051,7 +1048,7 @@ int shopkeeper_move(level_type *level, being *keeper)
 
 			if (level->loc[ty][tx].type == TYPE_ROOMFLOOR)
 			{
-				iptr=gameview.Get_Item(tc);
+				invnode *iptr=gameview.Get_Item(tc);
 				if (iptr)
 				{
 					if (level->Inside_Room(keeperoom, tc)==false)
@@ -1068,7 +1065,7 @@ int shopkeeper_move(level_type *level, being *keeper)
 			keeper->Set_Target_Spot(0, 0);
 			Coord kc=keeper->Get_Location();
 
-			iptr=gameview.Get_Item(kc);
+			invnode *iptr=gameview.Get_Item(kc);
 			if (iptr)
 				shopkeeper_get(level, keeper, iptr);
 		}
@@ -1137,7 +1134,7 @@ int shopkeeper_move(level_type *level, being *keeper)
 		}
 		else
 		{
-			dir=1+RANDU(9);
+			const int dir=1+RANDU(9);
 			tx=keeper->x + move_dx[dir];
 			ty=keeper->y + move_dy[dir];
 
@@ -1164,7 +1161,8 @@ int shopkeeper_move(level_type *level, being *keeper)
 
 	if (nx!=pc.x || ny!=pc.y)
 	{
-		keeper->Move_To(nx, ny);
+		Coord c(nx, ny);
+		keeper->Move_To(c);
 	}
 
 	return ticks;
@@ -1284,7 +1282,7 @@ bool teleport_monster(level_type *level, being *mptr)
 	msg.add_dist(level, mptr->x, mptr->y, s.c_str(), C_CYAN,
 		"You hear a distant \"swoosh\"-sound.", C_CYAN);
 
-	mptr->Move_To(c.x, c.y);
+	mptr->Move_To(c);
 
 	string q=moname;
 	q.append(" appears in your sight.");

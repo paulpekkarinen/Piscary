@@ -31,7 +31,7 @@ public:
 
 	void Add_Monster(being *b);
 	void handle_monsters(level_type *level, int slots);
-	void Refresh_Gameview(Gameview *gv); //put all monsters to gameview
+	void Refresh_Creature_Map(Gameview *gv); //put all monsters to gameview
 	void removeall();
 	void Remove_Dead(level_type *level); //remove at the end of turn
 	void Sentenced() { clean_up=true; } //notify that there are dead monsters

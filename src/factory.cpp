@@ -24,6 +24,7 @@
 #include "codex.h"
 #include "dice.h"
 #include "factory.h"
+#include "gameview.h"
 #include "invnode.h"
 #include "itemdata.h"
 #include "itempack.h"
@@ -69,7 +70,8 @@ void Factory::Add_Monster(level_type *level, int x, int y, int type)
 	level->crew.Add_Monster(newptr);
 
 	Monster_Initrandom(newptr, type);
-	newptr->Move_To(x, y);
+	Coord c(x, y);
+	Plant_Monster(newptr, c);
 	Monster_Postgeneration(level, newptr);
 }
 
@@ -111,7 +113,7 @@ void Factory::Add_Shopkeeper(level_type *level, int roomnum)
 
 	/* set initial coordinates to the room in case */
 	Coord c=get_random_location(ar);
-	b->Move_To(c.x, c.y);
+	Plant_Monster(b, c);
 	b->m.status=MST_SHOPKEEPER;
 
 	roleplay.Advance_To_Level(b, b->m.level);
@@ -150,16 +152,13 @@ void Factory::Add_Special_Monsters(level_type *level)
 
 			b->m=*monptr; //this should copy values, because mondef has = operator
 
+			Coord c;
 			if (aptr->X==0 || aptr->Y==0)
-			{
-				Coord c=find_random_location(level, 5);
-				b->Move_To(c.x, c.y);
-			}
+				c=find_random_location(level, 5);
 			else
-			{
-				b->Move_To(aptr->X, aptr->Y);
-			}
+				c.Set_Location(aptr->X, aptr->Y);
 
+			Plant_Monster(b, c);
 			Monster_Postgeneration(level, b);
 		}
 		monptr++;
@@ -399,6 +398,13 @@ being *Factory::New_Empty_Monster()
 	}
 
 	return b;
+}
+
+void Factory::Plant_Monster(being *b, const Coord &c)
+{
+	//move to location and place to gameview for first time
+	b->Set_Location(c.x, c.y);
+	gameview.Put_Monster(b, c);
 }
 
 /*

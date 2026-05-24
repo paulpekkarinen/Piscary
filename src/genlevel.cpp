@@ -87,10 +87,6 @@ void Genlevel::Create_Floor(const Coord &c, int floor, int16u flags)
 */
 void Genlevel::Create_Stairs()
 {
-	/* do we need up stair (first) */
-	int px=0;
-	int py=0;
-
 	bool doup1=false;
 	bool doup2=false;
 	bool dodown2=false;
@@ -107,7 +103,6 @@ void Genlevel::Create_Stairs()
 	if (levptr->outx && levptr->outy) doout=true;
 
 	const bool first_town_level=world->Is_First_Level_Of_Town();
-	Coord c;
 
 	if (first_town_level)
 	{
@@ -116,83 +111,34 @@ void Genlevel::Create_Stairs()
 		doout=false;
 	}
 
-	/* up stair 1 */
 	if (doup1)
-	{
-		c=Create_Stairs_Up(STAIRUP1);
+		Create_Stairs_Up(STAIRUP1);
 
-		if (player.lastdir==STAIRDOWN1)
-		{
-			px=c.x;
-			py=c.y;
-		}
-	}
-
-	/* down stair */
 	if (dodown1)
-	{
-		c=Create_Stairs_Down(STAIRDOWN1, first_town_level);
-
-		if (player.lastdir==STAIRUP1)
-		{
-			px=c.x;
-			py=c.y;
-		}
-	}
+		Create_Stairs_Down(STAIRDOWN1, first_town_level);
 
 	if (doup2)
-	{
-		c=Create_Stairs_Up(STAIRUP2);
+		Create_Stairs_Up(STAIRUP2);
 
-		if (player.lastdir==STAIRDOWN2)
-		{
-			px=c.x;
-			py=c.y;
-		}
-	}
-
-	/* down stair */
 	if (dodown2)
-	{
-		c=Create_Stairs_Down(STAIRDOWN2, first_town_level);
-
-		if (player.lastdir==STAIRUP2)
-		{
-			px=c.x;
-			py=c.y;
-		}
-	}
+		Create_Stairs_Down(STAIRDOWN2, first_town_level);
 
 	if (doout)
-	{
-		c=Create_Stairs_Up(STAIROUT);
-
-		if (player.lastdir==STAIROUT)
-		{
-			px=c.x;
-			py=c.y;
-		}
-	}
-
-	player.Set_Location(px, py);
+		Create_Stairs_Up(STAIROUT);
 }
 
-Coord Genlevel::Create_Stairs_Down(int8u number, bool first_town_level)
+void Genlevel::Create_Stairs_Down(int8u number, bool first_town_level)
 {
 	Coord c=find_downstairs_place(this, first_town_level);
 
 	loc[c.y][c.x].stairs_down(number);
-
-	return c;
 }
 
-Coord Genlevel::Create_Stairs_Up(int8u number)
+void Genlevel::Create_Stairs_Up(int8u number)
 {
 	Coord c=find_random_location(this, 1);
 
 	loc[c.y][c.x].stairs_up(number);
-
-	return c;
 }
 
 void Genlevel::Create_Trap(int type, const Coord &c)

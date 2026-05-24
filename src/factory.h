@@ -18,6 +18,7 @@ private:
 	void Monster_Initrandom(being *newptr, int type);
 	void Monster_Postgeneration(level_type *level, being *mptr);
 	being *New_Empty_Monster();
+	void Plant_Monster(being *b, const Coord &c);
 	void Set_Alignment(item_def *i);
 	void Set_Material(item_def *i, int material);
 

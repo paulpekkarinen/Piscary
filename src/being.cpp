@@ -387,15 +387,13 @@ bool being::Handle_Confusion(Condition *cond, int slots)
 	return false;
 }
 
-void being::Move_To(int dx, int dy)
+void being::Move_To(const Coord &c)
 {
 	Coord oc=Get_Location();
 	gameview.Put_Monster(0, oc); //clear old location
 
-	Set_Location(dx, dy);
-
-	Coord nc=Get_Location();
-	gameview.Put_Monster(this, nc);
+	Set_Location(c.x, c.y);
+	gameview.Put_Monster(this, c);
 }
 
 bool being::Is_Peaceful()

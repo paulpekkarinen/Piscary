@@ -383,13 +383,10 @@ void playerinfo::Initialize()
 	Reset();
 	m.playerize();
 	lastdir=STAIROUT; //reset to stairout
-
-	Set_Location(0, 0);
-
 	color=CH_RED;
 	nutr=FOOD_SATIATED;
-	sight=8;
 
+	sight=8;
 	delta=4;
 	num_places=0;
 	num_levels=0;
