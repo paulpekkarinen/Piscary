@@ -25,6 +25,7 @@ struct being : public Actor
 	being();
 	~being();
 
+	int In_Room(); //which room the being is now (-1 if none)
 	bool Is_Spotting() const; //monster has a target location
 	bool Is_Peaceful();
 	bool Gets_Angry_To(being *other);

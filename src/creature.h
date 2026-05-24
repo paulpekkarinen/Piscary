@@ -24,7 +24,7 @@
 #define MST_FLEEMODE    0x00000004 // monster is fleeing for its life
 #define MST_ATTACKMODE  0x00000008 // this bit on monster is in attackmode
 #define MST_KEEPERHATES	0x01000000 // monster hated by shopkeeper
-#define MST_INSIDESHOP	0x02000000 // for shopkeepers,
+#define MST_INSIDESHOP	0x02000000 // (note: unused, now as 'last_room')
 #define MST_HATEPLAYER	0x04000000 // for shopkeepers, hates player will attack
 #define MST_GUARDDOOR   0x08000000
 #define MST_SHOPKEEPER  0x10000000 // it is a shopkeeper

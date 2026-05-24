@@ -26,7 +26,6 @@ public:
 	int exp; //experience points
 	Attribute health; //hit points
 	hpslot hpp[HPSLOT_MAX];	//hitpoints pack for each bodypart
-	int inroom;	// set to -1 if not in any room, else the room index
 	inventory inv; //inventory - items the actor is carrying
 	equipment equips; //equipment wielded
 	int lastdir; // direction of last move
@@ -85,7 +84,6 @@ public:
 	bool Regenerate_Health(int slots, int ctime);
 	void Reset(); //resets all data to default values
 	void Set_Location(int dx, int dy);
-	void Set_Room(int r) { inroom=r; }
 	virtual void Shouldflee(level_type *level) = 0;
 	bool Skill_Testsuccess(int group, int type);
 	void Spend_Time(int ticks);

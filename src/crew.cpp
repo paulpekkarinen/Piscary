@@ -138,9 +138,6 @@ void Crew::handle_monsters(level_type *lvl, int slots)
 
 			const Coord monpos=ptr->Get_Location();
 
-			//find out what room the monster is or -1 if none
-			ptr->Set_Room(gameview.Get_Room_Id(monpos));
-
 			//note: player's speed is used, could be a bug?
 			ptr->Regenerate(lvl, player.stat[STAT_SPD].Get(), slots);
 			ptr->Handle_Conditions(slots);

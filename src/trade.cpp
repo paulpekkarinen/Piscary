@@ -66,7 +66,7 @@ void paybill(playerinfo *plr, level_type *level)
 		return;
 	}
 
-	const int pinroom=plr->inroom;
+	const int pinroom=plr->In_Room();
 
 	if (pinroom<0)
 	{
@@ -76,7 +76,7 @@ void paybill(playerinfo *plr, level_type *level)
 
 	if (level->rooms[pinroom].type != ROOM_SHOP)
 	{
-		msg.newmsg("You're not in a shop.", C_WHITE);
+		msg.newmsg("You are in a room, but this is not a shop.", C_WHITE);
 		return;
 	}
 

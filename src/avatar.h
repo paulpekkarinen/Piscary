@@ -43,7 +43,6 @@ struct playerinfo : public being
 	void Change_Alignment(char dir, int amount);
 	void Changetactics();
 	void Check_Bill() const;
-	void Check_Inroom(level_type *level, const Coord &pc); //check what room the player is in
 	void Checkstat(level_type *level, bool lower, bool showmsg);
 	void Damage_Message(int damage, int bodypart) override;
 	void Eat_Addnutr(item_def *item, int weight);

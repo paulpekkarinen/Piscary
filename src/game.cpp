@@ -231,9 +231,7 @@ void gamedata::Passturn(bool playervis, bool foodsub)
 		return;
 	}
 
-	const Coord pc=player.Get_Location();
-
-	player.Check_Inroom(level, pc);
+	player.Check_Room(level);
 
 	int spdadd=player.stat[STAT_SPD].Get();
 	int ptime=player.stat[STAT_SPD].Get(); //note: should this be something else?

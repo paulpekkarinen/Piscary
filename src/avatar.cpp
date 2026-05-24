@@ -113,28 +113,6 @@ void playerinfo::Check_Bill() const
 	}
 }
 
-void playerinfo::Check_Inroom(level_type *level, const Coord &pc)
-{
-	const int rc=gameview.Get_Room_Id(pc);
-
-	if (inroom==-1)
-	{
-		if (rc!=-1)
-		{
-			level->rooms[rc].Check_Visit();
-			inroom=rc;
-		}
-	}
-	else
-	{
-		if (rc==-1)
-		{
-			//leave room, note: code for shops
-			inroom=-1;
-		}
-	}
-}
-
 void playerinfo::Checkstat(level_type *level, bool lower, bool showmsg)
 {
 	bool alarmi=false;
@@ -430,6 +408,10 @@ void playerinfo::Initialize()
 void playerinfo::Jump_To(const Coord &c)
 {
 	Set_Location(c.x, c.y);
+
+	last_room=-1; //"exit" current room if in any
+	Check_Room(world->Get_Current_Level());
+		
 	gameview.Center(c);
 }
 

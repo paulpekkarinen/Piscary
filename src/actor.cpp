@@ -451,7 +451,6 @@ void Actor::Reset()
 	attackbonus=0;
 	bill=0;
 	exp=0;
-	inroom=-1;
 	lastdir=0;
 	light=0;
 	movecount=0;
@@ -518,7 +517,6 @@ void Actor::Save(Tar_Ball &tb)
 	for (int i=0; i<HPSLOT_MAX; i++)
 		hpp[i].Save(tb);
 
-	tb.Put(inroom);
 	inv.save(tb);
 	equips.save(tb);
 	tb.Put(lastdir);
@@ -549,8 +547,6 @@ void Actor::Load(Tar_Ball &tb)
 	
 	for (int i=0; i<HPSLOT_MAX; i++)
 		hpp[i].Load(tb);
-
-	inroom=tb.Get_Next_Value();
 
 	inv.load(tb);
 	//equipment needs to be loaded after the inventory to set equipment

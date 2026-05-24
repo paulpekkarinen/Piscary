@@ -35,6 +35,7 @@
 #include "salamath.h"
 #include "specmon.h"
 #include "storage.h"
+#include "terrain.h"
 #include "tactics.h"
 
 using std::string;
@@ -52,6 +53,12 @@ being::~being()
 {
 	inv.Clear();
 	path.clear();
+}
+
+int being::In_Room()
+{
+	Coord c=Get_Location();
+	return gameview.Get_Room_Id(c);	
 }
 
 bool being::Is_Spotting() const
@@ -105,20 +112,17 @@ void being::Checkbody()
 
 void being::Check_Room(level_type *level)
 {
-	Coord c=Get_Location();
-	const int r=gameview.Get_Room_Id(c);
+	const int r=In_Room();
 
 	//if inside a room, could exit it
-	if (m.status & MST_INSIDESHOP)
+	if (last_room!=-1)
 	{
-		if (r!=-1)
+		if (r==last_room)
 			return;
-
-		//exits a shop
-		m.status^=MST_INSIDESHOP;
 
 		being *owner=level->Get_Room_Owner(last_room);
 
+		//when exiting room's generic area then farewell
 		if (owner!=0)
 			keeper_farewell(level, owner, this);
 
@@ -129,19 +133,28 @@ void being::Check_Room(level_type *level)
 		if (r==-1)
 			return;
 
+		if (Is_Player())
+			level->rooms[r].Check_Visit();
+
 		//enters a shop
 		if (last_room!=r)
 		{
+			Coord c=Get_Location();
+
+			//check also that the creature is on floor tile before
+			//greeting
 			if (level->Is_Shop(r))
 			{
-				m.status|=MST_INSIDESHOP;
-
-				being *owner=level->Get_Room_Owner(r);
-				if (r!=0)
-					keeper_greet(level, owner, this);
+				if (level->Get_Terrain(c)==TYPE_ROOMFLOOR)
+				{
+					being *owner=level->Get_Room_Owner(r);
+					if (r!=0)
+						keeper_greet(level, owner, this);
+					last_room=r;
+				}
 			}
-			
-			last_room=r;
+			else
+				last_room=r;
 		}
 	}
 }

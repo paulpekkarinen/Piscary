@@ -302,14 +302,15 @@ bool player_did_drop(invnode *dropit)
 
 	player.Spend_Time(TIME_DROPITEM);
 
-	if (player.inroom>=0 && !(dropit->i.status & ITEM_UNPAID))
+	const int pr=player.In_Room();
+
+	if (pr!=-1 && !(dropit->i.status & ITEM_UNPAID))
 	{
-		if (level->rooms[player.inroom].type == ROOM_SHOP)
+		if (level->rooms[pr].type == ROOM_SHOP)
 		{
 			Game.noticeevents(level);
-			if (shopkeeper_buy(level, level->rooms[player.inroom].owner,
-				dropit))
-					sellmode=true;
+			if (shopkeeper_buy(level, level->rooms[pr].owner, dropit))
+				sellmode=true;
 		}
 	}
 

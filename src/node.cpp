@@ -123,10 +123,6 @@ bool Levelnode::Visit()
 	//copy objects, room ids etc. to gameview after the level is created
 	//or visited again
 	level->Refresh_Gameview();
-
-	//when moving to another level, clear inroom and check it
-	player.inroom=-1;
-	player.Check_Inroom(level, player.Get_Location());
 	
 	return rv;
 }
