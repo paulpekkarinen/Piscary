@@ -36,7 +36,7 @@ void clear_flag_bit(int16u &var, int16u lippu)
 
 void delay(int delaycount)
 {
-	std::chrono::seconds d(delaycount);
+	std::chrono::milliseconds d(delaycount);
 	std::this_thread::sleep_for(d);	
 }
 

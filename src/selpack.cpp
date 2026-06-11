@@ -30,6 +30,7 @@ invnode *SelectItemsPack::Get_Handle(const char *preprompt)
 	{
 		case Stockpile::Selected:
 		case Stockpile::Container_Selected:
+			rv=mypocket.Remove_Next_Selected();
 		break;
 		default: break; 
 	}

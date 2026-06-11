@@ -339,7 +339,7 @@ void run_command(playerinfo *plr, const int command)
 		case Look: lookdir(plr, level); break;
 		case Look_Around:
 		{
-			Aim a(level);
+			Aim a(level, Aim::Look_Around);
 			a.Select();			
 		}
 		break;

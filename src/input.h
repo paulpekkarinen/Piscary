@@ -26,7 +26,6 @@ int my_gets(char *str, int mlen); //get a string
 void player_gettarget(level_type *level, Target *target, Spell *spell);
 void rename_monster(monsterdef &mondef); //give a name for this monster (not for player!)
 void retitle_player(monsterdef &mondef); //change player's title
-bool ranged_gettarget(level_type *level, int *scr_x, int *scr_y, int *lev_x, int *lev_y);
 int select_textlist(const char *prompt, const char **list, bool quit);
 void showmore(bool msgmode, bool shortmsg);
 void wait_key();

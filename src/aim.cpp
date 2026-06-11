@@ -24,16 +24,49 @@
 #include "input.h"
 #include "invnode.h"
 #include "names.h"
+#include "options.h"
 #include "output.h"
+#include "ranged.h"
 #include "terrain.h"
+#include "textdata.h"
 #include "way.h"
 
 using std::string;
 
-Aim::Aim(level_type *lvl)
-	: level(lvl), olento(0)
+const Aim_Data aimdata[Aim::Amt_Of_Modes]=
+{
+	{
+		"Use movement keys for location ['x' to quit].",
+		"",
+		" (More info with SPACE)",
+		"It's",
+		"A pile of items.",
+		".",
+		false,
+		'*'
+	},
+	{
+		"Target with movement keys [n,t,SPACE, 'x' to quit or ?].",
+		"Target = ",
+		".",
+		"Target =",
+		"Target = a pile of items.",
+		" (no target).",
+		true,
+		'X'
+	}
+};
+
+Aim::Aim(level_type *lvl, int tm)
+	: level(lvl), olento(0), mode(tm), lastidx(-1)
 {
 	
+}
+
+//Returns current target location, this can be without an actual target.
+Coord Aim::Get_Target_Location()
+{
+	return pos;
 }
 
 bool Aim::Select()
@@ -41,8 +74,10 @@ bool Aim::Select()
 	bool looping=true;
 	bool update=false;
 	bool rv=false;
-	Coord pc=player.Get_Location();
 
+	Coord pc=player.Get_Location();
+	
+	Starting_Location();
 	Show_Info();
 
 	while (looping)
@@ -50,25 +85,59 @@ bool Aim::Select()
 		if (update)
 		{
 			gameview.Show();
+
+			if (CONFIGVARS.targetline==true &&
+				aimdata[mode].show_targetline==true)
+			{
+				//note: wonder how these nulls work?
+				ranged_line(level, 0, 0, false,
+					pc.x,
+					pc.y,
+					pos.x, pos.y, NULL, NULL, 0);
+			}
+						
 			update=false;
 		}
 	
-		Coord e=gameview.Get_Screen_Location(pc);
+		Coord e=gameview.Get_Screen_Location(pos);
 
 		gotoxy(e.x, e.y);
-		put_char('*', CH_RED);
+		put_char(aimdata[mode].target_char, CH_RED);
 
-		Show_Spot_Info(pc);
+		Show_Spot_Info();
 
 		const int k=my_getch();
 
 		switch (k)
 		{
 			case ' ':
+			case 't':
 				if (olento!=0)
 				{
-					display->Monster_Description((being*)olento);
-					display->Redraw(level);
+					if (mode==Look_Around)
+					{
+						display->Monster_Description((being*)olento);
+						display->Redraw(level);
+						Show_Info();
+					}
+					else
+					{
+						rv=true; //target selected
+						looping=false;
+					}
+				}
+			break;
+			case 'n': //choose next target
+			{
+				lastidx=level->crew.Target_Nearest(level, pos, lastidx);
+				if (lastidx<0) //note: what is this...
+					lastidx=level->crew.Target_Nearest(level, pos, lastidx);				
+			}
+			break;
+			case '?':
+				if (mode==Target)
+				{
+					text_data->View(Text_Data::Missile_Help);
 					Show_Info();
 				}
 			break;
@@ -77,10 +146,10 @@ bool Aim::Select()
 				const int dir=Way::Get_From_Keycode(k);
 				if (dir!=-1)
 				{
-					Coord saved=pc;
-					pc.Move_Direction(dir);
-					if (gameview.Is_Outside_View(pc))
-						pc=saved;
+					Coord saved=pos;
+					pos.Move_Direction(dir);
+					if (gameview.Is_Outside_View(pos))
+						pos=saved;
 					else
 						update=true;
 				}
@@ -102,49 +171,52 @@ void Aim::Show_Info()
 	clearline(MSGLINE);
 	clearline(MSGLINE+1);
 
-	print_toc(0, MSGLINE,
-		"Use movement keys for location, 'x' to quit.", C_WHITE);
+	print_toc(0, MSGLINE, aimdata[mode].info_line, C_WHITE);
 }
 
-void Aim::Show_Spot_Info(const Coord &c)
+void Aim::Show_Spot_Info()
 {
 	gotoxy(0, MSGLINE+1);
 	set_color(CH_WHITE);
 	
-	if (gameview.Is_Visible(c)==false)
+	if (gameview.Is_Visible(pos)==false)
 	{
 		print_text("Unknown");
+		clrtoeol();
 		return;
 	}
 
 	string s;
 	
-	olento=gameview.Get_Actor(c);
+	olento=gameview.Get_Actor(pos);
 	if (olento!=0)
 	{
-		s=monster_sprintf(olento, true, true);
-		s.append(" (More info with SPACE)");		
+		s.append(aimdata[mode].monster_prefix);
+		s.append(monster_sprintf(olento, true, true));
+		s.append(aimdata[mode].monster_suffix);		
 	}
 	else
 	{
-		invnode *iptr=gameview.Get_Item(c);
+		invnode *iptr=gameview.Get_Item(pos);
 		if (iptr!=0)
 		{
-			const int items=level->inv.Count_Items_Flat(c.x, c.y);
+			const int items=level->inv.Count_Items_Flat(pos.x, pos.y);
 			if (items==1)
 			{
 				display->Item_Info(
-					&iptr->i, iptr->i.weight, iptr->count, "It's");
+					&iptr->i, iptr->i.weight, iptr->count,
+						aimdata[mode].item_prefix);
 			}
 			else
 			{
-				s="A pile of items.";
+				s=aimdata[mode].itempile;
 			}			
 		}
 		else
 		{
-			const int tt=level->Get_Terrain(c);
+			const int tt=level->Get_Terrain(pos);
 			s=terrains[tt].desc;
+			s.append(aimdata[mode].terrain_suffix);
 		}				
 	}
 
@@ -152,4 +224,21 @@ void Aim::Show_Spot_Info(const Coord &c)
 		print_text(s.c_str());
 
 	clrtoeol();
+}
+
+void Aim::Starting_Location()
+{
+	switch (mode)
+	{
+		case Look_Around: pos=player.Get_Location(); break;
+		case Target:
+		{
+			lastidx=level->crew.Target_Nearest(level, pos, 0);
+			//no monsters found, use player's location
+			if (lastidx==-1)
+				pos=player.Get_Location();
+		}
+		break;
+		default: break;
+	}
 }

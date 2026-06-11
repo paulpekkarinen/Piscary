@@ -16,6 +16,7 @@
 
 //Refactored 28.9.2021 - 12.4.2026 Paul K. Pekkarinen
 
+#include "aim.h"
 #include "avatar.h"
 #include "being.h"
 #include "caves.h"
@@ -96,9 +97,9 @@ void ranged_attack(playerinfo *plr, level_type *level)
 	if (!plr->Get_Rangedskill(&agrp, &askill))
 		return;
 
-	int t_lx, t_ly, t_sx, t_sy;
+	Aim ai(level, Aim::Target);
 
-	if (!ranged_gettarget(level, &t_sx, &t_sy, &t_lx, &t_ly))
+	if (ai.Select()==false)
 	{
 		msg.newmsg("No target selected.", C_WHITE);
 		return;
@@ -137,10 +138,11 @@ void ranged_attack(playerinfo *plr, level_type *level)
 	hidecursor();
 
 	Coord pc=plr->Get_Location();
+	Coord tar=ai.Get_Target_Location();
 
 	bool misres=ranged_line(level, outchar, 60, true,
 		pc.x, pc.y,
-		t_lx, t_ly, ranged_checkhit, plr, skillval);
+		tar.x, tar.y, ranged_checkhit, plr, skillval);
 
 	showcursor();
 
@@ -151,9 +153,7 @@ void ranged_attack(playerinfo *plr, level_type *level)
 
 		invnode *dip=plr->equips.get_inventory_item(EQUIP_MISSILE);
 
-		Coord c(t_lx, t_ly);
-
-		plr->Drop_Single_Item(dip, c);
+		plr->Drop_Single_Item(dip, tar);
 	}
 
 	/* equip a new item from reserve if possible */
@@ -316,10 +316,12 @@ bool ranged_line(level_type *level, int out, int output_delay, bool single,
 		 bool (*hitfunc)(level_type *, Actor *ranger, int, int, bool, int),
 		 Actor *ranger, int skill)
 {
-	int d, x, y;
+	int d;
 	int outchar;
 	bool vistat;
 	Coord old;
+	Coord levpos;
+	Coord scpos;
 
 	int dx = x2-x1;
 	int dy = y2-y1;
@@ -335,58 +337,53 @@ bool ranged_line(level_type *level, int out, int output_delay, bool single,
 	else
 		outchar=out;
 
-	x = x1;
-	y = y1;
+	levpos.Set_Location(x1, y1);
+	
 	if (ax>ay)
 	{		/* x dominant */
 		d = ay-(ax>>1);
 		for (;;)
 		{
-			if (gameview.Is_Visible(x, y))
+			if (gameview.Is_Visible(levpos))
 			{
 				vistat=true;
-				//old=player.Screen_Location(x, y); //note: fix later
+				old=gameview.Get_Screen_Location(levpos);
+				
+				gotoxy(old.x, old.y);
+				addch(outchar);
+				refresh();
 
-				if (old.x > 0 && old.x < (MAPWIN_RELX+MAPWIN_SIZEX) &&
-					old.y > 0 && old.y < (MAPWIN_RELY+MAPWIN_SIZEY))
-				{
-					gotoxy(old.x, old.y);
-
-					addch(outchar);
-					refresh();
-
-					if (output_delay>0)
-						delay(output_delay);
-					if (single)
-						gameview.Show();
-				}
+				if (output_delay>0)
+					delay(output_delay);
+				if (single)
+					gameview.Show();
 			}
 			else
 				vistat=false;
 
 			if (hitfunc!=NULL)
 			{
-				if (hitfunc(level, ranger, x, y, vistat, skill))
+				if (hitfunc(level, ranger, levpos.x, levpos.y, vistat, skill))
 					return true;
 			}
 
-			if (x==x2) return false;
+			if (levpos.x==x2) return false;
 
-			old.Set_Location(x, y);
+			old=levpos;
 
 			if (d>=0)
 			{
-				y += sy;
+				levpos.y += sy;
 				d -= ax;
 			}
-			x += sx;
+			levpos.x += sx;
 			d += ay;
 
-			if (level->Is_Passable(x, y)==false)
+			if (level->Is_Passable(levpos)==false)
 				return false;
 
 			if (!out)
-				outchar=decidelinechar(old.x, old.y, x, y);
+				outchar=decidelinechar(old.x, old.y, levpos.x, levpos.y);
 		}
 	}
 	else /* y dominant */
@@ -394,51 +391,47 @@ bool ranged_line(level_type *level, int out, int output_delay, bool single,
 		d = ax-(ay>>1);
 		for (;;)
 		{
-			if (gameview.Is_Visible(x, y))
+			if (gameview.Is_Visible(levpos))
 			{
 				vistat=true;
 
-				//old=player.Screen_Location(x, y); //note: fix later
+				old=gameview.Get_Screen_Location(levpos);
 
-				if (old.x > 0 && old.x < (MAPWIN_RELX+MAPWIN_SIZEX) &&
-					old.y > 0 && old.y < (MAPWIN_RELY+MAPWIN_SIZEY))
-				{
-					gotoxy(old.x, old.y);
-					addch(outchar);
-					refresh();
+				gotoxy(old.x, old.y);
+				addch(outchar);
+				refresh();
 
-					if (output_delay>0)
-						delay(output_delay);
-					if (single)
-						gameview.Show();
-				}
+				if (output_delay>0)
+					delay(output_delay);
+				if (single)
+					gameview.Show();
 			}
 			else
 				vistat=false;
 
 			if (hitfunc!=NULL)
 			{
-				if (hitfunc(level, ranger, x, y, vistat, skill))
+				if (hitfunc(level, ranger, levpos.x, levpos.y, vistat, skill))
 					return true;
 			}
 
-			if (y==y2) return false;
+			if (levpos.y==y2) return false;
 
-			old.Set_Location(x, y);
+			old=levpos;
 
 			if (d>=0)
 			{
-				x += sx;
+				levpos.x += sx;
 				d -= ay;
 			}
-			y += sy;
+			levpos.y += sy;
 			d += ax;
 
-			if (level->Is_Passable(x, y)==false)
+			if (level->Is_Passable(levpos)==false)
 				return false;
 
 			if (!out)
-				outchar=decidelinechar(old.x, old.y, x, y);
+				outchar=decidelinechar(old.x, old.y, levpos.x, levpos.y);
 		}
 	}
 }

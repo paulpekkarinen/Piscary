@@ -198,25 +198,27 @@ void Crew::Remove_Dead(level_type *level)
 	clean_up=false;
 }
 
-int Crew::Target_Nearest(level_type *level, int *cx, int *cy, int lastidx)
+int Crew::Target_Nearest(level_type *level, Coord &c, int lastidx)
 {
 	Coord pc=player.Get_Location();
 	int shortest_dist = 10000;
-	int sx, sy;
+	Coord dest;
 	int i=0;
+	int rv=lastidx;
 
 	for (mon_iter ii=monsters.begin(); ii!=monsters.end(); ++ii)
 	{
 		Coord mc=(*ii)->Get_Location();
 
-		if (gameview.Is_Visible(mc) && i>lastidx)
+		if (gameview.Is_Visible(mc) && gameview.Is_Outside_View(mc)==false
+			&& i>lastidx)
 		{
 			const int d=get_distance(pc, mc);
 			if (d<shortest_dist)
 			{
 				shortest_dist=d;
-				sx=mc.x;
-				sy=mc.y;
+				dest=mc;
+				rv=i;
 			}
 		}
 
@@ -224,13 +226,9 @@ int Crew::Target_Nearest(level_type *level, int *cx, int *cy, int lastidx)
 	}
 
 	if (shortest_dist<10000)
-	{
-		*cx=sx;
-		*cy=sy;
-		return i;
-	}
+		c=dest;
 
-	return -1;
+	return rv;
 }
 
 void Crew::Debug_List()
