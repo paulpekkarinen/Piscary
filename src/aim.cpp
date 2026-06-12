@@ -23,6 +23,7 @@
 #include "gameview.h"
 #include "input.h"
 #include "invnode.h"
+#include "magic.h"
 #include "names.h"
 #include "options.h"
 #include "output.h"
@@ -49,24 +50,40 @@ const Aim_Data aimdata[Aim::Amt_Of_Modes]=
 		"Target with movement keys [n,t,SPACE, 'x' to quit or ?].",
 		"Target = ",
 		".",
-		"Target =",
+		"Target = ",
 		"Target = a pile of items.",
 		" (no target).",
 		true,
 		'X'
+	},
+	{
+		"Target with movement keys [n,t,SPACE, 'x' to quit or ?].",
+		"Target = ",
+		".",
+		"Target = ",
+		"Target = a pile of items.",
+		" (no target).",
+		false,
+		'*'
 	}
 };
 
 Aim::Aim(level_type *lvl, int tm)
-	: level(lvl), olento(0), mode(tm), lastidx(-1)
+	: level(lvl), mode(tm), lastidx(-1), spell(0)
 {
-	
+
+}
+
+Aim::Aim(level_type *lvl, Spell *sp)
+	: level(lvl), mode(Spell_Target), lastidx(-1), spell(sp)
+{
+
 }
 
 //Returns current target location, this can be without an actual target.
 Coord Aim::Get_Target_Location()
 {
-	return pos;
+	return target.pos;
 }
 
 bool Aim::Select()
@@ -76,9 +93,10 @@ bool Aim::Select()
 	bool rv=false;
 
 	Coord pc=player.Get_Location();
-	
+
 	Starting_Location();
 	Show_Info();
+	Coord &pos=target.pos;
 
 	while (looping)
 	{
@@ -95,10 +113,10 @@ bool Aim::Select()
 					pc.y,
 					pos.x, pos.y, NULL, NULL, 0);
 			}
-						
+
 			update=false;
 		}
-	
+
 		Coord e=gameview.Get_Screen_Location(pos);
 
 		gotoxy(e.x, e.y);
@@ -112,11 +130,11 @@ bool Aim::Select()
 		{
 			case ' ':
 			case 't':
-				if (olento!=0)
+				if (target.olento!=0)
 				{
 					if (mode==Look_Around)
 					{
-						display->Monster_Description((being*)olento);
+						display->Monster_Description((being*)target.olento);
 						display->Redraw(level);
 						Show_Info();
 					}
@@ -131,11 +149,11 @@ bool Aim::Select()
 			{
 				lastidx=level->crew.Target_Nearest(level, pos, lastidx);
 				if (lastidx<0) //note: what is this...
-					lastidx=level->crew.Target_Nearest(level, pos, lastidx);				
+					lastidx=level->crew.Target_Nearest(level, pos, lastidx);
 			}
 			break;
 			case '?':
-				if (mode==Target)
+				if (mode==Missile_Target)
 				{
 					text_data->View(Text_Data::Missile_Help);
 					Show_Info();
@@ -159,11 +177,11 @@ bool Aim::Select()
 						looping=false;
 				}
 			}
-			break;			
+			break;
 		}
 	}
 
-	return rv;	
+	return rv;
 }
 
 void Aim::Show_Info()
@@ -178,7 +196,10 @@ void Aim::Show_Spot_Info()
 {
 	gotoxy(0, MSGLINE+1);
 	set_color(CH_WHITE);
-	
+	target.Clear();
+
+	Coord &pos=target.pos;
+
 	if (gameview.Is_Visible(pos)==false)
 	{
 		print_text("Unknown");
@@ -187,37 +208,66 @@ void Aim::Show_Spot_Info()
 	}
 
 	string s;
-	
-	olento=gameview.Get_Actor(pos);
-	if (olento!=0)
+
+	Actor *o=gameview.Get_Actor(pos);
+	if (o!=0)
 	{
-		s.append(aimdata[mode].monster_prefix);
-		s.append(monster_sprintf(olento, true, true));
-		s.append(aimdata[mode].monster_suffix);		
+		if (o->Is_Player())
+		{
+			if (Can_Target_Yourself())
+			{
+				target.Set(o);
+				s.append(aimdata[mode].monster_prefix);
+				s.append("yourself");
+				s.append(aimdata[mode].monster_suffix);
+			}
+			else
+				s="Self targetting not allowed.";
+		}
+		else
+		{
+			if (Can_Target_Creature())
+			{
+				target.Set(o);
+				s.append(aimdata[mode].monster_prefix);
+				s.append(monster_sprintf(o, true, true));
+				s.append(aimdata[mode].monster_suffix);
+			}
+			else
+				s="Monster targetting not allowed.";
+		}
 	}
 	else
 	{
 		invnode *iptr=gameview.Get_Item(pos);
 		if (iptr!=0)
 		{
-			const int items=level->inv.Count_Items_Flat(pos.x, pos.y);
-			if (items==1)
+			if (Can_Target_Item())
 			{
-				display->Item_Info(
-					&iptr->i, iptr->i.weight, iptr->count,
-						aimdata[mode].item_prefix);
+				target.Set(iptr, pos);
+				const int items=level->inv.Count_Items_Flat(pos.x, pos.y);
+				if (items==1)
+				{
+					display->Item_Info(
+						&iptr->i, iptr->i.weight, iptr->count,
+							aimdata[mode].item_prefix);
+				}
+				else
+				{
+					s=aimdata[mode].itempile;
+				}
 			}
 			else
-			{
-				s=aimdata[mode].itempile;
-			}			
+				s="Item targetting not allowed.";
 		}
 		else
 		{
+			target.Set(pos);
+
 			const int tt=level->Get_Terrain(pos);
 			s=terrains[tt].desc;
 			s.append(aimdata[mode].terrain_suffix);
-		}				
+		}
 	}
 
 	if (s.empty()==false)
@@ -230,15 +280,55 @@ void Aim::Starting_Location()
 {
 	switch (mode)
 	{
-		case Look_Around: pos=player.Get_Location(); break;
-		case Target:
+		case Spell_Target:
+		case Look_Around: target.pos=player.Get_Location(); break;
+		case Missile_Target:
 		{
-			lastidx=level->crew.Target_Nearest(level, pos, 0);
+			lastidx=level->crew.Target_Nearest(level, target.pos, 0);
 			//no monsters found, use player's location
 			if (lastidx==-1)
-				pos=player.Get_Location();
+				target.pos=player.Get_Location();
 		}
 		break;
 		default: break;
 	}
+}
+
+bool Aim::Can_Target_Creature()
+{
+	if (mode==Spell_Target)
+	{
+		if (spell->other >= 0)
+			return true;
+
+		return false;
+	}
+
+	return true;
+}
+
+bool Aim::Can_Target_Item()
+{
+	if (mode==Spell_Target)
+	{
+		if (spell->levitem >= 0)
+			return true;
+
+		return false;
+	}
+
+	return true;
+}
+
+bool Aim::Can_Target_Yourself()
+{
+	if (mode==Spell_Target)
+	{
+		if (spell->self >= 0)
+			return true;
+
+		return false;
+	}
+
+	return true;
 }

@@ -6,21 +6,28 @@
 #define TARGET_H
 
 #include "geometry.h"
-#include "types.h"
 
-/* this is used when magic is targetted by player */
+class Actor;
+struct invnode;
+
+/* this is used when something is targetted by player */
 struct Target
 {
-	invnode *invitem;      /* inventory item targetted */
+	Actor *olento; //monster targetted
+	invnode *invitem; //item targetted
 
 	/* x and y coordinates of the target(s) */
 	Coord pos;
 
-	int direction;
+	Target() : olento(0), invitem(0) { }
 
-	Target() : invitem(0), direction(0) { }
+	bool Is_Active();
 
-	void clear();
+	void Clear();
+	void Set(const Coord &c);
+	void Set(Actor *o);
+	void Set(invnode *i);
+	void Set(invnode *i, const Coord &c);
 };
 
 #endif

@@ -97,7 +97,7 @@ void ranged_attack(playerinfo *plr, level_type *level)
 	if (!plr->Get_Rangedskill(&agrp, &askill))
 		return;
 
-	Aim ai(level, Aim::Target);
+	Aim ai(level, Aim::Missile_Target);
 
 	if (ai.Select()==false)
 	{

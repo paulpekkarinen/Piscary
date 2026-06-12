@@ -26,15 +26,15 @@
 #include "input.h"
 #include "invnode.h"
 #include "lexicon.h"
-#include "magic.h"
+//#include "magic.h"
 #include "message.h"
 #include "move.h"
 #include "names.h"
 #include "options.h"
 #include "output.h"
-#include "ranged.h"
+//#include "ranged.h"
 #include "score.h"
-#include "target.h"
+//#include "target.h"
 #include "terrain.h"
 #include "textdata.h"
 
@@ -158,7 +158,7 @@ int get_index_from_key(int k, int max_items)
 
 	if (k>='A' && k < 'A'+max_items)
 		return k-'A';
-		
+
 	return -1;
 }
 
@@ -264,7 +264,7 @@ bool is_quit_key(int k)
 	if (k=='x' || k==PADENTER || k==KEY_ENTER)
 		return true;
 
-	return false;	
+	return false;
 }
 
 bool list_more(int &y)
@@ -302,157 +302,6 @@ int my_gets(char *str, int mlen)
 	return ch;
 }
 
-/*
- * "target" is a struct of type Target, one field must be set to determine
- * the target of a spell.
- *
- * Every spell has the similar format of targetting
- *
- */
-void player_gettarget(level_type *level, Target *target, Spell *spell)
-{
-	int keycode, dir;
-
-	being *mptr=0;
-	invnode *iptr=0;
-
-	bool monsterthere=false;
-
-	int tx=0; //note: get player's screen position later
-	int ty=0;
-
-	target->clear();
-
-	msg.add("Use movement keys for target, quit with ESC or ENTER.",
-		C_WHITE);
-
-	while(1)
-	{
-		keycode=my_getch();
-
-		dir=0;
-
-		if (is_quit_key(keycode))
-			break;
-
-		if(keycode==KEY_UP) dir=8;
-		if(keycode==KEY_DOWN) dir=2;
-		if(keycode==KEY_LEFT) dir=4;
-		if(keycode==KEY_RIGHT) dir=6;
-		if(keycode>='1' && keycode <='9')
-		{
-			dir=keycode-'0';
-		}
-		if(keycode==' ')
-		{
-			return;
-		}
-		else if(dir)
-		{
-			msg.update();
-
-			/* last coordinates */
-			int ltx=tx;
-			int lty=ty;
-
-			/* make new coordinates */
-			tx+=move_dx[dir];
-			ty+=move_dy[dir];
-
-			/* do not allow beyond map window */
-			if(tx<1) tx=1;
-			if(ty<1) ty=1;
-			if(tx>MAPWIN_SIZEX) tx=MAPWIN_SIZEX;
-			if(ty>MAPWIN_SIZEY) ty=MAPWIN_SIZEY;
-
-			/* check if that location is visible */
-			const int rx=0; //note: was lreg.x, refactor later
-			const int ry=0;
-
-			if (gameview.Is_Visible(rx+tx-1, ry+ty-1)==false)
-			{
-				tx=ltx;
-				ty=lty;
-			}
-
-			gameview.Show();
-
-			Coord tc(rx+tx-1, ry+ty-1);
-
-			gotoxy(MAPWIN_RELX+tx, MAPWIN_RELY+ty);
-			put_char('*', CH_RED);
-			gotoxy(0, MSGLINE+1);
-			mptr=gameview.Get_Monster(tc);
-
-			const int items=gameview.Count_Items(tc);
-			monsterthere=false;
-
-			if(mptr)
-			{
-				/* set target to monster */
-				target->clear();
-
-				if(spell->other >= 0)
-				{
-					target->pos=mptr->Get_Location();
-
-					string s="Target = ";
-					string monsname=monster_sprintf(mptr, true, false);
-					append_string_with(s, monsname, '.');
-					msg.newmsg(s, C_RED);
-					monsterthere=true;
-				}
-				else
-					msg.newmsg("Monster targetting not allowed.", C_RED);
-			}
-			else if (items)
-			{
-				/* set target to item coords */
-				target->clear();
-
-				if(spell->levitem >= 0)
-				{
-					target->pos.Set_Location(rx+tx-1, ry+ty-1);
-
-					if(items==1)
-					{
-						iptr=gameview.Get_Item(tc);
-						display->Item_Info(&iptr->i, iptr->i.weight, iptr->count,
-							   "Target =");
-					}
-					else
-					{
-						msg.newmsg("Target = a pile of items.", C_WHITE);
-					}
-				}
-				else
-					msg.newmsg("Item targetting not allowed.", C_RED);
-			}
-			else if (player.Is_At(rx+tx-1, ry+ty-1))
-			{
-				target->clear();
-				if(spell->self >= 0)
-				{
-					target->pos.Set_Location(rx+tx-1, ry+ty-1);
-					msg.newmsg("Target = yourself.", C_WHITE);
-				}
-				else
-					msg.newmsg("Self targetting not allowed.", C_RED);
-			}
-			else
-			{
-				const int tt=level->Get_Terrain(tc);
-				string s=terrains[tt].desc;
-				s.append("(no target).");
-				msg.newmsg(s, C_WHITE);
-			}
-		}
-
-		msg.notice();
-		gotoxy(MAPWIN_RELX+tx, MAPWIN_RELY+ty);
-	}
-}
-
 void rename_monster(monsterdef &mondef)
 {
 	string s=get_string(false, NAMEMAX);
@@ -488,7 +337,7 @@ int select_textlist(const char *prompt, const char **list, bool quit)
 		my_printf("] %s\n", list[num]);
 		num++;
 	}
-	
+
 	int cury=get_cursor_y()+1;
 
 	while (1)

@@ -9,8 +9,6 @@
 
 struct level_type;
 struct monsterdef;
-struct Spell;
-struct Target;
 
 bool confirm_yn(const char *prompt, bool defaultresult, bool showprompt); //get y/n
 int dir_askdir(const char *prompt, bool self); //ask direction
@@ -23,7 +21,6 @@ bool is_quit_key(int k);
 bool list_more(int &y); //check position of text, show --more-- if at end of screen
 int my_getch();
 int my_gets(char *str, int mlen); //get a string
-void player_gettarget(level_type *level, Target *target, Spell *spell);
 void rename_monster(monsterdef &mondef); //give a name for this monster (not for player!)
 void retitle_player(monsterdef &mondef); //change player's title
 int select_textlist(const char *prompt, const char **list, bool quit);

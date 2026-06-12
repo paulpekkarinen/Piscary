@@ -17,6 +17,7 @@
 //Refactored 26.9.2021 - 24.6.2025 Paul K. Pekkarinen
 
 #include <cctype>
+#include "aim.h"
 #include "avatar.h"
 #include "being.h"
 #include "caves.h"
@@ -158,19 +159,19 @@ bool spell_zap(
 
 		if (chstr[0]=='d')
 		{
-			t.direction = dir_askdir("Cast into", true);
+			int sd = dir_askdir("Cast into", true);
 
-			if (t.direction > 9)
-				t.direction=0;
+			if (sd > 9)
+				sd=0;
 			else
-			{
-				t.pos=move_to_direction(t.direction, plr);
-			}
+				t.pos=move_to_direction(sd, plr);
 		}
 		else if (chstr[0]=='i')
 		{
 			plr->backpack->Set_Filter(-1); //all items
-			t.invitem=plr->backpack->Get_Handle("Target to which item?");
+			invnode *i=plr->backpack->Get_Handle("Target to which item?");
+			if (i!=0)
+				t.Set(i);
 		}
 		else
 		{
@@ -181,11 +182,15 @@ bool spell_zap(
 				t.pos=plr->Get_Location();
 			}
 			else
-				player_gettarget(level, &t, &list_spells[spell]);
+			{
+				Aim ai(level, &list_spells[spell]);
+				//player_gettarget(level, &t, &list_spells[spell]);
+				if (ai.Select())
+					t=ai.Get_Target();
+			}
 		}
 
-
-		if (t.invitem==0 && (!t.pos.x && !t.pos.y) && !t.direction)
+		if (t.Is_Active()==false)
 		{
 			msg.newmsg("No target selected.", C_YELLOW);
 			return false;
