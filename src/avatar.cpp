@@ -400,9 +400,6 @@ void playerinfo::Initialize()
 	path.clear();
 
 	roleplay.Calculate_Itembonus(this);
-
-	//note: give player some starting items
-	inv.Add_Copper(10);
 }
 
 void playerinfo::Jump_To(const Coord &c)
@@ -411,7 +408,7 @@ void playerinfo::Jump_To(const Coord &c)
 
 	last_room=-1; //"exit" current room if in any
 	Check_Room(world->Get_Current_Level());
-		
+
 	gameview.Center(c);
 }
 

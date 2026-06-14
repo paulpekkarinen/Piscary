@@ -35,6 +35,7 @@ public:
 
 private:
 	level_type *level;
+	Coord pos; //crosshair location on level
 	Target target;
 	int mode;
 	int lastidx; //-1 if no monster found

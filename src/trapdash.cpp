@@ -120,13 +120,12 @@ bool trap_eshock(level_type *level, Trap &t)
 				trap_damage, RANDU(HPSLOT_MAX+1), NULL);
 		}
 
+		Coord c=gameview.Get_Screen_Location(d);
+
 		for (int i=0; i<8; i++)
 		{
 			my_setcolor(RANDU(16));
-
-			//note: fix later
-			//Coord c=player.Screen_Location(d.x, d.y);
-			//put_char_to('*', c);
+			put_char_to('*', c);
 
 			refresh();
 			delay(200);

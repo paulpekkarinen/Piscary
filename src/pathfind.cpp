@@ -31,8 +31,8 @@
 #include "way.h"
 
 /*
- * directions and their reverse directions 
- * these tables are used by the pathfinder 
+ * directions and their reverse directions
+ * these tables are used by the pathfinder
  */
 //const int dir_normal[]= { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 const int dir_invers[]= { 0, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
@@ -134,7 +134,7 @@ void Pathlist::Show_Debug_Info(char ch, int len)
 
 	for (std::list<Coordist>::iterator ii = coords.begin() ; ii != coords.end() ; ++ii)
 	{
-		Coord c; //=player.Screen_Location((*ii).x, (*ii).y); //note: fix later
+		Coord c=gameview.Get_Screen_Location(*ii);
 		put_char_to(ch, c);
 	}
 
@@ -179,7 +179,7 @@ void Pathlist::find_route(level_type *level, int x1, int y1, int x2, int y2)
 
 	/* clear the memory, needs to be 0 */
 	gameview.dirgrid->Clear(0);
-   
+
 	/* init dir grid */
 	gameview.dirgrid->Set(x1, y1, 5);
 

@@ -109,14 +109,14 @@ Command_Data cmdtable[Amt_Of_Commands]=
 	{"Enter upstairs", {'<', 0, 0, 0, 0}, Navigation, true},
 
 	//items
-	{"Equip items/View equipment", {'q', 0, 0, 0, 0}, Items, true},
+	{"Equip/View gear", {'g', 0, 0, 0, 0}, Items, true},
 	{"Display inventory", {'i', 0, 0, 0, 0}, Items, true},
 	{"Get item", {',', 0, 0, 0, 0}, Items, false},
 	{"Drop item", {'d', 0, 0, 0, 0}, Items, true},
 
 	//adventure
 	{"Game menu", {'G', 0, 0, 0, 0}, Adventure, true},
-	{"Quests", {':', 'q', 0, 0, 0}, Adventure, true},
+	{"Quests", {'q', 0, 0, 0, 0}, Adventure, true},
 	{"Character status", {'@', 0, 0, 0, 0}, Adventure, true},
 	{"Journey log", {'J', 0, 0, 0, 0}, Adventure, true},
 	{"Weather report", {':', 'w', 0, 0, 0}, Adventure, false},
@@ -229,11 +229,7 @@ void read_cmd()
 {
 	int mk=0;
 	bool cmdnotfull=true;
-
-	//static char txt_cmdline[128]={0};
 	static int cmdline[CMD_MAXLEN+1]={0};
-
-	//txt_cmdline[0]=0;
 	string cmdstr;
 
 	while (cmdnotfull)
@@ -244,7 +240,7 @@ void read_cmd()
 		cmdline[mk]=ch;
 
 		const int ci=check_cmdtable(cmdline, mk);
-		clearline(0); //note: is this needed when msg.update is called?
+		clearline(0);
 		gotoxy(0, 0);
 		set_color(C_RED);
 
@@ -340,7 +336,7 @@ void run_command(playerinfo *plr, const int command)
 		case Look_Around:
 		{
 			Aim a(level, Aim::Look_Around);
-			a.Select();			
+			a.Select();
 		}
 		break;
 		case Read: read_scroll(plr, level); break;
@@ -382,7 +378,7 @@ void run_command(playerinfo *plr, const int command)
 
 void cmd_help()
 {
-	Window menuwin("Help", 30, 10, 27, 7, CH_GREEN, CH_WHITE);
+	Window menuwin("Help", 30, 10, 27, 5, CH_GREEN, CH_WHITE);
 
 	menuwin.Draw(
 		"k - Keybindings\n"

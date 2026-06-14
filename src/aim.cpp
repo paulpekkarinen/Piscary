@@ -96,7 +96,6 @@ bool Aim::Select()
 
 	Starting_Location();
 	Show_Info();
-	Coord &pos=target.pos;
 
 	while (looping)
 	{
@@ -137,13 +136,12 @@ bool Aim::Select()
 						display->Monster_Description((being*)target.olento);
 						display->Redraw(level);
 						Show_Info();
-					}
-					else
-					{
-						rv=true; //target selected
-						looping=false;
+						continue;
 					}
 				}
+
+				rv=true; //target selected
+				looping=false;
 			break;
 			case 'n': //choose next target
 			{
@@ -197,8 +195,6 @@ void Aim::Show_Spot_Info()
 	gotoxy(0, MSGLINE+1);
 	set_color(CH_WHITE);
 	target.Clear();
-
-	Coord &pos=target.pos;
 
 	if (gameview.Is_Visible(pos)==false)
 	{
@@ -281,13 +277,13 @@ void Aim::Starting_Location()
 	switch (mode)
 	{
 		case Spell_Target:
-		case Look_Around: target.pos=player.Get_Location(); break;
+		case Look_Around: pos=player.Get_Location(); break;
 		case Missile_Target:
 		{
-			lastidx=level->crew.Target_Nearest(level, target.pos, 0);
+			lastidx=level->crew.Target_Nearest(level, pos, 0);
 			//no monsters found, use player's location
 			if (lastidx==-1)
-				target.pos=player.Get_Location();
+				pos=player.Get_Location();
 		}
 		break;
 		default: break;

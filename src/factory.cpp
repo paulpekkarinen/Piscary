@@ -106,7 +106,7 @@ void Factory::Add_Shopkeeper(level_type *level, int roomnum)
 	Area ar=level->rooms[roomnum].Get_Area();
 	ar.Shrink(); //limit inside walls
 	b->myarea=ar;
-	
+
 	b->sindex=0;
 
 	level->set_room_owner(roomnum, b);
@@ -289,6 +289,8 @@ invnode *Factory::New_Item(const Itempack &ip)
 {
 	invnode *inode=new invnode;
 	inode->i.Clear(); //reset everything to default values
+
+	inode->count=ip.amount;
 
 	item_def *item_def_data=0;
 	int subtype=ip.subtype;

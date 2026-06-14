@@ -193,14 +193,14 @@ int Crew::Target_Nearest(level_type *level, Coord &c, int lastidx)
 	int shortest_dist = 10000;
 	Coord dest;
 	int i=0;
-	int rv=lastidx;
+	int rv=-1;
 
 	for (mon_iter ii=monsters.begin(); ii!=monsters.end(); ++ii)
 	{
 		Coord mc=(*ii)->Get_Location();
 
 		if (gameview.Is_Visible(mc) && gameview.Is_Outside_View(mc)==false
-			&& i>lastidx)
+			&& i>=lastidx)
 		{
 			const int d=get_distance(pc, mc);
 			if (d<shortest_dist)
