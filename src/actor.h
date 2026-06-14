@@ -78,7 +78,7 @@ public:
 	void Drop_Single_Item(invnode *in_src, const Coord &c);
 	void Death(); //set death condition
 	virtual void Gain_Experience(int gain) = 0;
-	virtual void Getangry(level_type *level, Actor *target) = 0;
+	virtual void Getangry(level_type *level, Actor *target, bool always) = 0;
 	void Handle_Conditions(int slots);
 	virtual bool Handle_Confusion(Condition *cond, int slots) = 0;
 	bool Regenerate_Health(int slots, int ctime);

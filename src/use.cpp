@@ -94,7 +94,7 @@ int close_door(Actor *tonttu, level_type *level, const Coord &c)
 				/* note: issue some damage here!!! */
 
 				/* make monster angry to player */
-				mptr->Getangry(level, tonttu);
+				mptr->Getangry(level, tonttu, true);
 			}
 			else
 				return DOORSTAT_STUCK;

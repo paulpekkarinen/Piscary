@@ -246,17 +246,18 @@ bool Gameview::Notice_Something(being *b, bool items_too)
 	{
 		if (b->Gets_Angry_To(otus))
 		{
-			b->Getangry(level, otus);
+			b->Getangry(level, otus, false);
 			return true;
 		}
 	}
 
 	if (saw_item)
 	{
-		b->Set_Target_Spot(d.x, d.y);
+		b->target.Set(d);
+		//note: target type should indicate this
 		b->m.status|=MST_PURSUEITEM;
 		return true;
-	}		
+	}
 
 	return false;
 }

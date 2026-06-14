@@ -74,7 +74,7 @@ void playerinfo::Change_Alignment(char dir, int amount)
 	GAME_NOTIFYFLAGS|=GAME_ALIGNCHG;
 }
 
-void playerinfo::Getangry(level_type *level, Actor *kohde)
+void playerinfo::Getangry(level_type *level, Actor *kohde, bool always)
 {
 	msg.vnewmsg(CH_RED, "Error: Trying to get angry with %s at %s!",
 		kohde->Get_Name(), level->Get_Name());

@@ -283,10 +283,10 @@ int damage_issue(level_type *level, //note: need damage routine without attacker
 			{
 				/* make angry only if sees the player */
 				if (gameview.Is_Visible(target->x, target->y))
-					target->Getangry(level, attacker);
+					target->Getangry(level, attacker, true);
 			}
 			else
-				target->Getangry(level, attacker);
+				target->Getangry(level, attacker, false);
 
 			target->Shouldflee(level);
 		}

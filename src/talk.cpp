@@ -312,7 +312,7 @@ void monster_talk(being *monster)
 	}
 
 	/* if it's attacking the player, it wont't talk much */
-	if (monster->m.status & MST_ATTACKMODE && monster->target==NULL)
+	if (monster->m.status & MST_ATTACKMODE && monster->target.olento==&player)
 	{
 		msg.newmsg("No response.", C_WHITE);
 		return;

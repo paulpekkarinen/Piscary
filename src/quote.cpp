@@ -130,7 +130,7 @@ void keeper_farewell(level_type *level, being *owner, being *creat)
 			//if keeper is in attack mode yell an unfriendly phrase when
 			//target leaves shop
 			const char *throw_mess=texts->Get_Random(Script::Keeper_Throw);
-			
+
 			string distant("Someone ");
 			distant.append(throw_mess);
 
@@ -169,7 +169,7 @@ void keeper_greet(level_type *level, being *owner, being *creat)
 				"You hear from distance: \"Get out of here...NOW!\".",
 				C_MAGENTA);
 			owner->m.status|=MST_ATTACKMODE;
-			owner->target=creat;
+			owner->target.Set(creat);
 		}
 		else
 		{
@@ -196,7 +196,7 @@ void keeper_greet(level_type *level, being *owner, being *creat)
 		if (owner->m.status & MST_HATEPLAYER)
 		{
 			owner->m.status|=MST_ATTACKMODE;
-			owner->target=NULL;
+			owner->target.Clear();
 			msg.newmsg(CH_MAGENTA,
 				"%s yells: \"Get OUT of here, thief!\".",
 				ownername);

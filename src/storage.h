@@ -27,7 +27,7 @@ private:
 
 	bool Is_Separator(const char c);
 	void Clear() { ts.clear(); }
-	int Copy_To_Numstr();	
+	int Copy_To_Numstr();
 	void Separate();
 
 public:
@@ -41,7 +41,7 @@ public:
 	void Put(int16u v);
 	void Put(int32u v);
 	void Put_String(std::string &str);
-	
+
 	int Get_Next_Value();
 	char Get_Next_Char();
 	int16u Get_Int16u();
@@ -50,7 +50,7 @@ public:
 	std::string Get_Next_String();
 
 	void Save(File *save_file);
-	void Load(File *save_file);	
+	void Load(File *save_file);
 };
 
 #endif

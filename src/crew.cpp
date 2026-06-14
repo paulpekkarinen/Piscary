@@ -45,23 +45,12 @@ void Crew::Cleantargets(being *remove)
 	for (mon_iter i=monsters.begin(); i!=monsters.end(); ++i)
 	{
 		being *mptr=(*i);
-		Actor *mytarget=mptr->target;
 
-		/* if monster is targetting itself, clear target */
-		if (mytarget==mptr)
+		if (mptr->target.olento==remove)
 		{
-			if (mptr->m.status & MST_ATTACKMODE)
-				mptr->m.status^=MST_ATTACKMODE;
-			if (mptr->m.status & MST_FLEEMODE)
-				mptr->m.status^=MST_FLEEMODE;
+			//if monster is targetting the removed monster, clean
+			mptr->target.Clear();
 
-			//clear now, otherwise null pointer references itself
-			mptr->target=0;
-		}
-		else if (mytarget==remove)
-		{
-			/* if monster is targetting the removed monster, clean */
-			mptr->target=0;
 			if (mptr->m.status & MST_ATTACKMODE)
 				mptr->m.status^=MST_ATTACKMODE;
 			if (mptr->m.status & MST_FLEEMODE)
@@ -273,12 +262,7 @@ void Crew::Full_Debug_List()
 
 		my_printf(" (%d, %d) ", b->x, b->y);
 		display->Attribute_As("HP", b->health);
-		if (b->target==0) my_printf(" No target\n");
-		else
-		{
-			my_printf("Target: %s ", b->target->Get_Name());
-			my_printf("Pos: %d, %d.\n", b->spot.x, b->spot.y);
-		}
+		b->target.Show_Data();
 
 		if (list_more(y)==false)
 			break;

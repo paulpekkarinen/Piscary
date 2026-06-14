@@ -61,7 +61,7 @@ int monster_ranged_attack(being *mptr, level_type *level)
 
 	Coord c=mptr->Get_Location();
 
-	if (mptr->target==0)
+	if (mptr->target.olento==&player)
 	{
 		int skillval=mptr->skills.check(agrp, askill);
 

@@ -393,25 +393,9 @@ int move_monster(being *monster, level_type *level)
 	/* players position... :-) */
 
 	/* get coordinates for the target */
-	int tx, ty;
-	if (monster->target)
-	{
-		tx=monster->target->x;
-		ty=monster->target->y;
-	}
-	else if (monster->Is_Spotting())
-	{
-		/* pursue item located in level */
-		tx=monster->spot.x;
-		ty=monster->spot.y;
-	}
-	else
-	{
-		/* if there is no target, then attack player */
-		Coord pc=player.Get_Location();
-		tx=pc.x;
-		ty=pc.y;
-	}
+	const Coord t=monster->target.Get_Location();
+	int tx=t.x;
+	int ty=t.y;
 
 	/* confusion walk */
 	int dir;
@@ -430,10 +414,11 @@ int move_monster(being *monster, level_type *level)
 	}
 	else if ((monster->m.status & MST_ATTACKMODE))
 	{
-		if (!monster->target)
-			monster_moveTOtarget(level, &nx, &ny, tx, ty, true);
-		else
-			monster_moveTOtarget(level, &nx, &ny, tx, ty, false);
+		//if (!monster->target)
+		//	monster_moveTOtarget(level, &nx, &ny, tx, ty, true);
+		//else
+		//note: getpast parameter not used
+		monster_moveTOtarget(level, &nx, &ny, tx, ty, false);
 	}
 	else if ((monster->m.status & MST_PURSUEITEM))
 	{
@@ -500,7 +485,7 @@ int move_monster(being *monster, level_type *level)
 
 	if (player.Is_At(nc))
 	{
-		if ((monster->m.status & MST_ATTACKMODE) && monster->target==NULL)
+		if ((monster->m.status & MST_ATTACKMODE))
 		{
 			ticks=monster->Calculate_Time(TIME_MELEEATTACK);
 
@@ -523,7 +508,7 @@ int move_monster(being *monster, level_type *level)
 			if (monster_moveAROUNDtarget(level, &nx, &ny,
 				pc.x, pc.y)==5)
 			{
-				monster->Set_Target_Spot(0, 0);
+				monster->target.Clear();
 
 				if (monster->m.status & MST_PURSUEITEM)
 					monster->m.status^=MST_PURSUEITEM;
@@ -561,7 +546,7 @@ int move_monster(being *monster, level_type *level)
 		if (mptr)
 		{
 			if ((monster->m.status & MST_ATTACKMODE) &&
-				(mptr==monster->target))
+				(mptr==monster->target.olento))
 			{
 				/* do the attack */
 				monster_meleeattack(monster, level, mptr);
@@ -611,8 +596,7 @@ int move_monster(being *monster, level_type *level)
 		{
 			const Coord mc=monster->Get_Location();
 
-			if (monster->spot.x==mc.x &&
-				monster->spot.y==mc.y)
+			if (mc==t) //arrived at target location
 			{
 				//note: SOMEHOW SHOULD DECIDE TO GET OR NOT TO GET
 
@@ -628,7 +612,7 @@ int move_monster(being *monster, level_type *level)
 				}
 
 				monster->m.status^=MST_PURSUEITEM;
-				monster->Set_Target_Spot(0, 0);
+				monster->target.Clear();
 
 				ticks=monster->Calculate_Time(TIME_PICKUP);
 			}
@@ -1015,7 +999,7 @@ int shopkeeper_move(level_type *level, being *keeper)
 		if (drx == keeper->x && dry == keeper->y)
 			keeper->path.clear();
 
-		keeper->Set_Target_Spot(0, 0);
+		keeper->target.Clear();
 
 		return move_monster(keeper, level);
 
@@ -1035,6 +1019,7 @@ int shopkeeper_move(level_type *level, being *keeper)
 	}
 
 	const int keeperoom=keeper->roomnum;
+	Coord tarpos=keeper->target.Get_Location();
 
 	/* check for items in the door area */
 	if (keeper->Is_Spotting()==false)
@@ -1052,7 +1037,7 @@ int shopkeeper_move(level_type *level, being *keeper)
 				if (iptr)
 				{
 					if (level->Inside_Room(keeperoom, tc)==false)
-						keeper->Set_Target_Spot(iptr->x, iptr->y);
+						keeper->target.Set(iptr, tc);
 					break;
 				}
 			}
@@ -1060,10 +1045,11 @@ int shopkeeper_move(level_type *level, being *keeper)
 	}
 	else
 	{
-		if (keeper->Get_Location()==keeper->spot)
+		Coord kc=keeper->Get_Location();
+
+		if (kc==tarpos)
 		{
-			keeper->Set_Target_Spot(0, 0);
-			Coord kc=keeper->Get_Location();
+			keeper->target.Clear();
 
 			invnode *iptr=gameview.Get_Item(kc);
 			if (iptr)
@@ -1078,7 +1064,7 @@ int shopkeeper_move(level_type *level, being *keeper)
 		//      iptr=level->Get_Top_Item(keeper->targetx, keeper->targety);
 		//      if(iptr) {
 		monster_moveTOtarget(
-			level, &nx, &ny, keeper->spot.x, keeper->spot.y, false);
+			level, &nx, &ny, tarpos.x, tarpos.y, false);
 		//      }
 		//      else {
 		//	 keeper->targetx=drx;

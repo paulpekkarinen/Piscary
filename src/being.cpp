@@ -41,7 +41,7 @@
 using std::string;
 
 being::being()
-	: base_hp(0), target(0), roomnum(-1), sindex(-1), last_room(-1)
+	: base_hp(0), roomnum(-1), sindex(-1), last_room(-1)
 {
 	Reset();
 
@@ -58,13 +58,7 @@ being::~being()
 int being::In_Room()
 {
 	Coord c=Get_Location();
-	return gameview.Get_Room_Id(c);	
-}
-
-bool being::Is_Spotting() const
-{
-	if (spot.x>0 && spot.y>0) return true;
-	return false;
+	return gameview.Get_Room_Id(c);
 }
 
 void being::Checkbody()
@@ -126,7 +120,7 @@ void being::Check_Room(level_type *level)
 		if (owner!=0)
 			keeper_farewell(level, owner, this);
 
-		last_room=-1;		
+		last_room=-1;
 	}
 	else //if outside room, possibly entering one
 	{
@@ -307,7 +301,7 @@ void being::Gain_Experience(int gain)
 	exp+=gain;
 	roleplay.Check_Levelraise(this, false);
 
-	target=0;
+	target.Clear();
 
 	/* clear attack and flee modes */
 	if ((m.status & MST_ATTACKMODE))
@@ -316,13 +310,20 @@ void being::Gain_Experience(int gain)
 		m.status^=MST_FLEEMODE;
 }
 
-void being::Getangry(level_type *level, Actor *kohde)
+void being::Getangry(level_type *level, Actor *kohde, bool always)
 {
 	/* target must NOT be the monster who is getting angry :) */
 	if (this == kohde)
 	{
 		msg.addwait("Error: Getangry() trying to make monster angry with itself!", CH_RED);
 		return;
+	}
+
+	//if doesn't counter-attack check if already has a target
+	if (always==false)
+	{
+		if (target.Is_Active())
+			return;
 	}
 
 	const bool is_plr=kohde->Is_Player();
@@ -336,7 +337,7 @@ void being::Getangry(level_type *level, Actor *kohde)
 			m.status |= MST_KEEPERHATES;
 	}
 
-	if (!(m.status & MST_ATTACKMODE) || target!=kohde)
+	if (!(m.status & MST_ATTACKMODE))
 	{
 		string moname=monster_sprintf(this, true, true);
 
@@ -357,13 +358,12 @@ void being::Getangry(level_type *level, Actor *kohde)
 
 	/* make it angry */
 	m.status|=MST_ATTACKMODE;
-	target=kohde;
+	target.Set(kohde);
 
 	/* for now, use TACTIC_AGGR */
 	tactic=TACTIC_AGGR;
 
 	/* forget other special modes */
-	Set_Target_Spot(0, 0);
 	if (m.status & MST_PURSUEITEM)
 		m.status ^= MST_PURSUEITEM;
 
@@ -400,6 +400,11 @@ bool being::Handle_Confusion(Condition *cond, int slots)
 	return false;
 }
 
+bool being::Is_Spotting()
+{
+	return target.Is_Active();
+}
+
 void being::Move_To(const Coord &c)
 {
 	Coord oc=Get_Location();
@@ -419,7 +424,7 @@ bool being::Is_Peaceful()
 	if (m.behave & BEHV_FRIENDLY)
 		return true;
 
-	return false;	
+	return false;
 }
 
 bool being::Gets_Angry_To(being *other)
@@ -432,7 +437,7 @@ bool being::Gets_Angry_To(being *other)
 	{
 		if (other->Is_Player())
 			return false;
-			
+
 		if (other->Get_Special_Id()!=0)
 			return false;
 	}
@@ -460,7 +465,7 @@ bool being::Noticestuff()
 	bool note_items;
 
 	//notice items on level
-	if (Is_Spotting()==false &&
+	if (target.Is_Active()==false &&
 		!(npc_races[m.race].behave & BEHV_ANIMAL) &&
 		!(m.status & MST_SHOPKEEPER))
 	{
@@ -510,11 +515,6 @@ void being::Regenerate(level_type *level, int ctime, int slots)
 		Checkstat(level);
 
 	/* monster needs atleast half of it's max health to get out from fleemode */
-}
-
-void being::Set_Target_Spot(int dx, int dy)
-{
-	spot.Set_Location(dx, dy);
 }
 
 void being::Shouldflee(level_type *level)
@@ -605,7 +605,7 @@ void being::Save(Tar_Ball &tb)
 	tb.Put(id);
 	tb.Put(base_hp);
 
-	spot.Save(tb);
+	target.Save(tb);
 
 	myarea.Save(tb);
 	tb.Put(roomnum);
@@ -619,13 +619,7 @@ void being::Load(Tar_Ball &tb, level_type *lvl)
 	id=tb.Get_Next_Unsigned();
 	base_hp=tb.Get_Next_Value();
 
-	spot.Load(tb);
-
-	//check and restore target (note: if targetting an item, this kind of fails)
-	if (spot.x>0 && spot.y>0)
-		target=lvl->crew.Find_Monster_At(spot);
-	else
-		target=0;
+	target.Load(tb, lvl);
 
 	myarea.Load(tb);
 

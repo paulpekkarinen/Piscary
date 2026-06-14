@@ -39,7 +39,7 @@ struct playerinfo : public being
 
 	bool Is_Player() override { return true; }
 
-	void Getangry(level_type *level, Actor *kohde) override;
+	void Getangry(level_type *level, Actor *kohde, bool always) override;
 	void Change_Alignment(char dir, int amount);
 	void Changetactics();
 	void Check_Bill() const;

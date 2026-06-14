@@ -407,7 +407,7 @@ void Display::Monster_Description(being *mptr)
 
 	string moname=monster_sprintf(mptr, false, false);
 	Underline_Header(moname.c_str(), CH_WHITE, C_YELLOW);
-	
+
 	my_setcolor(C_WHITE);
 	if (mptr->m.longdesc)
 	{
@@ -539,10 +539,17 @@ void Display::Monster_Description(being *mptr)
 		if (mptr->m.status & MST_ATTACKMODE)
 		{
 			my_printf(", It's attacking");
-			if (mptr->target==NULL)
-				my_printf(" YOU");
+			Actor *tg=mptr->target.olento;
+
+			if (tg!=0)
+			{
+				if (tg->Is_Player())
+					my_printf(" you");
+				else
+					my_printf(" %s", tg->m.desc.c_str());
+			}
 			else
-				my_printf(" %s", mptr->target->m.desc.c_str());
+				my_printf(" thin air");
 		}
 		my_printf("\n");
 		my_printf("STR=%d DEX=%d CON=%d WIS=%d INT=%d CHA=%d TGH=%d SPD=%d LCK=%d\n",

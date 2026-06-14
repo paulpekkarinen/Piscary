@@ -7,6 +7,7 @@
 
 #include "actor.h"
 #include "creature.h"
+#include "target.h"
 
 // level monster structure
 struct being : public Actor
@@ -14,8 +15,7 @@ struct being : public Actor
 	int32u id; // monster generation ID
 	int base_hp;
 
-	Actor *target; // who is the monster attacking
-	Coord spot; //last known target location
+	Target target; // who is the monster attacking
 
 	Area myarea; //monster location limits, shopkeepers
 	int roomnum; // shopkeeper room index
@@ -26,8 +26,8 @@ struct being : public Actor
 	~being();
 
 	int In_Room(); //which room the being is now (-1 if none)
-	bool Is_Spotting() const; //monster has a target location
 	bool Is_Peaceful();
+	bool Is_Spotting(); //has active target
 	bool Gets_Angry_To(being *other);
 
 	void Checkbody();
@@ -36,13 +36,12 @@ struct being : public Actor
 	void Checkturn(level_type *level);
 	void Damage_Message(int damage, int bodypart) override;
 	void Gain_Experience(int gain) override;
-	void Getangry(level_type *level, Actor *kohde) override;
+	void Getangry(level_type *level, Actor *kohde, bool always) override;
 	bool Handle_Confusion(Condition *cond, int slots) override;
 	void Move_To(const Coord &c);
 	bool Noticestuff();
 	bool Pick_Up_Item(level_type *level, invnode *itemptr);
 	void Regenerate(level_type *level, int ctime, int slots);
-	void Set_Target_Spot(int dx, int dy);
 	void Shouldflee(level_type *level) override;
 	bool Useitems(level_type *level);
 
