@@ -25,6 +25,7 @@
 #include "gametime.h"
 #include "gameview.h"
 #include "message.h"
+#include "move.h"
 #include "output.h"
 #include "storage.h"
 #include "terrain.h"
@@ -156,7 +157,7 @@ bool level_type::Find_Stairs(Coord &here, int stair_type, int8u number)
 			}
 		}
 	}
-	
+
 	return false;
 }
 
@@ -170,6 +171,12 @@ bool level_type::Free_To_Walk(const Coord &c)
 int level_type::get_amount_of_rooms()
 {
 	return (int)rooms.size();
+}
+
+int8u level_type::Get_Door_Flag(const Coord &c)
+{
+	if (Is_Outside(c)) return 0;
+	return loc[c.y][c.x].doorfl;
 }
 
 roomdef& level_type::get_last_created_room()
@@ -188,10 +195,22 @@ being *level_type::Get_Room_Owner(int roomnum)
 	return rooms[roomnum].owner;
 }
 
+int level_type::Get_Svalbard(const Coord &c)
+{
+	if (Is_Outside(c)) return GENERATE_DONOTCARVE;
+	return loc[c.y][c.x].sval;
+}
+
 int level_type::Get_Terrain(const Coord &c)
 {
 	if (Is_Outside(c)) return TYPE_DARK;
 	return loc[c.y][c.x].type;
+}
+
+int level_type::Get_Terrain(int x, int y)
+{
+	Coord c(x, y);
+	return Get_Terrain(c);
 }
 
 Trap &level_type::Get_Trap(const Coord &c)
@@ -356,6 +375,20 @@ bool level_type::Close_Door(const Coord &c)
 	return rv;
 }
 
+void level_type::Explore()
+{
+	//note: test this, might not work as expected
+	for (int y=1; y<sizey-1; y++)
+	{
+		for (int x=1; x<sizex-1; x++)
+		{
+			if (sur_countall(this, x, y) > 0)
+				//&& !(loc[y][x].flags & CAVE_NOLIT))
+				loc[y][x].flags|=CAVE_EXPLORED;
+		}
+	}
+}
+
 void level_type::Refresh_Gameview()
 {
 	//set room ids of this level to gameview
@@ -430,6 +463,17 @@ void level_type::Clear_Object(const Coord &c, int8u flag)
 	loc[c.y][c.x].object &= (0xff ^ flag);
 }
 
+void level_type::Clear_Svalbards()
+{
+	for (int ty=0; ty<sizey; ty++)
+	{
+		for (int tx=0; tx<sizex; tx++)
+		{
+			loc[ty][tx].sval=0;
+		}
+	}
+}
+
 void level_type::Clear_Terrain(int terraintype)
 {
 	for (int ty=0; ty<sizey; ty++)
@@ -460,7 +504,13 @@ void level_type::Set_Flag(const Coord &c, int16u flag)
 
 void level_type::Clear_Flag(const Coord &c, int16u flag)
 {
-	loc[c.y][c.x].flags&=(0xffff ^ flag);	
+	loc[c.y][c.x].flags&=(0xffff ^ flag);
+}
+
+void level_type::Set_Impassable(const Coord &c)
+{
+	if (Is_Outside(c)==false)
+		Clear_Flag(c, CAVE_PASSABLE);
 }
 
 void level_type::Set_Object(const Coord &c, int8u flag)
@@ -471,6 +521,12 @@ void level_type::Set_Object(const Coord &c, int8u flag)
 void level_type::Set_Seen(const Coord &c)
 {
 	Set_Flag(c, CAVE_EXPLORED);
+}
+
+void level_type::Set_Svalbard(const Coord &c, int v)
+{
+	if (Is_Outside(c)) return;
+	loc[c.y][c.x].sval=v;
 }
 
 void level_type::Set_Terrain(int x, int y, int terratype)

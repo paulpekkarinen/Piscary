@@ -429,7 +429,8 @@ void playerinfo::Killedmonster(being *mptr)
 
 void playerinfo::Lastdir_To_Doorflag(level_type *level)
 {
-	lastdir=level->loc[y][x].doorfl;
+	const Coord pc=Get_Location();
+	lastdir=level->Get_Door_Flag(pc);
 }
 
 void playerinfo::Noticestuff(level_type *level)
@@ -444,7 +445,9 @@ void playerinfo::Noticestuff(level_type *level)
 			msg.newmsg("It's really dark here.", C_WHITE);
 	}
 
-	if (level->loc[pc.y][pc.x].type==TYPE_STAIRUP)
+	const int tt=level->Get_Terrain(pc);
+
+	if (tt==TYPE_STAIRUP)
 	{
 		if (tilelight)
 			msg.newmsg("You see stairs leading up!", C_GREEN);
@@ -453,7 +456,7 @@ void playerinfo::Noticestuff(level_type *level)
 	}
 	else
 	{
-		if (level->loc[pc.y][pc.x].type==TYPE_STAIRDOWN)
+		if (tt==TYPE_STAIRDOWN)
 		{
 			if (tilelight)
 				msg.newmsg("You see stairs leading down!", C_GREEN);

@@ -439,16 +439,7 @@ bool spell_magicmap(level_type *level, being *caster, int skill)
 	if (caster)
 		return false;
 
-	//note: test this, might not work as expected
-	for (int y=1; y<level->sizey-1; y++)
-	{
-		for (int x=1; x<level->sizex-1; x++)
-		{
-			if (sur_countall(level, x, y) > 0)
-				//&& !(level->loc[y][x].flags & CAVE_NOLIT))
-				level->loc[y][x].flags|=CAVE_EXPLORED;
-		}
-	}
+	level->Explore();
 
 	GAME_NOTIFYFLAGS|=GAME_DO_REDRAW;
 	msg.newmsg("Suddenly you can remember the locations in this level.",

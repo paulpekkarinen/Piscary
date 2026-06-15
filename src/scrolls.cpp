@@ -61,16 +61,14 @@ void scroll_blank()
 
 void scroll_amnesia(level_type *level)
 {
-	int x, y;
-
 	//note: test scroll of amnesia
-	int16u clearmask=0xffff ^ CAVE_EXPLORED;
 
 	msg.newmsg("What? Who? Where? ... There's a hole in your mind!", C_WHITE);
 
-	for(y=0; y<level->sizey; y++)
-		for(x=0; x<level->sizey; x++)
-			level->loc[y][x].flags &= clearmask;
+	Coord c;
+	for (c.y=0; c.y<level->sizey; c.y++)
+		for (c.x=0; c.x<level->sizey; c.x++)
+			level->Clear_Flag(c, CAVE_EXPLORED);
 
 	GAME_NOTIFYFLAGS|=GAME_DO_REDRAW;
 }

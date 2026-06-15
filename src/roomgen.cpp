@@ -506,7 +506,7 @@ bool generatelair(Genlevel *level)
 
 	int16u lastattr=terrains[TYPE_ROOMFLOOR].flags;
 	int32u index=0;
-		
+
 	for (j=0; j<hg; j++)
 	{
 		for (i=0; i<wd; i++)
@@ -528,18 +528,18 @@ bool generatelair(Genlevel *level)
 				break;
 				case ',':
 					level->Clear_Flag(c, CAVE_LIGHT);
-					clear_flag_bit(lastattr, CAVE_LIGHT);				
+					clear_flag_bit(lastattr, CAVE_LIGHT);
 				break;
 				case '.':
 					level->Set_Flag(c, terrains[TYPE_ROOMFLOOR].flags);
-					lastattr=terrains[TYPE_ROOMFLOOR].flags;				
+					lastattr=terrains[TYPE_ROOMFLOOR].flags;
 				break;
 				case '?': //add room owner
 					factory.Add_Monster(level, c.x, c.y, 0);
 				break;
 				case '!': //door
 					level->Create_Door(c.x, c.y, false);
-					lairroom.set_door(c.x, c.y);				
+					lairroom.set_door(c.x, c.y);
 				break;
 				default:
 				{
@@ -560,13 +560,7 @@ bool generatelair(Genlevel *level)
 	makehall_only(level, lairroom.doorx, lairroom.doory, rooms->doordir);
 
 	/* clear the sval */
-	for (y1=0; y1<level->sizey; y1++)
-	{
-		for (x1=0; x1<level->sizex; x1++)
-		{
-			level->loc[y1][x1].sval=0;
-		}
-	}
+	level->Clear_Svalbards();
 
 	level->rooms.push_back(lairroom);
 
@@ -628,13 +622,13 @@ bool generate_townroom(Genlevel *level, int roomtype)
 				case '!': // exitpoint (door)
 					//generate door and add its coordinates to the roomlist
 					level->Create_Door(x1+i, y1+j, false);
-					townroom.set_door(x1+i, y1+j);				
+					townroom.set_door(x1+i, y1+j);
 				break;
 				default:
 					debug->Message("Lair generator, unknown type: %c.", tile);
 				break;
 			}
-			
+
 			if (tt!=-1)
 				level->Set_Terrain(c.x, c.y, tt);
 		}
@@ -748,7 +742,7 @@ void makehall_only(Genlevel *level, int x1, int y1, int dir)
 			return;
 		}
 		/* place terrain */
-		/* sval must be cleared after this routine */
+		/* sval must be cleared after this routine (note: is it cleared?) */
 		level->Protect_From_Carving(c);
 		level->Set_Terrain(c, TYPE_PASSAGE);
 

@@ -331,31 +331,30 @@ int monster_moveTOtarget(level_type *level, int *mx, int *my, int tx, int ty, bo
  */
 int move_item(level_type *level, invnode *item, int dir, bool checkmonster)
 {
-	being *mptr=0;
-	int res;
-
-	if (!item || !level || dir>9)
+	if (dir>9)
 		return false;
 
+	Coord ic(item->Get_Location());
+
+	//set old location passable
 	if (item->i.status & ITEM_NOTPASSABLE)
-	{
-		level->loc[item->y][item->x].flags |= CAVE_PASSABLE;
-	}
+		level->Set_Flag(ic, CAVE_PASSABLE);
 
 	/* move the item */
-	Coord ic(item->Get_Location());
 	ic.Move_Direction(dir);
 
+	being *mptr;
 	if (checkmonster && (item->i.status & ITEM_NOTPASSABLE))
-	{
 		mptr=gameview.Get_Monster(ic);
-	}
+	else
+		mptr=0;
+
+	int res=0;
 
 	/* if the new location is passalbe, actually update the coords */
 	if (mptr==0 && level->Is_Passable(ic))
 	{
 		item->Set_Location(ic);
-		res=0;
 	}
 	else if (mptr)
 		res=BLOCKED_MONSTER;
@@ -366,7 +365,7 @@ int move_item(level_type *level, invnode *item, int dir, bool checkmonster)
 	if (item->i.status & ITEM_NOTPASSABLE)
 	{
 		/* mask the passable flag out from current level location */
-		level->loc[item->y][item->x].flags &= (0xffff^CAVE_PASSABLE);
+		level->Clear_Flag(ic, CAVE_PASSABLE);
 	}
 
 	return res;
@@ -961,22 +960,22 @@ int shopkeeper_move(level_type *level, being *keeper)
 	int nx=keeper->x;
 	int ny=keeper->y;
 
-	if (level->loc[dry-1][drx-1].type == TYPE_ROOMFLOOR)
+	if (level->Get_Terrain(drx-1, dry-1) == TYPE_ROOMFLOOR)
 	{
 		gx1=drx-1;
 		gy1=dry-1;
 	}
-	else if (level->loc[dry+1][drx-1].type == TYPE_ROOMFLOOR)
+	else if (level->Get_Terrain(drx-1, dry+1) == TYPE_ROOMFLOOR)
 	{
 		gx2=drx-1;
 		gy2=dry+1;
 	}
-	else if (level->loc[dry-1][drx+1].type == TYPE_ROOMFLOOR)
+	else if (level->Get_Terrain(drx+1, dry-1) == TYPE_ROOMFLOOR)
 	{
 		gx3=drx+1;
 		gy3=dry-1;
 	}
-	else if (level->loc[dry+1][drx+1].type == TYPE_ROOMFLOOR)
+	else if (level->Get_Terrain(drx+1, dry+1) == TYPE_ROOMFLOOR)
 	{
 		gx4=drx+1;
 		gy4=dry+1;
@@ -1031,7 +1030,7 @@ int shopkeeper_move(level_type *level, being *keeper)
 
 			Coord tc(tx, ty);
 
-			if (level->loc[ty][tx].type == TYPE_ROOMFLOOR)
+			if (level->Get_Terrain(tc) == TYPE_ROOMFLOOR)
 			{
 				invnode *iptr=gameview.Get_Item(tc);
 				if (iptr)
@@ -1128,7 +1127,7 @@ int shopkeeper_move(level_type *level, being *keeper)
 			if (distance(drx, dry, nx, ny) > 1)
 				shopkeeper_drop(level, keeper);
 
-			if (level->loc[ty][tx].type != TYPE_ROOMFLOOR)
+			if (level->Get_Terrain(tx, ty) != TYPE_ROOMFLOOR)
 			{
 				nx=keeper->x;
 				ny=keeper->y;

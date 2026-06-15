@@ -129,14 +129,13 @@ bool is_handle_stuck(Actor *tonttu, level_type *level, const Coord &c)
 
 	ustr=ustr/2;
 
-	const int dx=c.x;
-	const int dy=c.y;
-
+	int sv=level->Get_Svalbard(c);
 	const bool is_plr=tonttu->Is_Player();
+	bool rv=true;
 
-	if (level->loc[dy][dx].sval > ustr)
+	if (sv > ustr)
 	{
-		level->loc[dy][dx].sval-=ustr;
+		sv-=ustr;
 		if (is_plr)
 		{
 			msg.newmsg("The door seems to loose up a bit, but it's still stuck.",
@@ -150,22 +149,25 @@ bool is_handle_stuck(Actor *tonttu, level_type *level, const Coord &c)
 					 "%s seems to have some problems with a door.",
 					 monsname.c_str());
 		}
-
-		return true;
 	}
 	else
 	{
-		level->loc[dy][dx].sval=0;
+		sv=0;
 		if (is_plr)
 		{
 			msg.newmsg("With a forceful push you manage to get the door open!",
 				   C_WHITE);
 		}
 
-		return false;
+		rv=false;
 	}
 
-	return true;
+	if (sv<0)
+		sv=0;
+
+	level->Set_Svalbard(c, sv);
+
+	return rv;
 }
 
 bool disarm_trap(playerinfo *plr, level_type *level)
@@ -260,11 +262,10 @@ int open_door(Actor *tonttu, level_type *level, const Coord &c)
 
 	if (level->Is_Closed_Door(c))
 	{
-		const int dx=c.x;
-		const int dy=c.y;
+		const int8u dflag=level->Get_Door_Flag(c);
 
 		/* is the door stuck? */
-		if (level->loc[dy][dx].doorfl & DOOR_STUCK)
+		if (dflag & DOOR_STUCK)
 		{
 			if (is_plr)
 			{
@@ -276,7 +277,7 @@ int open_door(Actor *tonttu, level_type *level, const Coord &c)
 				return DOORSTAT_STUCK;
 		}
 		/* is the door locked? */
-		else if (level->loc[dy][dx].doorfl & DOOR_LOCKED)
+		else if (dflag & DOOR_LOCKED)
 		{
 			if (is_plr)
 			{

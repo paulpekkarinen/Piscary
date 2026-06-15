@@ -65,7 +65,7 @@ invnode *Spawner::Create_Item(const Coord &c, int type, int subtype, int count, 
 	/* if we created a item which can't be walked on */
 	/* mark item not passable */
 	if (inode->i.status & ITEM_NOTPASSABLE)
-		lvl->loc[c.y][c.x].flags &= (0xffff ^ CAVE_PASSABLE);
+		lvl->Set_Impassable(c);
 
 	return inode;
 }

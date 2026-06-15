@@ -83,13 +83,15 @@ void Stockpile::Show_Header()
 	if (usefilter >= 0)
 	{
 		gotoxy(SCREEN_COLS - strlen(gategories[usefilter].name) - 4, 1);
-	
+
 		my_printf("[ %s ]", gategories[usefilter].name);
 	}
 	else
 		print_text_to(SCREEN_COLS-14, 1, "[ all items ]");
 
-	display->Footer("a-w = select, A-W = toggle, Space = choose, Ctrl+I = info, x = exit", CH_GREEN);
+	display->Footer(
+		"a-w = select, A-W = toggle, Space = choose, Ctrl+I = info, x = exit",
+			CH_GREEN);
 }
 
 bool Stockpile::Open_Container(int key, int view_index)
@@ -124,7 +126,7 @@ int Stockpile::Select(const char *preprompt, bool oneshot)
 	int rv=Cancel;
 	int index=0;
 	bool browsing=true;
-	
+
 	while (browsing)
 	{
 		//show the current filtered list (note: check darklevel parameter)
@@ -141,7 +143,6 @@ int Stockpile::Select(const char *preprompt, bool oneshot)
 			{
 				arrayweight = mypocket.get_weight_of_items();
 
-				//itemcount=i=j=0;
 				lasttype=-1;
 				Show_Header();
 				continue;
@@ -170,7 +171,7 @@ int Stockpile::Select(const char *preprompt, bool oneshot)
 
 				print_centered(SCREEN_LINES-2,
 					"Open which container [press item letter]?");
-				int selection = my_getch();			
+				int selection = my_getch();
 				if (Open_Container(selection, index)==false)
 					display->Footer_Failure("That is not a container.");
 
@@ -375,7 +376,7 @@ bool Stockpile::Select_Item(const int index, int key)
 			return true;
 		}
 	}
-	
+
 	return false;
 }
 

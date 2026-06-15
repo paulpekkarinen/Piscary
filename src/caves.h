@@ -46,10 +46,13 @@ struct level_type
 	bool Free_To_Walk(const Coord &c); //can walk to this tile
 
 	int get_amount_of_rooms();
+	int8u Get_Door_Flag(const Coord &c);
 	roomdef& get_last_created_room();
 	const char *Get_Name(); //does just return a "level"
 	being *Get_Room_Owner(int roomnum);
+	int Get_Svalbard(const Coord &c);
 	int Get_Terrain(const Coord &c);
+	int Get_Terrain(int x, int y);
 	Trap &Get_Trap(const Coord &c);
 
 	bool Has_Door(const Coord &c);
@@ -79,8 +82,10 @@ struct level_type
 	void clear_data();
 	void Clear_Flag(const Coord &c, int16u flag);
 	void Clear_Object(const Coord &c, int8u flag);
+	void Clear_Svalbards();
 	void Clear_Terrain(int terraintype); //clear the entire level's terrain
 	bool Close_Door(const Coord &c);
+	void Explore(); //set level explored
 	void Refresh_Gameview(); //copy current level data to gameview
 	bool Open_Door(const Coord &c);
 	void Plot_Maze(int x, int y);
@@ -90,9 +95,11 @@ struct level_type
 	void reveal(); //make the whole level visible
 	void Reveal_Trap(const Coord &c);
 	void Set_Flag(const Coord &c, int16u flag);
+	void Set_Impassable(const Coord &c); //this tile can't be walked over
 	void Set_Object(const Coord &c, int8u flag);
 	void set_room_owner(int roomid, being *b);
 	void Set_Seen(const Coord &c);
+	void Set_Svalbard(const Coord &c, int v);
 	void Set_Terrain(int x, int y, int terratype);
 	void Set_Terrain(const Coord &c, int terratype);
 	void Shop_Init(); //put shopkeeper and items in shop rooms
@@ -106,7 +113,5 @@ struct level_type
 
 	void save(Tar_Ball &tb);
 };
-
-extern level_type *c_level; //points to current level
 
 #endif
