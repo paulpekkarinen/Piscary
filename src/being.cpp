@@ -18,6 +18,7 @@
 
 #include "avatar.h"
 #include "being.h"
+#include "body.h"
 #include "caves.h"
 #include "condit.h"
 #include "damage.h"
@@ -246,11 +247,22 @@ void being::Checkturn(level_type *level)
 
 void being::Damage_Message(int damage, int bodypart)
 {
+	int gindex;
+
+	//for animals use neutral form for messages
+	if (npc_races[m.race].behave & BEHV_ANIMAL)
+		gindex=SEX_NEUTRAL;
+	else
+		gindex=m.gender;
+
+	Gender gen(gindex);
+	const char *gen_art3=gen.Get_Art(3);
+
 	if(bodypart<0 || bodypart>=HPSLOT_MAX)
 	{
 		if (gameview.Is_Visible(x, y))
 		{
-			string s(gender_art3[m.gender]);
+			string s(gen_art3);
 			s.append(" whole body seems to be damaged.");
 
 			s[0]=toupper(s[0]);
@@ -262,12 +274,6 @@ void being::Damage_Message(int damage, int bodypart)
 
 	real rhp=hpp[bodypart].cur;
 	const char **bpptr;
-	int gindex;
-
-	if(npc_races[m.race].behave & BEHV_ANIMAL)
-		gindex=SEX_NEUTRAL;
-	else
-		gindex=m.gender;
 
 	if(npc_races[m.race].behave & BEHV_FLYING)
 		bpptr=bodyparts_flying;
@@ -275,7 +281,7 @@ void being::Damage_Message(int damage, int bodypart)
 		bpptr=bodyparts;
 
 	string s;
-	append_string_with(s, gender_art3[gindex], ' ');
+	append_string_with(s, gen_art3, ' ');
 	append_string_with(s, bpptr[bodypart], ' ');
 	append_string_with(s, bodypart_art[bodypart], ' ');
 

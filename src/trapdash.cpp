@@ -246,8 +246,7 @@ bool trap_bomb(level_type *level, Trap &t)
 	{
 		bx=d.x + move_dx[i];
 		by=d.y + move_dy[i];
-		if (bx>0 && bx<level->sizex && by>0 && by<level->sizey)
-			level->Set_Terrain(bx, by, TYPE_PASSAGE);
+		level->Set_Terrain(bx, by, TYPE_PASSAGE);
 	}
 
 	/* calculate new los */

@@ -20,6 +20,7 @@
 
 #include <cstring>
 #include "being.h"
+#include "body.h"
 #include "caves.h"
 #include "classes.h"
 #include "dice.h"
@@ -222,6 +223,8 @@ string monster_sprintf(Actor *mptr, bool upcase, bool nameonly)
 	}
 
 	string s;
+	Gender gen(mptr->m.gender);
+	const char *gender_name=gen.Get_Name();
 
 	if(npc_races[mptr->m.race].behave & BEHV_ANIMAL)
 	{
@@ -241,7 +244,7 @@ string monster_sprintf(Actor *mptr, bool upcase, bool nameonly)
 					s.append(mptr->m.name);
 					s.append(", ");
 					the_creature_name(s,
-						gendertext[mptr->m.gender],
+						gender_name,
 						mptr->Get_Description(),
 						classes[mptr->m.mclass].name);
 				}
@@ -250,7 +253,7 @@ string monster_sprintf(Actor *mptr, bool upcase, bool nameonly)
 					s.append(mptr->m.name);
 					s.append(", ");
 					the_creature_name(s,
-						gendertext[mptr->m.gender],
+						gender_name,
 						mptr->Get_Description(),
 						0);
 				}
@@ -261,14 +264,14 @@ string monster_sprintf(Actor *mptr, bool upcase, bool nameonly)
 			if(!mptr->m.special && mptr->Is_Shopkeeper()==false)
 			{
 				the_creature_name(s,
-					gendertext[mptr->m.gender],
+					gender_name,
 					mptr->Get_Description(),
 					classes[mptr->m.mclass].name);
 			}
 			else
 			{
 				the_creature_name(s,
-					gendertext[mptr->m.gender],
+					gender_name,
 					mptr->Get_Description(),
 					0);
 			}
@@ -279,14 +282,14 @@ string monster_sprintf(Actor *mptr, bool upcase, bool nameonly)
 		if(!mptr->m.special && mptr->Is_Shopkeeper()==false)
 		{
 			the_creature_name(s,
-				gendertext[mptr->m.gender],
+				gender_name,
 				mptr->Get_Description(),
 				classes[mptr->m.mclass].name);
 		}
 		else
 		{
 			the_creature_name(s,
-				gendertext[mptr->m.gender],
+				gender_name,
 				mptr->Get_Description(),
 				0);
 		}

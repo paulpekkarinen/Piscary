@@ -20,12 +20,6 @@
 #define STAT_LUC	7
 #define STAT_SPD	8
 
-/* heigth
-#define STAT_AC	9
-#define STAT_HP	10
-#define STAT_SP	11
-*/
-
 #define STATMAX_SPEED	180
 #define STATMAX_LUCK	20
 #define STATMAX_GEN		99

@@ -643,10 +643,11 @@ int moveplayer(playerinfo *plr, int dir, level_type *level, bool autowalk)
 
 	nx+=move_dx[dir];
 	ny+=move_dy[dir];
+	const bool is_outside=level->Is_Outside(nx, ny);
 
 	if (world->Get_Level_Type()==DTYPE_TOWN)
 	{
-		if (level->Is_Outside(nx, ny))
+		if (is_outside)
 		{
 			string s("Do you want to leave ");
 			s.append(world->Get_Level_Name());
@@ -662,7 +663,7 @@ int moveplayer(playerinfo *plr, int dir, level_type *level, bool autowalk)
 
 	if (plr->huntmode)
 	{
-		if (level->Is_Outside(nx, ny))
+		if (is_outside)
 		{
 			if (confirm_yn("Leave this encounter", false, true))
 			{
@@ -672,7 +673,7 @@ int moveplayer(playerinfo *plr, int dir, level_type *level, bool autowalk)
 		}
 	}
 
-	if (level->Is_Outside(nx, ny))
+	if (is_outside)
 	{
 		msg.newmsg("Are you going to the void?", C_RED);
 		msg.newmsg("I wouldn't mind but it would cause some nasty pagefaults!",
@@ -717,9 +718,6 @@ int moveplayer(playerinfo *plr, int dir, level_type *level, bool autowalk)
 
 		if (plr->searchmode)
 			plr->timetaken-=TIME_AUTOSEARCH;
-
-		if (nx<0 || ny<0 || ny==level->sizey || nx==level->sizex)
-			return 0;
 
 		plr->Set_Location(nx, ny);
 		plr->Noticestuff(level);

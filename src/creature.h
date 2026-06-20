@@ -50,12 +50,6 @@
 #define ANGRY_TO_MONSTER 	-5
 #define ANGRY_TO_PLAYER		-10
 
-/* monster and player 'sex' values */
-#define SEX_UNKNOWN	0
-#define SEX_MALE	1
-#define SEX_FEMALE	2
-#define SEX_NEUTRAL	3
-
 /* targetting flags for monsters
    monster can attack specific bodypart when
    a flag has been set in the race description
@@ -119,13 +113,9 @@ struct Npcrace
 extern const int eqslot_from_hpslot[];
 extern char *desclist[];
 extern Npcrace npc_races[];
-extern const char *gendertext[];
-extern const char *gender_art2[];
-extern const char *gender_art1[];
-extern const char *gender_art3[];
 extern const char *bodyparts[];
 extern const char *bodyparts_flying[];
 extern const char *bodypart_art[];
 extern const real hp_bpmod[];
 
-#endif 
+#endif

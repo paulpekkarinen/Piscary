@@ -11,6 +11,7 @@
 #define _CRT_SECURE_NO_DEPRECATE 1
 
 #include "avatar.h"
+#include "body.h"
 #include "creature.h"
 #include "names.h"
 #include "output.h"
@@ -125,11 +126,12 @@ void Score::Show(int index, int y)
 	tm *loctime=localtime(&mytime);
 
 	strftime(timestr, sizeof(timestr), "%H:%M %d/%m/%C%y", loctime);
+	Gender gen(monsu.gender);
 
 	my_printf("%2d %7ld %s %s (l%d %s %s) [%dm] - %s",
 		index, final, monsu.name.c_str(), monsu.desc.c_str(),
 		monsu.level,
-		gendertext[monsu.gender],
+		gen.Get_Name(),
 		npc_races[monsu.race].name,
 		moves,
 		deathreason.c_str());

@@ -18,6 +18,7 @@
 
 #include "avatar.h"
 #include "birth.h"
+#include "body.h"
 #include "cornucop.h"
 #include "creature.h"
 #include "dice.h"
@@ -55,7 +56,7 @@ const char *txt_events[]=
      "got sick and were sick for %d months and lost %d %s.",
    "a group of bandits raided your town. While\nhelping your fellow "
      "citizens to defend against the bandits\nyou were wounded but "
-     "gained %d %s!",   
+     "gained %d %s!",
    NULL
 };
 
@@ -119,22 +120,22 @@ void Birth::Ask_Skills() //note: commented out
 {
    /* first two weapon skills */
 /*
-   skill_modify(&player.skills, SKILLGRP_WEAPON, 
+   skill_modify(&player.skills, SKILLGRP_WEAPON,
 		skill_listselect(SKILLGRP_WEAPON, txt_primaryweapon),
 		25, true);
 
-   skill_modify(&player.skills, SKILLGRP_WEAPON, 
+   skill_modify(&player.skills, SKILLGRP_WEAPON,
 		skill_listselect(SKILLGRP_WEAPON, txt_secondaryweapon),
 		10, true);
 
-   skill_modify(&player.skills, SKILLGRP_MAGIC, 
+   skill_modify(&player.skills, SKILLGRP_MAGIC,
 		skill_listselect(SKILLGRP_MAGIC, "SPELL"),
 		10, true);
 */
 
-//   skill_modify(&player.skills, SKILLGRP_MAGIC, 
+//   skill_modify(&player.skills, SKILLGRP_MAGIC,
 //		SPELL_TELEPORT, 50, true);
-//   skill_modify(&player.skills, SKILLGRP_MAGIC, 
+//   skill_modify(&player.skills, SKILLGRP_MAGIC,
 //		SPELL_IDENTIFY, 50, true);
 }
 
@@ -162,7 +163,7 @@ void Birth::Random_Stats(statpack *stats)
 			throwdice(1, STATMAX_LUCK/2, 0)), STATMAX_LUCK, 0);
 }
 
-void Birth::Randomeffect(int age) 
+void Birth::Randomeffect(int age)
 {
 	if (throwdice(1, 100, 0) > 20)
 		return;
@@ -219,7 +220,7 @@ void Birth::Ask_Stats(bool automatic)
 	Random_Stats(player.stat);
 
 	const int stat_ty=get_cursor_y();
-	
+
 	for (int i=0; i<7; i++)
 	{
 		set_color(C_WHITE);
@@ -355,7 +356,7 @@ int Birth::Fast_Action()
 	player.stat[STAT_SPD].initial= npc_races[pr].stats.SPD +
 		roleplay.Get_Dex_Speed(player.stat[STAT_DEX].Get());
 
-	return yearstook;		
+	return yearstook;
 }
 
 /************************************/
@@ -374,7 +375,7 @@ int Birth::Player_Born(gamedata *mygame)
 
 	set_color(C_GREEN);
 	string plrname=get_string(true, NAMEMAX-1);
-	
+
 	if (plrname.empty())
 	{
 		plrname=Give_Random_Name();
@@ -459,7 +460,7 @@ int Birth::Player_Born(gamedata *mygame)
 #else
 	retitle_player(player.m); //ask for the title
 #endif
-	
+
 	/* init inventory */
 	Cornucopia cc(player.inv);
 	cc.Initpack(player.skills);

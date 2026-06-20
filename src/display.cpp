@@ -24,6 +24,7 @@
 #include <format>
 #include "avatar.h"
 #include "being.h"
+#include "body.h"
 #include "caves.h"
 #include "codex.h"
 #include "currency.h"
@@ -182,7 +183,7 @@ void Display::Footer_Failure(const char *txt)
 	set_color(CH_RED);
 	clearline(SCREEN_LINES-2);
 	print_centered(SCREEN_LINES-2, txt);
-		
+
 	set_color(CHB_WHITE);
 	print_centered(SCREEN_LINES-1, "[Press a key]");
 	wait_key();
@@ -192,14 +193,14 @@ void Display::Footer(const char *txt, int color)
 {
 	set_color(get_darker_color(color));
 	drawline(SCREEN_LINES-1, '-');
-	
+
 	set_color(color);
-	
+
 	string s("~{ ");
 	s.append(txt);
 	s.append(" }~");
 
-	print_centered(SCREEN_LINES-1, s.c_str());	
+	print_centered(SCREEN_LINES-1, s.c_str());
 }
 
 void Display::Header(const char *txt, int color)
@@ -208,7 +209,7 @@ void Display::Header(const char *txt, int color)
 
 	set_color(get_darker_color(color));
 	drawline(0, '-');
-		
+
 	set_color(color);
 
 	string s("~{ ");
@@ -415,8 +416,10 @@ void Display::Monster_Description(being *mptr)
 		showmore(false, false);
 	}
 
+	const int race=mptr->m.race;
+
 	my_setcolor(C_WHITE);
-	const char *dptr=npc_races[mptr->m.race].desc;
+	const char *dptr=npc_races[race].desc;
 
 	if (dptr)
 		my_wordwraptext(dptr, 4, SCREEN_LINES-1, 1, SCREEN_COLS-1);
@@ -424,36 +427,40 @@ void Display::Monster_Description(being *mptr)
 		my_printf("\nNo race description.\n");
 	my_printf("\n");
 
-	if (npc_races[mptr->m.race].behave & BEHV_ANIMAL)
+	if (npc_races[race].behave & BEHV_ANIMAL)
 	{
 		my_printf("It's an animal");
-		if (npc_races[mptr->m.race].behave & BEHV_CANUSEITEM)
+		if (npc_races[race].behave & BEHV_CANUSEITEM)
 			my_printf(" but it's known to use some items. ");
 		else my_printf(". ");
 	}
-	if (npc_races[mptr->m.race].behave & BEHV_FLYING)
+	if (npc_races[race].behave & BEHV_FLYING)
 		my_printf("It can fly.");
 	my_printf("\n");
-	if (npc_races[mptr->m.race].attacktypes & ATTACK_BITE)
+	if (npc_races[race].attacktypes & ATTACK_BITE)
 		my_printf("It can bite. ");
-	if (npc_races[mptr->m.race].attacktypes & ATTACK_KICK)
+	if (npc_races[race].attacktypes & ATTACK_KICK)
 		my_printf("It can kick. ");
-	if ((npc_races[mptr->m.race].attacktypes & ATTACK_HIT) || npc_races[mptr->m.race].attacktypes==0)
+	if ((npc_races[race].attacktypes & ATTACK_HIT) || npc_races[race].attacktypes==0)
 		my_printf("It can hit. ");
 	my_printf("\n");
 
 	bool some1=false;
+	Gender gen(mptr->m.gender);
+	const char *gen_art1=gen.Get_Art(1);
+	const char *gen_art3=gen.Get_Art(3);
+
 	zprintf("As you examine %s closer, you notice that ",
-		gender_art2[mptr->m.gender]);
+		gen.Get_Art(2));
 
 	invnode *eqitem=mptr->equips.get_inventory_item(EQUIP_RHAND);
 	if (eqitem)
 	{
 		some1=true;
 		zprintf("%s has readied a %s in %s right hand",
-			gender_art1[mptr->m.gender],
+			gen_art1,
 			mptr->equips.get_equipment_name(EQUIP_RHAND),
-			gender_art3[mptr->m.gender]);
+			gen_art3);
 	}
 
 	eqitem=mptr->equips.get_inventory_item(EQUIP_LHAND);
@@ -462,8 +469,7 @@ void Display::Monster_Description(being *mptr)
 		if (some1)
 			zprintf(" and ");
 		zprintf("in %s left hand %s has a %s",
-			gender_art3[mptr->m.gender],
-			gender_art1[mptr->m.gender],
+			gen_art3, gen_art1,
 			mptr->equips.get_equipment_name(EQUIP_LHAND));
 	}
 
@@ -473,16 +479,15 @@ void Display::Monster_Description(being *mptr)
 		if (some1)
 			zprintf(" and ");
 		zprintf("%s seems to have some missiles readied (%s)",
-			gender_art1[mptr->m.gender],
+			gen_art1,
 			mptr->equips.get_equipment_name(EQUIP_MISSILE));
 	}
 
 	if (!some1)
 		zprintf("%s is not using anything particular.\n",
-			gender_art1[mptr->m.gender]);
+			gen_art1);
 	else
 		zprintf(".\n");
-	//   my_printf("\n");
 
 	const int max_hit_points=mptr->health.max_value;
 
@@ -506,15 +511,15 @@ void Display::Monster_Description(being *mptr)
 		my_printf("\nCheat values here: (monster id=%ld)\n", mptr->id);
 		my_setcolor(C_WHITE);
 		my_printf("It can target:");
-		if (npc_races[mptr->m.race].targetflags & TARGET_HEAD)
+		if (npc_races[race].targetflags & TARGET_HEAD)
 			my_printf(" %s", bodyparts[HPSLOT_HEAD]);
-		if (npc_races[mptr->m.race].targetflags & TARGET_BODY)
+		if (npc_races[race].targetflags & TARGET_BODY)
 			my_printf(" %s", bodyparts[HPSLOT_BODY]);
-		if (npc_races[mptr->m.race].targetflags & TARGET_LHAND)
+		if (npc_races[race].targetflags & TARGET_LHAND)
 			my_printf(" %s", bodyparts[HPSLOT_LEFTHAND]);
-		if (npc_races[mptr->m.race].targetflags & TARGET_RHAND)
+		if (npc_races[race].targetflags & TARGET_RHAND)
 			my_printf(" %s", bodyparts[HPSLOT_RIGHTHAND]);
-		if (npc_races[mptr->m.race].targetflags & TARGET_LEGS)
+		if (npc_races[race].targetflags & TARGET_LEGS)
 			my_printf(" %s", bodyparts[HPSLOT_LEGS]);
 
 		my_printf("\nAlignment=%d\tLevel=%d (exp=%d)\n",
@@ -523,9 +528,9 @@ void Display::Monster_Description(being *mptr)
 			mptr->health.value, max_hit_points);
 		for (i=0; i<HPSLOT_MAX; i++)
 		{
-			if (npc_races[mptr->m.race].bodyparts[i]>=0)
+			if (npc_races[race].bodyparts[i]>=0)
 			{
-				if (npc_races[mptr->m.race].behave & BEHV_FLYING)
+				if (npc_races[race].behave & BEHV_FLYING)
 					my_printf("%s [%d/%d] ", bodyparts_flying[i],
 						mptr->hpp[i].cur, mptr->hpp[i].max);
 				else

@@ -75,8 +75,6 @@ int statpack::Get()
 	else if (result > max)
 		result = max;
 
-	//	if(result >=100) result=99;
-
 	return result;
 }
 
@@ -154,7 +152,6 @@ void statpack::Set_Initial(int value, int imax, int imin)
 	min=imin;
 	temp=0;
 
-	//	pstat->initial+=amount;
 	initial=value;
 
 	if (initial > max)

@@ -20,6 +20,7 @@
 
 #include "avatar.h"
 #include "being.h"
+#include "body.h"
 #include "caves.h"
 #include "condit.h"
 #include "damage.h"
@@ -46,6 +47,7 @@ void damage_checkbodyparts(level_type *level, Actor *mptr)
 	hpslot *hpptr=mptr->hpp;
 	int race=mptr->Get_Race();
 	Coord pc=mptr->Get_Location();
+	Gender gen(mptr->m.gender);
 
 	/* when head falls below or to zero, the creature SHOULD die! */
 	if (hpptr[HPSLOT_HEAD].cur <= 0)
@@ -106,7 +108,7 @@ void damage_checkbodyparts(level_type *level, Actor *mptr)
 				{
 					string s=monsname;
 					s.append(" lost ");
-					append_string_with(s, gender_art3[mptr->m.gender], ' ');
+					append_string_with(s, gen.Get_Art(3), ' ');
 					append_string_with(s, equip[slot].item->i.name, '.');
 
 					/* drop the item */
@@ -166,7 +168,7 @@ void damage_checkbodyparts(level_type *level, Actor *mptr)
 				{
 					string s=monsname;
 					s.append(" lost ");
-					append_string_with(s, gender_art3[mptr->m.gender], ' ');
+					append_string_with(s, gen.Get_Art(3), ' ');
 					append_string_with(s, equip[slot].item->i.name, '.');
 
 					/* drop the item */

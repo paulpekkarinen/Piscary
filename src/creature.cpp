@@ -316,39 +316,6 @@ const char *txt_luckdesc[]=
    NULL,
 };
 
-const char *gendertext[]=
-{
-   "UNKNOWN SEX",
-   "male",
-   "female",
-   "neutral",
-   NULL
-};
-
-const char *gender_art1[]={
-     "???",
-     "he",
-     "she",
-     "it",
-     NULL,
-};
-
-const char *gender_art2[]={
-     "???",
-     "him",
-     "her",
-     "it",
-     NULL,
-};
-
-const char *gender_art3[]={
-     "???",
-     "his",
-     "her",
-     "its",
-     NULL,
-};
-
 const char *bodyparts[]=
 {
      "head",
@@ -394,7 +361,7 @@ const int eqslot_from_hpslot[]=
  * when calculating initial hitpoints for a creature/player
  * each bodypart is issued a (init_hp * hp_bpmod[bodypart]) hitpoints
  *
- */ 
+ */
 const real hp_bpmod[]=
 {
    0.50, /* head */

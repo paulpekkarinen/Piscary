@@ -4,6 +4,7 @@
 
 #include "amount.h"
 #include "avatar.h"
+#include "body.h"
 #include "classes.h"
 #include "creature.h"
 #include "dice.h"
@@ -19,15 +20,19 @@ using std::string;
 
 monsterdef npc_list[] =
 {
-     {"dull looking chairman", "Gill Bates", NPC_BILLGATES, 48000, 4, CHAOTIC, NPC_BILLGATES, RACE_HUMAN, CLASS_MERCHANT, SEX_MALE, 0, 0,
-    {50, 50, 30, 50, 50, 50, 50, 20, BASE_SPEED}, 0 },
-     {"scar faced knight", "Sparhawk", NPC_SPARHAWK, 121000, 6, LAWFUL, NPC_SPARHAWK, RACE_HIGHELF, CLASS_KNIGHT, SEX_MALE, 0, BEHV_FRIENDLY,
-    {50, 50, 56, 70, 50, 50, 50, 20, BASE_SPEED+1}, 0},
-     {"very corrupted adventurer", "Thomas Biskup", NPC_THOMAS, 77500, 12, LAWFUL, NPC_THOMAS, RACE_HUMAN, CLASS_MAGE, SEX_MALE, 0, BEHV_FRIENDLY,
-    {50, 60, 53, 50, 50, 50, 50, 20, BASE_SPEED+2}, 0},
-     {"beautiful cat lady", "Natasha", NPC_NATASHA, 44500, 8, NEUTRAL, NPC_NATASHA, RACE_CATHUMAN, CLASS_MAGE, SEX_FEMALE, 0, BEHV_FRIENDLY,
-    {45, 55, 55, 55, 68, 60, 50, 25, BASE_SPEED+3}, 0},
-     { "", "" }
+	{"dull looking chairman", "Gill Bates", NPC_BILLGATES, 48000, 4, CHAOTIC, NPC_BILLGATES,
+		RACE_HUMAN, CLASS_MERCHANT, SEX_MALE, 0, 0,
+		{50, 50, 30, 50, 50, 50, 50, 20, BASE_SPEED}, 0},
+	{"scar faced knight", "Sparhawk", NPC_SPARHAWK, 121000, 6, LAWFUL, NPC_SPARHAWK,
+		RACE_HIGHELF, CLASS_KNIGHT, SEX_MALE, 0, BEHV_FRIENDLY,
+		{50, 50, 56, 70, 50, 50, 50, 20, BASE_SPEED+1}, 0},
+	{"very corrupted adventurer", "Thomas Biskup", NPC_THOMAS, 77500, 12, LAWFUL, NPC_THOMAS,
+		RACE_HUMAN, CLASS_MAGE, SEX_MALE, 0, BEHV_FRIENDLY,
+		{50, 60, 53, 50, 50, 50, 50, 20, BASE_SPEED+2}, 0},
+	{"beautiful cat lady", "Natasha", NPC_NATASHA, 44500, 8, NEUTRAL, NPC_NATASHA,
+		RACE_CATHUMAN, CLASS_MAGE, SEX_FEMALE, 0, BEHV_FRIENDLY,
+		{45, 55, 55, 55, 68, 60, 50, 25, BASE_SPEED+3}, 0},
+	{ "", "" }
 };
 
 monsterdef shopkeeper_list[] =
@@ -74,7 +79,7 @@ void monsterdef::randomize(Npcrace *stdmon, int monrace)
 		align=RANDU(LAWFUL);
 	else
 		align=stdmon->align;
-    
+
     race=monrace;
 
 	/* class if monster is not animal */
@@ -111,9 +116,6 @@ void monsterdef::randomize(Npcrace *stdmon, int monrace)
 		lev=1;
 
 	level=lev;
-
-	//   newptr->exp=expneeded[lev] + 1 + RANDU(200);
-	//   newptr->m.level=0;
 }
 
 void monsterdef::steer_alignment(char dir, int amount)
