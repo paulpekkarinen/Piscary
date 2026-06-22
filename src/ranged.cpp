@@ -19,6 +19,7 @@
 #include "aim.h"
 #include "avatar.h"
 #include "being.h"
+#include "body.h"
 #include "caves.h"
 #include "codex.h"
 #include "damage.h"
@@ -226,6 +227,8 @@ bool ranged_checkhit(level_type *level, Actor *ranger,
 	item_def *projectile=ranger->equips.get_item(EQUIP_MISSILE);
 	equipment &gear=ranger->equips;
 	const bool is_plr=ranger->Is_Player();
+	Bodypart part(bodyp);
+	const char *partname=part.Get_Name();
 
 	string shootmess;
 
@@ -241,7 +244,7 @@ bool ranged_checkhit(level_type *level, Actor *ranger,
 		else if (playerhere)
 		{
 			shootmess="You shoot your ";
-			shootmess.append(bodyparts[bodyp]);
+			shootmess.append(partname);
 			shootmess.append("!");
 		}
 	}
@@ -254,7 +257,7 @@ bool ranged_checkhit(level_type *level, Actor *ranger,
 		}
 		else if (playerhere)
 		{
-			string bp(bodyparts[bodyp]);
+			string bp(partname);
 			shootmess=noun_verbs_something(projectile->name, "hits your", bp);
 		}
 		shootmess[0]=toupper(shootmess[0]);
@@ -265,8 +268,7 @@ bool ranged_checkhit(level_type *level, Actor *ranger,
 	{
 		if (!mptr)
 			msg.vadd(C_WHITE, "An %s misses your %s.",
-				projectile->name.c_str(),
-				bodyparts[bodyp]);
+				projectile->name.c_str(), partname);
 
 		return false;
 	}

@@ -150,13 +150,13 @@ const char *condition[]=
 
 const char txt_logo[]=
 	"#########################     "
-	"#.................@.....#     "	
+	"#.................@.....#     "
 	"#....$....#############.#     "
 	"#.........#           #.######"
 	"###########      The  #......+"
-	"   Legend of Saladir  #.######"	
+	"   Legend of Saladir  #.######"
 	"#######################.#     "
-	"#.......................#     "		
+	"#.......................#     "
 	"#########################     ";
 
 void Display::Attribute_As(const char *what, Attribute &a)
@@ -167,7 +167,7 @@ void Display::Attribute_As(const char *what, Attribute &a)
 void Display::Error(const char *txt)
 {
 	print_text(txt);
-	showmore(false, false);	
+	showmore(false, false);
 }
 
 void Display::Footer_Error(const char *txt)
@@ -512,15 +512,15 @@ void Display::Monster_Description(being *mptr)
 		my_setcolor(C_WHITE);
 		my_printf("It can target:");
 		if (npc_races[race].targetflags & TARGET_HEAD)
-			my_printf(" %s", bodyparts[HPSLOT_HEAD]);
+			Bodypart::Show(HPSLOT_HEAD);
 		if (npc_races[race].targetflags & TARGET_BODY)
-			my_printf(" %s", bodyparts[HPSLOT_BODY]);
+			Bodypart::Show(HPSLOT_BODY);
 		if (npc_races[race].targetflags & TARGET_LHAND)
-			my_printf(" %s", bodyparts[HPSLOT_LEFTHAND]);
+			Bodypart::Show(HPSLOT_LEFTHAND);
 		if (npc_races[race].targetflags & TARGET_RHAND)
-			my_printf(" %s", bodyparts[HPSLOT_RIGHTHAND]);
+			Bodypart::Show(HPSLOT_RIGHTHAND);
 		if (npc_races[race].targetflags & TARGET_LEGS)
-			my_printf(" %s", bodyparts[HPSLOT_LEGS]);
+			Bodypart::Show(HPSLOT_LEGS);
 
 		my_printf("\nAlignment=%d\tLevel=%d (exp=%d)\n",
 			mptr->m.align, mptr->m.level, mptr->exp);
@@ -530,11 +530,13 @@ void Display::Monster_Description(being *mptr)
 		{
 			if (npc_races[race].bodyparts[i]>=0)
 			{
+				Bodypart part(i);
+
 				if (npc_races[race].behave & BEHV_FLYING)
-					my_printf("%s [%d/%d] ", bodyparts_flying[i],
+					my_printf("%s [%d/%d] ", part.Get_Name_Flying(),
 						mptr->hpp[i].cur, mptr->hpp[i].max);
 				else
-					my_printf("%s [%d/%d] ", bodyparts[i],
+					my_printf("%s [%d/%d] ", part.Get_Name(),
 						mptr->hpp[i].cur, mptr->hpp[i].max);
 			}
 		}
@@ -601,13 +603,15 @@ void Display::Player_Status(Actor &tonttu)
 	Header("Your status", CH_GREEN);
 
 	goto_content();
-	
+
 	my_printf("Limb status:\n");
 	set_color(C_WHITE);
 	for (int i=0; i<HPSLOT_MAX; i++)
 	{
+		Bodypart part(i);
+
 		set_color(C_YELLOW);
-		my_printf("%-15s", bodyparts[i]);
+		my_printf("%-15s", part.Get_Name());
 		set_color(C_WHITE);
 		my_printf(" Hp [%3d/%3d] Ac [%3d] ",
 			tonttu.hpp[i].cur,

@@ -316,37 +316,6 @@ const char *txt_luckdesc[]=
    NULL,
 };
 
-const char *bodyparts[]=
-{
-     "head",
-     "left hand",
-     "right hand",
-     "body",
-     "legs",
-     "odd place",
-     NULL
-};
-
-const char *bodyparts_flying[]=
-{
-     "head",
-     "left vane",
-     "right vane",
-     "body",
-     "legs",
-     "odd place",
-     NULL
-};
-
-const char *bodypart_art[]=
-{
-     "is",
-     "is",
-     "is",
-     "is",
-     "are",
-};
-
 const int eqslot_from_hpslot[]=
 {
      EQUIP_HEAD,
@@ -355,21 +324,6 @@ const int eqslot_from_hpslot[]=
      EQUIP_BODY,
      EQUIP_LEGS,
      0
-};
-
-/*
- * when calculating initial hitpoints for a creature/player
- * each bodypart is issued a (init_hp * hp_bpmod[bodypart]) hitpoints
- *
- */
-const real hp_bpmod[]=
-{
-   0.50, /* head */
-   0.75, /* left hand */
-   0.75, /* right hand */
-   1.00, /* body */
-   0.75, /* legs */
-   1.00,
 };
 
 void Npcrace::Draw_Glyph()

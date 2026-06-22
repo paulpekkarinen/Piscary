@@ -113,9 +113,5 @@ struct Npcrace
 extern const int eqslot_from_hpslot[];
 extern char *desclist[];
 extern Npcrace npc_races[];
-extern const char *bodyparts[];
-extern const char *bodyparts_flying[];
-extern const char *bodypart_art[];
-extern const real hp_bpmod[];
 
 #endif

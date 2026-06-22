@@ -272,18 +272,20 @@ void being::Damage_Message(int damage, int bodypart)
 		return;
 	}
 
-	real rhp=hpp[bodypart].cur;
-	const char **bpptr;
+	const real rhp=hpp[bodypart].cur;
+
+	Bodypart part(bodypart);
+	const char *partname;
 
 	if(npc_races[m.race].behave & BEHV_FLYING)
-		bpptr=bodyparts_flying;
+		partname=part.Get_Name_Flying();
 	else
-		bpptr=bodyparts;
+		partname=part.Get_Name();
 
 	string s;
 	append_string_with(s, gen_art3, ' ');
-	append_string_with(s, bpptr[bodypart], ' ');
-	append_string_with(s, bodypart_art[bodypart], ' ');
+	append_string_with(s, partname, ' ');
+	append_string_with(s, part.Get_Art(), ' ');
 
 	if(damage>rhp)
 		s.append("very badly injured!");

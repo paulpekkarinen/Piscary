@@ -19,6 +19,7 @@
 #include <format>
 #include "avatar.h"
 #include "being.h"
+#include "body.h"
 #include "caves.h"
 #include "dice.h"
 #include "damage.h"
@@ -149,7 +150,7 @@ bool meleeinner(
 
 	/* collect target bodyparts which the race has */
 	int bparts[HPSLOT_MAX+1]={0}; //array for target bodyparts
-	int i, j;	
+	int i, j;
 	for (j=0, i=0; i<HPSLOT_MAX; i++)
 	{
 		if (npc_races[mptr->m.race].bodyparts[i]>=0)
@@ -167,7 +168,7 @@ bool meleeinner(
 
 	//   inttotal=calculate_meleehit(iptr, player.skills, get_stat( &player.stat[STAT_LUC]),
 	//npc_races[mptr->m.race].bodyparts[tslot], player.tactic );
-	
+
 	int inttotal=plr->Calculate_Meleehit(eqptr, mptr, tslot);
 
 	//real hittotal=(real)inttotal;
@@ -268,7 +269,7 @@ bool monster_meleeinner(
 		eqptr=&invptr->i;
 	else
 		eqptr=0;
-	
+
 	const int monrace=mptr->m.race;
 
 	int damage;
@@ -307,6 +308,8 @@ bool monster_meleeinner(
 
 	/* get a random target bodypart */
 	int tslot=bparts[RANDU(j)];
+	Bodypart part(tslot);
+	const char *partname=part.Get_Name();
 
 	int inttotal=mptr->Calculate_Meleehit(eqptr, target, tslot);
 
@@ -349,7 +352,7 @@ bool monster_meleeinner(
 		if (plr)
 		{
 			msg.newmsg(C_WHITE, "%s misses your %s.",
-				attackername.c_str(), bodyparts[tslot]);
+				attackername.c_str(), partname);
 		}
 		else
 		{
@@ -382,12 +385,12 @@ bool monster_meleeinner(
 		if (plr)
 		{
 			msg.newmsg(C_WHITE, "%s %s your %s with no damage.",
-				attackername.c_str(), actiontxt.c_str(), bodyparts[tslot]);
+				attackername.c_str(), actiontxt.c_str(), partname);
 		}
 		else
 		{
 			string s=format("{}{} the {} of {} with no damage.",
-				attackername, actiontxt, bodyparts[tslot], targetname);
+				attackername, actiontxt, partname, targetname);
 
 			msg.add_dist(level, x, y, s.c_str(), C_WHITE,
 				NULL, C_WHITE);

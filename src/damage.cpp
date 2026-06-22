@@ -261,9 +261,10 @@ int damage_issue(level_type *level, //note: need damage routine without attacker
 	/* issue damage */
 	for(i=st; i<ed; i++)
 	{
-		if(bodydam)
+		if (bodydam)
 		{
-			idam=(int)(hp_bpmod[i] * (real)damage);
+			Bodypart part(i);
+			idam=(int)(part.Get_HP_Mod() * (real)damage);
 		}
 		else
 			idam=damage;
@@ -295,10 +296,8 @@ int damage_issue(level_type *level, //note: need damage routine without attacker
 
 		return target->Get_Hit_Points();
 	}
-	else
-	{
-		GAME_NOTIFYFLAGS|=GAME_HPSPCHG;
-		player.Checkstat(level, true, true);
-		return player.Get_Hit_Points();
-	}
+
+	GAME_NOTIFYFLAGS|=GAME_HPSPCHG;
+	player.Checkstat(level, true, true);
+	return player.Get_Hit_Points();
 }

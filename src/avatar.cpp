@@ -19,6 +19,7 @@
 #include <cstring>
 #include "avatar.h"
 #include "being.h"
+#include "body.h"
 #include "caves.h"
 #include "condit.h"
 #include "creature.h"
@@ -122,6 +123,7 @@ void playerinfo::Checkstat(level_type *level, bool lower, bool showmsg)
 	for (int i=0; i<HPSLOT_MAX; i++)
 	{
 		const int eqslot=eqslot_from_hpslot[i];
+		Bodypart part(i);
 
 		/* warn for low hitpoints */
 		if (CONFIGVARS.health_alarm>0 && lower && showmsg
@@ -138,7 +140,7 @@ void playerinfo::Checkstat(level_type *level, bool lower, bool showmsg)
 					alarmi=true;
 					msg.newmsg("HPALARM!", CHB_RED);
 				}
-				msg.vnewmsg(C_RED, "Your %s is in bad condition!", bodyparts[i]);
+				msg.vnewmsg(C_RED, "Your %s is in bad condition!", part.Get_Name());
 			}
 		}
 
@@ -156,7 +158,7 @@ void playerinfo::Checkstat(level_type *level, bool lower, bool showmsg)
 			else if (i==HPSLOT_RIGHTHAND)
 				conditions.remove(CONDIT_BADRARM);
 
-			msg.vnewmsg(C_GREEN, "Your %s looks better!", bodyparts[i]);
+			msg.vnewmsg(C_GREEN, "Your %s looks better!", part.Get_Name());
 		}
 	}
 
@@ -176,31 +178,33 @@ void playerinfo::Checkstat(level_type *level, bool lower, bool showmsg)
 
 void playerinfo::Damage_Message(int damage, int bodypart)
 {
-	real rhp=0;
-
-	if(bodypart<0 || bodypart>=HPSLOT_MAX)
+	if (bodypart<0 || bodypart>=HPSLOT_MAX)
 	{
 		msg.newmsg("Your whole body takes damage.", C_RED);
 		return;
 	}
 
-	rhp=hpp[bodypart].cur;
+	const real rhp=hpp[bodypart].cur;
+
+	Bodypart part(bodypart);
+	const char *partname=part.Get_Name();
+	const char *partart=part.Get_Art();
 
 	if(damage>rhp)
 		msg.vnewmsg(CH_RED, "Your %s %s very badly injured!",
-			bodyparts[bodypart], bodypart_art[bodypart]);
+			partname, partart);
 	else if(damage > (rhp*0.8))
 		msg.vnewmsg(C_RED, "Your %s %s severely injured!",
-			bodyparts[bodypart], bodypart_art[bodypart]);
+			partname, partart);
 	else if(damage > (rhp*0.5))
 		msg.vnewmsg(CH_YELLOW, "Your %s %s moderately injured!",
-			bodyparts[bodypart], bodypart_art[bodypart]);
+			partname, partart);
 	else if(damage > (rhp*0.2))
 		msg.vnewmsg(C_YELLOW, "Your %s %s slightly injured!",
-			bodyparts[bodypart], bodypart_art[bodypart]);
+			partname, partart);
 	else if(damage > (rhp*0.05))
 		msg.vnewmsg(C_WHITE, "Your %s %s is just scratched.",
-			bodyparts[bodypart], bodypart_art[bodypart]);
+			partname, partart);
 }
 
 void playerinfo::Eat_Addnutr(item_def *item, int weight)

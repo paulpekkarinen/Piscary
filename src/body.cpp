@@ -1,5 +1,5 @@
 /**************************************************************************
- * gender.cpp --                                                          *
+ * body.cpp --                                                            *
  * Author            : Erno Tuomainen (ernomat@evitech.fi)                *
  * Created on        : 21.04.1998                                         *
  * Last modified by  : Erno Tuomainen                                     *
@@ -17,6 +17,7 @@
 //Refactored by Paul K. Pekkarinen
 
 #include "body.h"
+#include "output.h"
 
 struct Gender_Data
 {
@@ -33,6 +34,54 @@ const Gender_Data gender_data[Gender::Amt_Of_Genders]=
 	{"female", "she", "her", "her"},
 	{"neutral", "it", "it", "its"}
 };
+
+struct Bodypart_Data
+{
+	const char *name;
+	const char *name_flying;
+	const char *art;
+	real hp_mod;
+};
+
+const Bodypart_Data bp_data[Bodypart::Amt_Of_Parts]=
+{
+	{"head", "head", "is", 0.50},
+	{"left hand", "left vane", "is", 0.75},
+	{"right hand", "right vane", "is", 0.75},
+	{"body", "body", "is", 1.00},
+	{"legs", "legs", "are", 0.75}
+};
+
+//===
+
+const char *Bodypart::Get_Name()
+{
+	return bp_data[part].name;
+}
+
+const char *Bodypart::Get_Name_Flying()
+{
+	return bp_data[part].name_flying;
+}
+
+const char *Bodypart::Get_Art()
+{
+	return bp_data[part].art;
+}
+
+void Bodypart::Show(int p)
+{
+	my_printf(" %s", bp_data[p].name);
+}
+
+//when calculating initial hitpoints for a creature/player
+//each bodypart is issued a (init_hp * hp_bpmod[bodypart]) hitpoints
+real Bodypart::Get_HP_Mod()
+{
+	return bp_data[part].hp_mod;
+}
+
+//===
 
 const char *Gender::Get_Art(int a)
 {
