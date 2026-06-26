@@ -3,124 +3,146 @@
 
 //Refactored 25.9.2021 - 8.6.2023 Paul K. Pekkarinen
 
+#include "being.h"
 #include "birth.h"
 #include "classes.h"
 #include "cornucop.h"
 #include "skills.h"
 
-void init_mage(skillset &skills, inventory &inv, statpack *stats, hpslot *hpp);
-void init_fighter(skillset &skills, inventory &inv, statpack *stats, hpslot *hpp);
-void init_rogue(skillset &skills, inventory &inv, statpack *stats, hpslot *hpp);
-void init_hunter(skillset &skills, inventory &inv, statpack *stats, hpslot *hpp);
-void init_ninja(skillset &skills, inventory &inv, statpack *stats, hpslot *hpp);
-void init_knight(skillset &skills, inventory &inv, statpack *stats, hpslot *hpp);
-void init_merchant(skillset &skills, inventory &inv, statpack *stats, hpslot *hpp);
-
-classdef classes[]=
+Class_Skill mage_skills[]=
 {
-   /* first class is for classless monsters */
-   { "", NULL },
-   { "ninja", init_ninja },
-   { "fighter", init_fighter },
-   { "knight", init_knight },
-   { "mage", init_mage },
-   { "priest", NULL },
-   { "paladin", NULL },
-   { "shaman", NULL },
-   { "necromancer", NULL },
-   { "caveman", NULL },
-   { "ranger", NULL },
-   { "farmer", NULL },
-   { "rogue", init_rogue},
-   { "merchant", init_merchant },
-   { "tourist", NULL },
-   { "healer", NULL },
-   { "hunter", init_hunter },
-   { NULL }
+	{SKILLGRP_WEAPON, SKILL_DAGGER, 25},
+	{SKILLGRP_WEAPON, SKILL_HAND, 25},
+	{SKILLGRP_WEAPON, SKILL_STAFF, 30},
+	{SKILLGRP_ENDLIST, 0, 0}
 };
 
-/* 80 points to distribute between weapon skills ?? */
-
-void init_mage(skillset &skills, inventory &inv, statpack *stats, hpslot *hpp)
+Class_Skill fighter_skills[]=
 {
-	/* fighter, good weapon skills */
-	skills.add_new_skill(SKILLGRP_WEAPON, SKILL_DAGGER, 25);
-	skills.add_new_skill(SKILLGRP_WEAPON, SKILL_HAND, 25);
-	skills.add_new_skill(SKILLGRP_WEAPON, SKILL_STAFF, 30);
+	{SKILLGRP_WEAPON, SKILL_SWORD, 25},
+	{SKILLGRP_WEAPON, SKILL_AXE, 15},
+	{SKILLGRP_WEAPON, SKILL_HAND, 15},
+	{SKILLGRP_WEAPON, SKILL_2HWEAP, 15},
+	{SKILLGRP_WEAPON, SKILL_1HWEAP, 10},
+	{SKILLGRP_ENDLIST, 0, 0}
+};
 
-	Cornucopia cc(inv);
-	cc.Giveskillweapon(skills);
-}
-
-void init_fighter(skillset &skills, inventory &inv, statpack *stats, hpslot *hpp)
+Class_Skill rogue_skills[]=
 {
-	/* fighter, good weapon skills */
-	skills.add_new_skill(SKILLGRP_WEAPON, SKILL_SWORD, 25);
-	skills.add_new_skill(SKILLGRP_WEAPON, SKILL_AXE, 15);
-	skills.add_new_skill(SKILLGRP_WEAPON, SKILL_HAND, 15);
-	skills.add_new_skill(SKILLGRP_WEAPON, SKILL_2HWEAP, 15);
-	skills.add_new_skill(SKILLGRP_WEAPON, SKILL_1HWEAP, 10);
+	{SKILLGRP_WEAPON, SKILL_DAGGER, 25},
+	{SKILLGRP_WEAPON, SKILL_SWORD, 10},
+	{SKILLGRP_WEAPON, SKILL_HAND, 20},
+	{SKILLGRP_WEAPON, SKILL_2WEAPCOMB, 10},
+	{SKILLGRP_WEAPON, SKILL_1HWEAP, 15},
+	{SKILLGRP_ENDLIST, 0, 0}
+};
 
-	Cornucopia cc(inv);
-	cc.Giveskillweapon(skills);
-}
-
-void init_rogue(skillset &skills, inventory &inv, statpack *stats, hpslot *hpp)
+Class_Skill hunter_skills[]=
 {
-	skills.add_new_skill(SKILLGRP_WEAPON, SKILL_DAGGER, 25);
-	skills.add_new_skill(SKILLGRP_WEAPON, SKILL_SWORD, 10);
-	skills.add_new_skill(SKILLGRP_WEAPON, SKILL_HAND, 20);
-	skills.add_new_skill(SKILLGRP_WEAPON, SKILL_2WEAPCOMB, 10);
-	skills.add_new_skill(SKILLGRP_WEAPON, SKILL_1HWEAP, 15);
+	{SKILLGRP_WEAPON, SKILL_BOW, 25},
+	{SKILLGRP_WEAPON, SKILL_POLEARM, 15},
+	{SKILLGRP_WEAPON, SKILL_THROW, 20},
+	{SKILLGRP_WEAPON, SKILL_SWORD, 10},
+	{SKILLGRP_WEAPON, SKILL_1HWEAP, 10},
+	{SKILLGRP_ENDLIST, 0, 0}
+};
 
-	Cornucopia cc(inv);
-	cc.Rogue_Items();
-}
-
-void init_hunter(skillset &skills, inventory &inv, statpack *stats, hpslot *hpp)
+Class_Skill ninja_skills[]=
 {
-	skills.add_new_skill(SKILLGRP_WEAPON, SKILL_BOW, 25);
-	skills.add_new_skill(SKILLGRP_WEAPON, SKILL_POLEARM, 15);
-	skills.add_new_skill(SKILLGRP_WEAPON, SKILL_THROW, 20);
-	skills.add_new_skill(SKILLGRP_WEAPON, SKILL_SWORD, 10);
-	skills.add_new_skill(SKILLGRP_WEAPON, SKILL_1HWEAP, 10);
+	{SKILLGRP_WEAPON, SKILL_HAND, 30},
+	{SKILLGRP_WEAPON, SKILL_SWORD, 15},
+	{SKILLGRP_WEAPON, SKILL_2HWEAP, 15},
+	{SKILLGRP_WEAPON, SKILL_THROW, 10},
+	{SKILLGRP_WEAPON, SKILL_DAGGER, 10},
+	{SKILLGRP_ENDLIST, 0, 0}
+};
 
-	Cornucopia cc(inv);
-	cc.Hunter_Items();
-}
-
-void init_ninja(skillset &skills, inventory &inv, statpack *stats, hpslot *hpp)
+Class_Skill knight_skills[]=
 {
-	skills.add_new_skill(SKILLGRP_WEAPON, SKILL_HAND, 30);
-	skills.add_new_skill(SKILLGRP_WEAPON, SKILL_SWORD, 15);
-	skills.add_new_skill(SKILLGRP_WEAPON, SKILL_2HWEAP, 15);
-	skills.add_new_skill(SKILLGRP_WEAPON, SKILL_THROW, 10);
-	skills.add_new_skill(SKILLGRP_WEAPON, SKILL_DAGGER, 10);
+	{SKILLGRP_WEAPON, SKILL_SWORD, 25},
+	{SKILLGRP_WEAPON, SKILL_AXE, 15},
+	{SKILLGRP_WEAPON, SKILL_HAND, 15},
+	{SKILLGRP_WEAPON, SKILL_2HWEAP, 15},
+	{SKILLGRP_WEAPON, SKILL_1HWEAP, 10},
+	{SKILLGRP_ENDLIST, 0, 0}
+};
 
-	Cornucopia cc(inv);
-	cc.Ninja_Items();
-}
-
-void init_knight(skillset &skills, inventory &inv, statpack *stats, hpslot *hpp)
+Class_Skill merchant_skills[]=
 {
-	skills.add_new_skill(SKILLGRP_WEAPON, SKILL_SWORD, 25);
-	skills.add_new_skill(SKILLGRP_WEAPON, SKILL_AXE, 15);
-	skills.add_new_skill(SKILLGRP_WEAPON, SKILL_HAND, 15);
-	skills.add_new_skill(SKILLGRP_WEAPON, SKILL_2HWEAP, 15);
-	skills.add_new_skill(SKILLGRP_WEAPON, SKILL_1HWEAP, 10);
+	{SKILLGRP_WEAPON, SKILL_BOW, 75},
+	{SKILLGRP_WEAPON, SKILL_POLEARM, 15},
+	{SKILLGRP_WEAPON, SKILL_THROW, 60},
+	{SKILLGRP_WEAPON, SKILL_SWORD, 45},
+	{SKILLGRP_WEAPON, SKILL_1HWEAP, 10},
+	{SKILLGRP_ENDLIST, 0, 0}
+};
 
-	Cornucopia cc(inv);
-	cc.Knight_Items();
-}
-
-void init_merchant(skillset &skills, inventory &inv, statpack *stats, hpslot *hpp)
+classdef class_data[]=
 {
-	skills.add_new_skill(SKILLGRP_WEAPON, SKILL_BOW, 75);
-	skills.add_new_skill(SKILLGRP_WEAPON, SKILL_POLEARM, 15);
-	skills.add_new_skill(SKILLGRP_WEAPON, SKILL_THROW, 60);
-	skills.add_new_skill(SKILLGRP_WEAPON, SKILL_SWORD, 45);
-	skills.add_new_skill(SKILLGRP_WEAPON, SKILL_1HWEAP, 10);
+	/* first class is for classless monsters */
+	{"", 0 },
+	{"ninja", ninja_skills},
+	{"fighter", fighter_skills},
+	{"knight", knight_skills},
+	{"mage", mage_skills},
 
-	Cornucopia cc(inv);
-	cc.Merchant_Items();
+	{"priest", 0},
+	{"paladin", 0},
+	{"shaman", 0},
+	{"necromancer", 0},
+	{"caveman", 0},
+
+	{"ranger", 0},
+	{"farmer", 0},
+	{"rogue", rogue_skills},
+	{"merchant", merchant_skills},
+	{"tourist", 0},
+
+	{"healer", 0},
+	{"hunter", hunter_skills}
+};
+
+/* note: 80 points to distribute between weapon skills ?? */
+
+void initialize_class(being *b, int c)
+{
+	//add starting skills if any found
+	Class_Skill *sk=class_data[c].starting_skills;
+
+	if (sk!=0)
+	{
+		int i=0;
+		while (sk[i].group!=SKILLGRP_ENDLIST)
+		{
+			b->skills.add_new_skill(
+				sk[i].group, sk[i].type, sk[i].amount);
+			i++;
+		}
+	}
+
+	//add class specific items
+	Cornucopia cc(b->inv);
+	switch (c)
+	{
+		case CLASS_FIGHTER:
+		case CLASS_MAGE:
+			cc.Giveskillweapon(b->skills);
+		break;
+		case CLASS_ROGUE:
+			cc.Rogue_Items();
+		break;
+		case CLASS_HUNTER:
+			cc.Hunter_Items();
+		break;
+		case CLASS_NINJA:
+			cc.Ninja_Items();
+		break;
+		case CLASS_KNIGHT:
+			cc.Knight_Items();
+		break;
+		case CLASS_MERCHANT:
+			cc.Merchant_Items();
+		break;
+		default: break;
+	}
 }

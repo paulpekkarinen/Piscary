@@ -33,14 +33,6 @@ void Amount::Initialize()
 		ptr++;
 	}
 
-	num_classes=0;
-	classdef *clptr=classes;
-	while (clptr->name)
-	{
-		num_classes++;
-		clptr++;
-	}
-
 	num_dungeons=0;
 	Dungeon *dungptr=dungeonlist;
 	while (dungptr->name)
@@ -133,13 +125,13 @@ void Amount::Initialize()
 		ptr++;
 	}
 }
-	
+
 void Amount::Show_Data()
 {
 	my_printf("%d weapons\n%d artifacts\n%d armor\n%d scrolls\n",
 		num_weapons, num_artifacts, num_armors, num_scrolls);
 	my_printf("%d classes\n%d races\n%d valuables\n",
-		num_classes, num_npcraces, num_valuables);
+		MAX_CLASSES, num_npcraces, num_valuables);
 	my_printf("%d lair templates\n%d general room templates\n",
 		num_lairs, num_rooms);
 	my_printf("%d materials\n", num_materials);

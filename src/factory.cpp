@@ -121,11 +121,7 @@ void Factory::Add_Shopkeeper(level_type *level, int roomnum)
 	b->base_hp=npc_races[b->m.race].hp_base;
 	b->mana.Initialize(npc_races[b->m.race].sp_base);
 
-	/* init class */
-	if (classes[b->m.mclass].initfunc != NULL)
-	{
-		classes[b->m.mclass].initfunc(b->skills, b->inv, b->stat, b->hpp);
-	}
+	initialize_class(b, b->m.mclass);
 
 	/* add initial money purse */
 	b->inv.Add_Gold(4000+RANDU(4000));
@@ -274,11 +270,7 @@ void Factory::Monster_Postgeneration(level_type *level, being *mptr)
 
 	roleplay.Advance_To_Level(mptr, mptr->m.level);
 
-	if (classes[mptr->m.mclass].initfunc!=0)
-	{
-		classes[mptr->m.mclass].initfunc(mptr->skills, mptr->inv,
-			mptr->stat, mptr->hpp);
-	}
+	initialize_class(mptr, mptr->m.mclass);
 
 	mptr->Useitems(level);
 

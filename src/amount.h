@@ -9,7 +9,6 @@ struct Amount
 {
 	int num_armors;
 	int num_artifacts;
-	int num_classes;
 	int num_dungeons;
 	int num_lairs;
 	int num_materials;
@@ -23,7 +22,7 @@ struct Amount
 	int num_weapons;
 
 	void Initialize();
-	void Show_Data();	
+	void Show_Data();
 };
 
 extern Amount mucho;

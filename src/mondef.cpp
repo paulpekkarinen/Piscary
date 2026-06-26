@@ -85,15 +85,15 @@ void monsterdef::randomize(Npcrace *stdmon, int monrace)
 	/* class if monster is not animal */
 	if (!(stdmon->behave & BEHV_ANIMAL))
 	{
-		mclass=1+RANDU(mucho.num_classes-1);
+		mclass=random_number(1, MAX_CLASSES-1);
 
 		random_name(name, CNAME_MAX);
 		uppercase_first_letter(name);
 	}
     else
     {
-        mclass=0;
-    }
+    	mclass=CLASS_NOCLASS;
+	}
 
 	attitude=stdmon->attitude;
 	behave=stdmon->behave;

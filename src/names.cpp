@@ -225,6 +225,7 @@ string monster_sprintf(Actor *mptr, bool upcase, bool nameonly)
 	string s;
 	Gender gen(mptr->m.gender);
 	const char *gender_name=gen.Get_Name();
+	const char *class_name=class_data[mptr->m.mclass].name;
 
 	if(npc_races[mptr->m.race].behave & BEHV_ANIMAL)
 	{
@@ -246,7 +247,7 @@ string monster_sprintf(Actor *mptr, bool upcase, bool nameonly)
 					the_creature_name(s,
 						gender_name,
 						mptr->Get_Description(),
-						classes[mptr->m.mclass].name);
+						class_name);
 				}
 				else
 				{
@@ -266,7 +267,7 @@ string monster_sprintf(Actor *mptr, bool upcase, bool nameonly)
 				the_creature_name(s,
 					gender_name,
 					mptr->Get_Description(),
-					classes[mptr->m.mclass].name);
+					class_name);
 			}
 			else
 			{
@@ -284,7 +285,7 @@ string monster_sprintf(Actor *mptr, bool upcase, bool nameonly)
 			the_creature_name(s,
 				gender_name,
 				mptr->Get_Description(),
-				classes[mptr->m.mclass].name);
+				class_name);
 		}
 		else
 		{
