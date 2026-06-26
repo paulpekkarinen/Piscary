@@ -89,14 +89,7 @@ void playerinfo::Changetactics()
 		tactic=TACTIC_COWARD;
 
 	msg.update();
-	msg.vadd(C_WHITE,
-		"Tactic: %s (Hit:%+d, Dodge:%+d, DAM:%+d, AC:%+d, SPD:%+d%%)! poop",
-		tacticnames[tactic],
-		tacticeffects[tactic].hit,
-		tacticeffects[tactic].dv,
-		tacticeffects[tactic].dam,
-		tacticeffects[tactic].pv,
-		100-tacticeffects[tactic].spd);
+	tactics_data[tactic].Show();
 }
 
 void playerinfo::Check_Bill() const

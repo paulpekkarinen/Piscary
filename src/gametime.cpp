@@ -116,9 +116,7 @@ Gametime::Gametime()
 
 int Gametime::Calculate(int speed, int time, int tactic)
 {
-	real tm;
-
-	tm=(real)tacticeffects[tactic].spd;
+	real tm=(real)tactics_data[tactic].spd;
 	tm=(tm*time)/100;
 
 	time=(int)tm;

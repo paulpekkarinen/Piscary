@@ -78,9 +78,9 @@ int Actor::Calculate_Meleehit(item_def *iptr, Actor *target, int bodypart)
 	skillset *tskills=&target->skills;
 	const int tluck=target->stat[STAT_LUC].Get();
 	const int trace=target->Get_Race();
-	const int ttactic=target->tactic;
+	const int tg_tactic=target->tactic;
 	//      tdv=calculate_slot_pv(bodypart, target->inv.equip );
-	
+
 	bool useleft, useright;
 	tequip->decide_meleeweapon(&useleft, &useright);
 
@@ -137,13 +137,13 @@ int Actor::Calculate_Meleehit(item_def *iptr, Actor *target, int bodypart)
 	/* every difficulty point substracts 2 points from hit */
 	attskill-=(2 * npc_races[trace].bodyparts[bodypart]);
 
-	/* tactic effects */
-	attskill+=tacticeffects[tactic].hit;
+	//attacker's hit modifier
+	attskill+=tactics_data[tactic].hit;
 
-	/* defender tactic effects */
-	attskill-=tacticeffects[ttactic].dv;
-	
-	int tdv=0; //note: value not set
+	//target's defense value
+	attskill-=tactics_data[tg_tactic].dv;
+
+	int tdv=0; //note: value not set, look at code in line 82
 
 	/* defender bodypart DV */
 	attskill-=tdv;
@@ -152,8 +152,6 @@ int Actor::Calculate_Meleehit(item_def *iptr, Actor *target, int bodypart)
 	/* I use 5% */
 	if (attskill < MIN_SKILLSCORE)
 		attskill=MIN_SKILLSCORE;
-
-	//msg.newmsg(CH_WHITE, "%d %d Ds: %d. As: %d.", atactic, ttactic, defskill, attskill);
 
 	return attskill;
 }

@@ -157,12 +157,6 @@ bool meleeinner(
 			bparts[j++]=i;
 	}
 
-	/*
-	  for(i=0; i<j; i++) {
-	  msg.newmsg(C_GREEN, "%s", bodyparts[bparts[i]]);
-	  }
-	*/
-
 	/* get a random target bodypart */
 	int tslot=bparts[RANDU(j)];
 
@@ -171,12 +165,10 @@ bool meleeinner(
 
 	int inttotal=plr->Calculate_Meleehit(eqptr, mptr, tslot);
 
-	//real hittotal=(real)inttotal;
-
 	/* 1..100 */
 	int hitresult=1+RANDU(100);
 
-	damage+=tacticeffects[plr->tactic].dam;
+	damage+=tactics_data[plr->tactic].dam;
 	if (damage<0)
 		damage=0;
 
@@ -185,7 +177,6 @@ bool meleeinner(
 		damage=0;
 		msg.newmsg("You miss.", C_WHITE);
 	}
-	/* creat hit */
 	else
 	{
 		/* normal hits give 1 learning mark */
@@ -319,7 +310,7 @@ bool monster_meleeinner(
 	int hitresult=throwdice(1, 100, 0);
 
 	/* add tactic effect damage */
-	damage+=tacticeffects[mptr->tactic].dam;
+	damage+=tactics_data[mptr->tactic].dam;
 	if (damage<0)
 		damage=0;
 
