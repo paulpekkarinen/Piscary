@@ -26,15 +26,12 @@
 #include "input.h"
 #include "invnode.h"
 #include "lexicon.h"
-//#include "magic.h"
 #include "message.h"
 #include "move.h"
 #include "names.h"
 #include "options.h"
 #include "output.h"
-//#include "ranged.h"
 #include "score.h"
-//#include "target.h"
 #include "terrain.h"
 #include "textdata.h"
 
@@ -42,8 +39,8 @@ using std::string;
 
 bool is_safe_char(int ch);
 
-const char text_targetting[] =
-"Target with movement keys [n,t,SPACE,q/ESC or?].";
+//const char text_targetting[] =
+//"Target with movement keys [n,t,SPACE,q/ESC or?].";
 
 bool confirm_yn(const char *prompt, bool defaultresult, bool showprompt)
 {
@@ -325,20 +322,20 @@ void retitle_player(monsterdef &mondef)
 		mondef.desc="the adventurer";
 }
 
-int select_textlist(const char *prompt, const char **list, bool quit)
+int select_textlist(const char *prompt, std::vector<const char*> &items, bool quit)
 {
 	int num=0;
 
-	while (list[num] != NULL)
+	for (const char* item : items)
 	{
-		my_setcolor(C_RED);
+		my_setcolor(C_GREEN);
 		my_printf("%d", num+1);
 		my_setcolor(C_WHITE);
-		my_printf("] %s\n", list[num]);
+		my_printf("] %s\n", item);
 		num++;
 	}
 
-	int cury=get_cursor_y()+1;
+	const int cury=get_cursor_y()+1;
 
 	while (1)
 	{

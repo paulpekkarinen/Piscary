@@ -5,13 +5,30 @@
 #ifndef SCHOOL_H
 #define SCHOOL_H
 
+#include <vector>
+
 struct playerinfo;
 
-struct School
+class School
 {
-	//int selected_teachers[NUM_TEACHERS+1];
+private:
+	int teacher;
+	int school;
+	int learnvalue;
 
-	int Study(playerinfo &plr, bool automatic);
+	//if automatic is true selects randomly without player input
+	bool automatic;
+
+	std::vector<const char*> names;
+	std::vector<const char*> school_names;
+
+	void Orientation(playerinfo &plr);
+	bool Select_Teacher(int age);
+
+public:
+	School(bool a);
+
+	int Study(playerinfo &plr);
 };
 
 #endif

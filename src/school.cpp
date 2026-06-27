@@ -26,6 +26,60 @@
 #include "school.h"
 #include "skills.h"
 
+using std::vector;
+
+//Skill data for each teacher.
+struct School_Skill
+{
+	int group;
+	int type;
+	int divisor;
+};
+
+School_Skill alredor_skills[]=
+{
+	{SKILLGRP_WEAPON, SKILL_DAGGER, 0},
+	{SKILLGRP_MAGIC, SPELL_CURSE, 4},
+	{SKILLGRP_ENDLIST, 0, 0}
+};
+
+School_Skill albinia_skills[]=
+{
+	{SKILLGRP_WEAPON, SKILL_STAFF, 0},
+	{SKILLGRP_MAGIC, SPELL_CONFUZE, 4},
+	{SKILLGRP_ENDLIST, 0, 0}
+};
+
+School_Skill mandalin_skills[]=
+{
+	{SKILLGRP_WEAPON, SKILL_SWORD, 0},
+	{SKILLGRP_WEAPON, SKILL_SHIELD, 2},
+	{SKILLGRP_ENDLIST, 0, 0}
+};
+
+School_Skill ferdinand_skills[]=
+{
+	{SKILLGRP_WEAPON, SKILL_SWORD, 0},
+	{SKILLGRP_ENDLIST, 0, 0}
+};
+
+School_Skill eriol_skills[]=
+{
+	{SKILLGRP_WEAPON, SKILL_BOW, 2},
+	{SKILLGRP_WEAPON, SKILL_DAGGER, 2},
+	{SKILLGRP_GENERIC, SKILL_FOODGATHER, 2},
+	{SKILLGRP_GENERIC, SKILL_FINDWEAKNESS, 4},
+	{SKILLGRP_ENDLIST, 0, 0}
+};
+
+School_Skill thorndarr_skills[]=
+{
+	{SKILLGRP_GENERIC, SKILL_HEALING, 2},
+	{SKILLGRP_WEAPON, SKILL_DAGGER, 4},
+	{SKILLGRP_GENERIC, SKILL_FINDWEAKNESS, 4},
+	{SKILLGRP_ENDLIST, 0, 0}
+};
+
 #define TEACHER_ALBINIA   0
 #define TEACHER_ALREDOR   1
 #define TEACHER_THORNDARR 2
@@ -34,29 +88,47 @@
 #define TEACHER_ERIOL     5
 #define NUM_TEACHERS      6
 
-const char *list_teachers[]=
+struct Teacher
 {
-   "Albinia, the Sorceror of Dalmn",
-   "Al'redor, the Black Wizard",
-   "Thorndarr, the Elf Healer",
-   "Mandalin, the Fighter",
-   "Ferdinand, the High Paladin",
-   "Eriol, the Ranger.",
-   0
+	const char *name;
+	char alignment;
+	bool has_academy;
+	School_Skill *skills;
 };
+
+const Teacher teacher_data[NUM_TEACHERS]=
+{
+	{"Albinia, the Sorceror of Dalmn", 'n', true, albinia_skills},
+	{"Al'redor, the Black Wizard", 'c', true, alredor_skills},
+	{"Thorndarr, the Elf Healer", 'l', true, thorndarr_skills},
+	{"Mandalin, the Fighter", 'n', false, mandalin_skills},
+	{"Ferdinand, the High Paladin", 'l', false, ferdinand_skills},
+	{"Eriol, the Ranger.", 'n', false, eriol_skills}
+};
+
+//===
 
 #define SCHOOL_ALTERATION  0
 #define SCHOOL_DESTRUCTION 1
 #define SCHOOL_MYSTICISM   2
 #define SCHOOL_OBSERVATION 3
-const char *list_magicschools[]=
+#define NUM_SCHOOLS 4
+
+struct Academy
 {
-   "School of Alteration",
-   "School of Destruction",
-   "School of Mysticism",
-   "School of Observation",
-   0
+	const char *name;
+	int related_skill;
 };
+
+Academy magic_schools[NUM_SCHOOLS]=
+{
+	{"School of Alteration", SKILL_ALTERATION},
+	{"School of Destruction", SKILL_DESTRUCTION},
+	{"School of Mysticism", SKILL_MYSTICISM},
+	{"School of Observation", SKILL_OBSERVATION}
+};
+
+//===
 
 const char *txt_teach1=
 "\007It's time to create your background. You have a choice of selecting "
@@ -66,171 +138,122 @@ const char *txt_teach1=
 const char *txt_teach2=
 "\007You can choose a path for your magic studies.\n\n";
 
-int School::Study(playerinfo &plr, bool automatic)
+School::School(bool a)
+	: teacher(0), school(0), learnvalue(0), automatic(a)
 {
-	int teacher = 0, school = 0;
+	//create list of teacher names
+	for (int i=0; i<NUM_TEACHERS; i++)
+		names.push_back(teacher_data[i].name);
+
+	//create list of school names
+	for (int i=0; i<NUM_SCHOOLS; i++)
+		school_names.push_back(magic_schools[i].name);
+}
+
+void School::Orientation(playerinfo &plr)
+{
+	if (teacher_data[teacher].has_academy)
+	{
+		if (automatic)
+		{
+			school=RANDU(4);
+		}
+		else
+		{
+			my_wordwraptext(txt_teach2, get_cursor_y(),
+				SCREEN_LINES, 0, SCREEN_COLS);
+
+			school=select_textlist("Select a direction for your studies",
+				school_names, false);
+		}
+
+		//modify the skill of this magic school
+		plr.skills.modify_raise(
+			SKILLGRP_GENERIC, magic_schools[school].related_skill,
+			learnvalue/2, true);
+	}
+}
+
+bool School::Select_Teacher(int age)
+{
+	bool rv=true;
+
+	if (automatic)
+	{
+		teacher=RANDU(NUM_TEACHERS);
+	}
+	else
+	{
+		clear_screen();
+		my_wordwraptext(txt_teach1, get_cursor_y(),
+			SCREEN_LINES, 0, SCREEN_COLS);
+
+		my_printf("At the age of %d you decided to ... \n\n", age);
+
+		teacher=select_textlist("Choose a teacher ('q' to end studies)",
+			names, true);
+
+		if (teacher<0)
+			rv=false;
+	}
+
+	return rv;
+}
+
+int School::Study(playerinfo &plr)
+{
 	int yearstook=6+RANDU(4);
 
-	//   my_printf("You were %d years old at the start of your studies.\n",
-	//	     yearstook);
 	clear_screen();
 
 	while (yearstook < 20)
 	{
-		if (automatic)
+		if (Select_Teacher(yearstook)==false)
 		{
-			teacher=RANDU(NUM_TEACHERS);
-		}
-		else
-		{
-			clear_screen();
-			my_wordwraptext(txt_teach1, get_cursor_y(), SCREEN_LINES, 0, SCREEN_COLS);
-
-			my_printf("At the age of %d you decided to ... \n\n", yearstook);
-
-			teacher=select_textlist("Choose a teacher (Q to end studies)",
-				list_teachers, true);
-
-			if (teacher<0)
-			{
-				my_printf("You decide to end your studies.\n");
-				return yearstook;
-			}
+			my_printf("\nYou decide to end your studies.\n");
+			break;
 		}
 
+		//after studies...
 		yearstook+=3;
-		int learnvalue=150 + RANDU(150);
+		learnvalue=150 + RANDU(150);
 
-		if (teacher==TEACHER_ALBINIA || teacher==TEACHER_ALREDOR ||
-			teacher==TEACHER_THORNDARR)
+		//take possible extra studies
+		Orientation(plr);
+
+		//affect alignment of the teacher
+		plr.Change_Alignment(teacher_data[teacher].alignment,
+			100+RANDU(ALIGNMENT_LIMIT/2));
+
+		plr.skills.modify_raise(
+			SKILLGRP_WEAPON, SKILL_DAGGER,
+			learnvalue, true);
+
+		//modify skills you learned
+		School_Skill *sk=teacher_data[teacher].skills;
+
+		int i=0;
+		while (sk[i].group!=SKILLGRP_ENDLIST)
 		{
-			if (automatic)
-			{
-				school=RANDU(4);
-			}
-			else
-			{
-				my_wordwraptext(txt_teach2, get_cursor_y(),
-					SCREEN_LINES, 0, SCREEN_COLS);
+			int amount=learnvalue;
+			const int d=sk[i].divisor;
+			if (d>0) amount=amount/d;
 
-				school=select_textlist("Select a direction for your studies",
-					list_magicschools, false);
-			}
-			switch (school)
-			{
-				case SCHOOL_ALTERATION:
-					plr.skills.modify_raise(
-						SKILLGRP_GENERIC, SKILL_ALTERATION,
-						learnvalue/2, true);
-					break;
-				case SCHOOL_DESTRUCTION:
-					plr.skills.modify_raise(
-						SKILLGRP_GENERIC, SKILL_DESTRUCTION,
-						learnvalue/2, true);
-					break;
-				case SCHOOL_OBSERVATION:
-					plr.skills.modify_raise(
-						SKILLGRP_GENERIC, SKILL_OBSERVATION,
-						learnvalue/2, true);
-					break;
-				case SCHOOL_MYSTICISM:
-					plr.skills.modify_raise(
-						SKILLGRP_GENERIC, SKILL_MYSTICISM,
-						learnvalue/2, true);
-					break;
-				default:
-					break;
-			}
+			plr.skills.modify_raise(
+				sk[i].group, sk[i].type, amount, true);
+			i++;
 		}
 
-		if (teacher==TEACHER_ALREDOR)
+		if (automatic==false)
 		{
-			plr.Change_Alignment('c',
-				100+RANDU(ALIGNMENT_LIMIT/2));
-			plr.skills.modify_raise(
-				SKILLGRP_WEAPON, SKILL_DAGGER,
-				learnvalue, true);
-			plr.skills.modify_raise(
-				SKILLGRP_MAGIC, SPELL_CURSE,
-				learnvalue/4, true);
+			my_printf("\nYou studied 3 years with %s.\n",
+				teacher_data[teacher].name);
+			showmore(false, false);
 		}
-
-		if (teacher==TEACHER_ALBINIA)
-		{
-			plr.Change_Alignment('n',
-				100 + RANDU(ALIGNMENT_LIMIT/2));
-			plr.skills.modify_raise(
-				SKILLGRP_WEAPON, SKILL_STAFF,
-				learnvalue, true);
-			plr.skills.modify_raise(
-				SKILLGRP_MAGIC, SPELL_CONFUZE,
-				learnvalue/4, true);
-		}
-
-		if (teacher==TEACHER_MANDALIN)
-		{
-			plr.Change_Alignment('n',
-				100 + RANDU(ALIGNMENT_LIMIT/2));
-			plr.skills.modify_raise(
-				SKILLGRP_WEAPON, SKILL_SWORD,
-				learnvalue, true);
-			plr.skills.modify_raise(
-				SKILLGRP_WEAPON, SKILL_SHIELD,
-				learnvalue/2, true);
-		}
-
-		if (teacher==TEACHER_FERDINAND)
-		{
-			plr.Change_Alignment('l',
-				100 + RANDU(ALIGNMENT_LIMIT/2));
-
-			plr.skills.modify_raise(
-				SKILLGRP_WEAPON, SKILL_SWORD,
-				learnvalue, true);
-		}
-
-		if (teacher==TEACHER_ERIOL)
-		{
-			plr.Change_Alignment('n',
-				100 + RANDU(ALIGNMENT_LIMIT/2));
-
-			plr.skills.modify_raise(
-				SKILLGRP_WEAPON, SKILL_BOW,
-				learnvalue/2, true);
-			plr.skills.modify_raise(
-				SKILLGRP_WEAPON, SKILL_DAGGER,
-				learnvalue/2, true);
-			plr.skills.modify_raise(
-				SKILLGRP_GENERIC, SKILL_FOODGATHER,
-				learnvalue/2, true);
-			plr.skills.modify_raise(
-				SKILLGRP_GENERIC, SKILL_FINDWEAKNESS,
-				learnvalue/4, true);
-		}
-
-		if (teacher==TEACHER_THORNDARR)
-		{
-			plr.Change_Alignment('l',
-				100 + RANDU(ALIGNMENT_LIMIT/2));
-
-			plr.skills.modify_raise(
-				SKILLGRP_GENERIC, SKILL_HEALING,
-				learnvalue/2, true);
-			plr.skills.modify_raise(
-				SKILLGRP_WEAPON, SKILL_DAGGER,
-				learnvalue/4, true);
-			plr.skills.modify_raise(
-				SKILLGRP_GENERIC, SKILL_FINDWEAKNESS,
-				learnvalue/4, true);
-		}
-
-		my_printf("\nYou studied 3 years with %s.\n",
-			list_teachers[teacher]);
 	}
 
-#ifndef debug_birth
-	showmore(false, false);
-#endif
+	if (automatic==false && yearstook<20)
+		showmore(false, false);
 
 	return yearstook;
 }

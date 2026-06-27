@@ -25,6 +25,7 @@
 #include "names.h"
 #include "options.h"
 #include "output.h"
+#include "school.h"
 #include "script.h"
 #include "spawner.h"
 #include "test.h"
@@ -38,13 +39,14 @@ void test_hitting();
 void test_keys();
 void test_random_generator();
 void test_scripts();
+void test_studying();
 void test_valuables();
 void test_window();
 
 void run_current_test()
 {
-	test_window();
-	
+	test_studying();
+
 	GAME_NOTIFYFLAGS|=GAME_DO_REDRAW;
 }
 
@@ -66,7 +68,7 @@ void test_keys()
 		k=my_getch();
 
 		string s=format("{} ({})", get_keyname(k), k);
-		
+
 		msg.add(s.c_str(), CH_GREEN);
 	}
 }
@@ -88,7 +90,13 @@ void test_valuables()
 void test_scripts()
 {
 	//texts->Random_Message(Script::Eating_Sound);
-	texts->Debug(Script::Sparhawk_Comments);	
+	texts->Debug(Script::Sparhawk_Comments);
+}
+
+void test_studying()
+{
+	School sch(false);
+	sch.Study(player);
 }
 
 void test_window()
@@ -99,5 +107,5 @@ void test_window()
 	"fits in the window and how it looks if the text is too long "
 	"for the window. Just a little bit more text here.");
 
-	wait_key();	
+	wait_key();
 }

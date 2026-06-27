@@ -336,8 +336,8 @@ int Birth::Fast_Action()
 	player.m.gender=random_number(SEX_MALE, SEX_FEMALE);
 	Random_Stats(player.stat);
 
-	School sch;
-	const int yearstook=sch.Study(player, true);
+	School sch(true);
+	const int yearstook=sch.Study(player);
 
 	Randomeffect(yearstook);
 
@@ -446,8 +446,8 @@ int Birth::Player_Born(gamedata *mygame)
 	for (int num=0; num<NUM_RANDEFFECT; num++)
 		used_effects[num]=0;
 
-	School sch;
-	yearstook=sch.Study(player, automode);
+	School sch(automode);
+	yearstook=sch.Study(player);
 
 	Randomeffect(yearstook);
 	Ask_Skills();
