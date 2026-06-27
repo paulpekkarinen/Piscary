@@ -26,7 +26,6 @@
 #include "input.h"
 #include "inventor.h"
 #include "invnode.h"
-#include "material.h"
 #include "message.h"
 #include "script.h"
 #include "selgro.h"
@@ -123,7 +122,6 @@ void eat_food(playerinfo *plr, level_type *level)
 		}
 		else
 			msg.vnewmsg(CH_RED, "You can't eat that, for gods sake "
-				"it's made out of %s.",
-				materials[eatit->i.material].name);
+				"it's made out of %s.", eatit->Get_Material_Name());
 	}
 }

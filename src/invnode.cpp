@@ -41,12 +41,17 @@ real invnode::Get_Material_Mod()
 	else
 		matmod=1.0;
 
-	return matmod;	
+	return matmod;
 }
 
 const char *invnode::Get_Name()
 {
 	return i.name.c_str();
+}
+
+const char *invnode::Get_Material_Name()
+{
+	return materials[i.material].name;
 }
 
 int invnode::Get_Weight()

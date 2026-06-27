@@ -15,15 +15,16 @@ struct invnode
 
 	int count; // number of this kind of items in inventory
 
-	int slot; // if item is equipped, slot number 
+	int slot; // if item is equipped, slot number
 	item_def i;	// item definition structure
 
 	invnode();
-	
+
 	Coord Get_Location();
 	int Get_Weight(); //includes amount of items (count)
 	real Get_Material_Mod(); //in shop pricing
 	const char *Get_Name();
+	const char *Get_Material_Name();
 
 	void Set_Location(const Coord &c);
 

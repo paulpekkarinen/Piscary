@@ -13,7 +13,7 @@ struct Shop_Data
 {
 	int script_id;
 	int sellp;
-	int buyp;	
+	int buyp;
 };
 
 const Shop_Data shop_data[Shoppe::Amt_Of_Shops]=
@@ -27,13 +27,13 @@ const Shop_Data shop_data[Shoppe::Amt_Of_Shops]=
 	//note: these shop types are not yet designed
 	{Script::Shop_General, 100, 50},
 	{Script::Shop_General, 100, 50},
-	{Script::Shop_General, 100, 50}	
+	{Script::Shop_General, 100, 50}
 };
 
 Shoppe::Shoppe()
 	: type(None), subtype(0), sellp(0), buyp(0)
 {
-	
+
 }
 
 const char *Shoppe::Get_Name()
@@ -51,7 +51,7 @@ real Shoppe::Get_Selling_Price(invnode *item)
 	mod=mod/100;
 	copper=copper * mod * item->Get_Material_Mod();
 
-	return copper;	
+	return copper;
 }
 
 bool Shoppe::Is_Open()
@@ -66,7 +66,7 @@ bool Shoppe::Is_Open()
 bool Shoppe::Accept_Item(invnode *item)
 {
 	bool rv=false;
-	
+
 	switch (type)
 	{
 		case Armour:
@@ -112,7 +112,7 @@ void Shoppe::Item_Sold(invnode *item)
 	mod=mod/100;
 	real copper=(real)item->i.price;
 	copper=copper * item->Get_Material_Mod() * mod;
-	item->i.price=(int32u)copper;	
+	item->i.price=(int32u)copper;
 }
 
 void Shoppe::Shopify(int st)

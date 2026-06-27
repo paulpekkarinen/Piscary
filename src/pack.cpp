@@ -200,10 +200,12 @@ int getitem_inner(playerinfo *plr, level_type *level, invnode *lptr)
 		}
 	}
 
+	const char *matname=lptr->Get_Material_Name();
+
 	if (count==0)
 	{
 		msg.vnewmsg(C_WHITE, "Item %s %s was not taken.",
-			materials[lptr->i.material].name, lptr->i.name.c_str());
+			matname, lptr->i.name.c_str());
 		return 0;
 	}
 
@@ -220,11 +222,11 @@ int getitem_inner(playerinfo *plr, level_type *level, invnode *lptr)
 		if (count==1)
 		{
 			msg.vnewmsg(C_WHITE, "The %s %s weighs too much for you.",
-				materials[lptr->i.material].name, lptr->i.name.c_str());
+				matname, lptr->i.name.c_str());
 		}
 		else
 			msg.vnewmsg(C_WHITE, "Those %d %s %s's weight too much for you.",
-				count, materials[lptr->i.material].name, lptr->i.name.c_str());
+				count, matname, lptr->i.name.c_str());
 		return 0;
 	}
 
@@ -266,7 +268,7 @@ bool player_did_drop(invnode *dropit)
 	if (dropit->slot >= 0)
 	{
 		msg.vnewmsg(C_YELLOW, "Item %s %s is in use, unequip it first!",
-			materials[dropit->i.material].name, dropit->i.name.c_str());
+			dropit->Get_Material_Name(), dropit->i.name.c_str());
 		return false;
 	}
 

@@ -329,6 +329,7 @@ void Display::Item_Info(item_def *iptr, int weight, int count, const char *acttx
 		pile="a ";
 
 	const char *itemname=iptr->name.c_str();
+	const char *matname=materials[iptr->material].name;
 
 	if (iptr->type==IS_FOOD)
 	{
@@ -351,8 +352,7 @@ void Display::Item_Info(item_def *iptr, int weight, int count, const char *acttx
 		else
 		{
 			item=format("{}{} {}{} labeled \"{}\"",
-				pile, materials[iptr->material].name,
-				itemname, many, iptr->sname);
+				pile, matname, itemname, many, iptr->sname);
 
 			if (list_scroll[iptr->group].flags & SCFLAG_NAMED)
 			{
@@ -377,7 +377,7 @@ void Display::Item_Info(item_def *iptr, int weight, int count, const char *acttx
 		{
 			item=format("{}{} {}{} {}{}",
 				pile, condition[iptr->icond], status,
-				materials[iptr->material].name, itemname, many);
+				matname, itemname, many);
 		}
 		else
 		{

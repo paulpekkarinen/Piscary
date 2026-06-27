@@ -57,7 +57,7 @@ int item_def::Age_Weapon(int luck, bool player)
 	{
 		const char *itemname=name.c_str();
 		int shard=0;
-		
+
 		/* substract damage modifiers */
 		meldam_mod--;
 		misdam_mod--;
@@ -75,9 +75,11 @@ int item_def::Age_Weapon(int luck, bool player)
 			}
 		}
 
+		const char *matname=materials[material].name;
+
 		if (player && icond<COND_BROKEN && !shard)
 			msg.newmsg(CH_BLUE, "Your %s %s seems worse.",
-				materials[material].name, itemname);
+				matname, itemname);
 
 		/* if stat reaches BROKEN condition then it must be removed
 	   by the caller of this routine */
@@ -87,10 +89,10 @@ int item_def::Age_Weapon(int luck, bool player)
 			{
 				if (shard)
 					msg.newmsg(CH_RED, "Your %s %s breaks into million pieces.",
-						materials[material].name, itemname);
+						matname, itemname);
 				else
 					msg.newmsg(CH_RED, "Your %s %s breaks up.",
-						materials[material].name, itemname);
+						matname, itemname);
 			}
 			melee_ds=0;
 			melee_dt=0;
@@ -235,29 +237,11 @@ bool item_def::Is_Weapon()
 
 int item_def::Rate()
 {
-	int value=0;
-
-	/*
-	 *  get pointer to the material list,
-	 * this is because there're two lists, one for armor items
-	 * and the other for the rest of items
-	 */
-	matlist *matptr=materials;
-
 	/* money is good to keep :) */
 	if (type==IS_MONEY)
 		return 1000;
 
-	matptr+=material;
-
-	/* at this time, rate only by appearing propability */
-	value+=matptr->appearprob;
-	value+=matptr->dam;
-	value+=matptr->hit;
-	value+=matptr->speed;
-	//   value-=matptr->breakprob;
-
-	return value;
+	return materials[material].Get_Value();
 }
 
 void item_def::Save(Tar_Ball &tb)

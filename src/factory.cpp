@@ -468,37 +468,13 @@ void Factory::Set_Material(item_def *i, int material)
 		while (1)
 		{
 			mat=RANDU(mucho.num_materials);
-			//			matptr=materials+mat;
-
 			const int prob=throwdice(10, 100, player.stat[STAT_LUC].Get());
 
 			/* if rand value smaller than appearing probability, continue */
 			if (prob >= materials[mat].appearprob)
 			{
-
 				/* accept only correct types of material */
-				if (materials[mat].status & MATSTAT_SPECIAL)
-					continue;
-
-				if (i->type==IS_MISWEAPON && i->group==WPN_BOW &&
-					(materials[mat].status & MATSTAT_NOTBOWS))
-					continue;
-				if (i->type==IS_MISSILE &&
-					materials[mat].status & MATSTAT_NOTMISSILE)
-					continue;
-
-				if ((i->type==IS_WEAPON2H || i->type==IS_WEAPON1H) &&
-					(materials[mat].status & MATSTAT_NOTWEAPON))
-					continue;
-				if ((i->type==IS_SHIELD || i->type == IS_BRACELET) &&
-					(materials[mat].status & MATSTAT_NOTWEAPON))
-					continue;
-
-				if (i->type==IS_RING &&
-					!(materials[mat].status & MATSTAT_RING))
-					continue;
-
-				if (i->type==IS_ARMOR && (materials[mat].status & MATSTAT_NOTARMOR))
+				if (materials[mat].Is_Suitable_For(i)==false)
 					continue;
 
 				if (materials[mat].appearprob >= 750)
@@ -515,21 +491,6 @@ void Factory::Set_Material(item_def *i, int material)
 	/* apply the material to item */
 	i->material=mat;
 
-	/* durability */
-	i->turnsleft=materials[mat].durability;
-
-	/* apply the material weight modifier */
-	i->weight=(int16u)(materials[mat].wmod * i->weight);
-
-	/* apply the damage and armorvalue modifiers */
-	if (i->type == IS_WEAPON2H || i->type == IS_WEAPON1H)
-		i->meldam_mod+=materials[mat].dam;
-
-	if (i->type == IS_MISWEAPON || i->type==IS_MISSILE)
-		i->misdam_mod+=materials[mat].dam;
-
-	if (i->type == IS_ARMOR || i->type == IS_SHIELD || i->type == IS_BRACELET)
-		i->ac+=materials[mat].dam;
-
-	i->dv+=materials[mat].dv;
+	//apply items modifiers
+	materials[mat].Apply_Item_Mods(i);
 }

@@ -225,10 +225,6 @@ int School::Study(playerinfo &plr)
 		plr.Change_Alignment(teacher_data[teacher].alignment,
 			100+RANDU(ALIGNMENT_LIMIT/2));
 
-		plr.skills.modify_raise(
-			SKILLGRP_WEAPON, SKILL_DAGGER,
-			learnvalue, true);
-
 		//modify skills you learned
 		School_Skill *sk=teacher_data[teacher].skills;
 
