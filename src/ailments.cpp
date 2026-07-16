@@ -25,32 +25,6 @@
 #include "output.h"
 #include "storage.h"
 
-/* a list of condition descriptions */
-const Ailments::cond_desc Ailments::cond_list[]=
-{
-   { "Bloated",    NULL, 0, CONDGRP_FOOD, CH_GREEN },
-   { "Satiated",   NULL, 0, CONDGRP_FOOD, C_GREEN },
-   { "Hungry",     NULL, 0, CONDGRP_FOOD, CH_YELLOW },
-   { "Starving",   NULL, 0, CONDGRP_FOOD, C_RED },
-   { "Fainting",   NULL, 0, CONDGRP_FOOD, CH_RED },
-   { "Fainted",    NULL, 0, CONDGRP_FOOD, CH_RED },
-   { "Burdened",   NULL, 0, CONDGRP_PW, C_YELLOW },
-   { "Strained",   NULL, 0, CONDGRP_PW, C_RED },
-   { "Overloaded", NULL, 0, CONDGRP_PW, CH_RED },
-   { "Confused",   NULL, 0, -1, C_MAGENTA },
-   { "Blessed",    NULL, 0, -1, CH_GREEN },
-   { "Cursed",     NULL, 0, -1, C_RED },
-   { "Stun",       NULL, 0, -1, C_RED },
-   { "Lucky",      NULL, 0, -1, CH_GREEN },
-   { "Bleeding",   NULL, 0, -1, CH_RED },
-   { "Poisoned",   NULL, 0, -1, CH_RED },
-   { "Paralysed",  NULL, 0, -1, CH_RED },
-   { "Legs_BAD",   NULL, 0, -1, CH_RED },
-   { "LArm_BAD",   NULL, 0, -1, CH_RED },
-   { "RArm_BAD",   NULL, 0, -1, CH_RED },
-   { "Dead!",      NULL, 0, -1, CHB_RED }
-};
-
 Ailments::~Ailments()
 {
 	init();
@@ -59,22 +33,24 @@ Ailments::~Ailments()
 Condition* Ailments::add(int cond, int value)
 {
 	/* remove all Ailments with same group as the new condition */
-	if (cond_list[cond].group >= 0)
-		delete_group(cond_list[cond].group);
+	const int g=Condition::Get_Group_Of(cond);
+	if (g>=0)
+		delete_group(g);
 
 	Condition *c=find(cond);
 
 	//add new if it doesn't exist
 	if (c==0)
 	{
-		c=new Condition;
+		c=new Condition(cond);
 		conds.push_back(c);
 	}
 
-	/* init condition */
-	c->type=cond;
-	c->val+=value;
-	c->time=0;
+	c->Change_Value(value);
+
+	//note: time is not used, maybe value should be strenght of the condition
+	//and time the current "value" decreased each turn by amount of slots
+	//c->time=0;
 
 	if (this==&player.conditions)
 		GAME_NOTIFYFLAGS |= GAME_CONDCHG;
@@ -91,7 +67,7 @@ void Ailments::delete_group(int group)
 
 	while (ii != conds.end())
 	{
-		if(cond_list[(*ii)->type].group==group)
+		if ((*ii)->Get_Group()==group)
 		{
 			delete (*ii);
 			ii=conds.erase(ii);
@@ -105,7 +81,7 @@ Condition* Ailments::find(int cond)
 	for (citr ii = conds.begin() ; ii != conds.end() ; ++ii)
 	{
 		Condition *cnd=(*ii);
-		if (cnd->type==cond) return cnd;
+		if (cnd->Get_Type()==cond) return cnd;
 	}
 
 	return 0;
@@ -115,13 +91,14 @@ int Ailments::get_value(int cond)
 {
 	Condition *cnd=find(cond);
 	if (cnd==0) return 0;
-	return cnd->val;
+	return cnd->Get_Value();
 }
 
 void Ailments::init()
 {
 	for (citr ii = conds.begin() ; ii != conds.end() ; ++ii)
 		delete (*ii);
+
 	conds.clear();
 }
 
@@ -134,7 +111,7 @@ void Ailments::remove(int cond)
 
 	while (ii != conds.end())
 	{
-		if((*ii)->type==cond)
+		if((*ii)->Get_Type()==cond)
 		{
 			delete (*ii);
 			ii=conds.erase(ii);
@@ -151,23 +128,9 @@ void Ailments::statshow(int y)
 
 	for (citr ii = conds.begin() ; ii != conds.end() ; ++ii)
 	{
-		Condition *cnd=(*ii);
-
-		if (cnd->type > CONDIT_MAX)
-		{
-			msg.vnewmsg(CH_RED,
-				"Error: Illegal condition %d (max=%d) in condition list.",
-				cnd->type, CONDIT_MAX);
-		}
-		else
-		{
-			/* stop if going over screen border */
-			if (is_over_border((int)strlen(cond_list[cnd->type].name)))
-				break;
-
-			set_color(cond_list[cnd->type].color);
-			my_printf("%s ",cond_list[cnd->type].name);
-		}
+		//stop showing if goes over the screen border
+		if ((*ii)->Show()==false)
+			break;
 	}
 }
 
@@ -177,17 +140,18 @@ void Ailments::handle(Actor *actor, int slots)
 
 	while (ii != conds.end())
 	{
-		if((*ii)->type==CONDIT_CONFUSED)
+		const bool done=(*ii)->Spend(slots);
+
+		if ((*ii)->Get_Type()==CONDIT_CONFUSED)
+			actor->Handle_Confusion(*ii);
+
+		if (done)
 		{
 			/* if set, then the condition should be deleted! */
-			if (actor->Handle_Confusion(*ii, slots))
-			{
-				GAME_NOTIFYFLAGS |= GAME_CONDCHG;
+			GAME_NOTIFYFLAGS |= GAME_CONDCHG;
 
-				delete (*ii);
-				ii=conds.erase(ii);
-			}
-			else ++ii;
+			delete (*ii);
+			ii=conds.erase(ii);
 		}
 		else ++ii;
 	}

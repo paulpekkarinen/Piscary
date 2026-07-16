@@ -387,25 +387,23 @@ void being::Getangry(level_type *level, Actor *kohde, bool always)
 	path.clear();
 }
 
-bool being::Handle_Confusion(Condition *cond, int slots)
+void being::Handle_Confusion(Condition *cond)
 {
-	if (sometimes() && gameview.Is_Visible(x, y))
+	const int v=cond->Get_Value();
+
+	if (v>0)
 	{
-		string s=monster_sprintf(this, true, true);
-		msg.vnewmsg(C_WHITE, "%s looks strangely distorted.", s.c_str());
+		if (sometimes() && gameview.Is_Visible(x, y))
+		{
+			string s=monster_sprintf(this, true, true);
+			msg.vnewmsg(C_WHITE, "%s looks strangely distorted.", s.c_str());
+		}
 	}
-
-	cond->val-=slots;
-
-	if (cond->val <= 0)
+	else
 	{
 		string s=monster_sprintf(this, true, true);
 		msg.vnewmsg(C_WHITE, "%s looks much more stable now.", s.c_str());
-
-		return true;
 	}
-
-	return false;
 }
 
 bool being::Is_Spotting()

@@ -37,7 +37,7 @@ struct being : public Actor
 	void Damage_Message(int damage, int bodypart) override;
 	void Gain_Experience(int gain) override;
 	void Getangry(level_type *level, Actor *kohde, bool always) override;
-	bool Handle_Confusion(Condition *cond, int slots) override;
+	void Handle_Confusion(Condition *cond) override;
 	void Move_To(const Coord &c);
 	bool Noticestuff();
 	bool Pick_Up_Item(level_type *level, invnode *itemptr);

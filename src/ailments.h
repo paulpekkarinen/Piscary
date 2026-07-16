@@ -6,9 +6,10 @@
 #define AILMENTS_H
 
 #include <list>
-#include "types.h"
 
-struct Condition;
+struct Actor;
+class Condition;
+class Tar_Ball;
 
 //List of conditions.
 class Ailments
@@ -17,18 +18,6 @@ class Ailments
 
 	typedef std::list<Condition*> cndlist;
 	typedef cndlist::iterator citr;
-
-	/* struct for condition description list */
-	struct cond_desc
-	{
-		const char *name;
-		const char *desc;
-		int16u flags;
-		int group;
-		int color;
-	};
-
-	static const cond_desc cond_list[];
 
 public:
 	~Ailments();

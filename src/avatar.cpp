@@ -240,20 +240,17 @@ void playerinfo::Go_Hunting()
 	huntmode=true;
 }
 
-bool playerinfo::Handle_Confusion(Condition *cond, int slots)
+void playerinfo::Handle_Confusion(Condition *cond)
 {
-	msg.newmsg("Confusion handling for you!", C_RED); //note: I guess this is missing?
+	const int v=cond->Get_Value();
 
-	cond->val-=slots;
-
-	if (cond->val <= 0)
+	if (v>0)
 	{
-		msg.newmsg("You feel more stable now.", CH_GREEN);
-
-		return true;
+		//note: I guess this is missing?
+		msg.newmsg("Confusion handling for you!", C_RED);
 	}
-
-	return false;
+	else
+		msg.newmsg("You feel more stable now.", CH_GREEN);
 }
 
 void playerinfo::Handlestatus(level_type *level, int slots)

@@ -49,7 +49,7 @@ struct playerinfo : public being
 	void Gain_Experience(int gain) override;
 
 	void Go_Hunting(); //wildhunt
-	bool Handle_Confusion(Condition *cond, int slots) override;
+	void Handle_Confusion(Condition *cond) override;
 	void Handlestatus(level_type *level, int slots);
 	void Hitwall();
 	void Initialize();
