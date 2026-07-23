@@ -14,7 +14,7 @@ struct resistpack
 	int cold;
 	int magic;
 	int elec;
-	
+
 	int water;
 	int acid;
 
@@ -44,10 +44,14 @@ struct resistpack
 		return *this;
 	}
 
+	int Get_Damage_Protection(int dam, int elem);
+
 	void Clear();
+	void Display_Status();
+	void Modify(resistpack &r);
 
 	void Save(Tar_Ball &tb);
-	void Load(Tar_Ball &tb);	
+	void Load(Tar_Ball &tb);
 };
 
 #endif

@@ -83,13 +83,7 @@ void Roleplay::Additembonus(hpslot *hpslot, Equipslot *eqslot)
 
 	if (eqslot->item->i.status & ITEM_ENCHANTED)
 	{
-		hpslot->res.fire+=eqslot->item->i.ench.res.fire;
-		hpslot->res.poison+=eqslot->item->i.ench.res.poison;
-		hpslot->res.cold+=eqslot->item->i.ench.res.cold;
-		hpslot->res.magic+=eqslot->item->i.ench.res.magic;
-		hpslot->res.elec+=eqslot->item->i.ench.res.elec;
-		hpslot->res.water+=eqslot->item->i.ench.res.water;
-		hpslot->res.acid+=eqslot->item->i.ench.res.acid;
+		hpslot->res.Modify(eqslot->item->i.ench.res);
 	}
 }
 

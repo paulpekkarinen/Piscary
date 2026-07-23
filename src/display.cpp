@@ -618,13 +618,8 @@ void Display::Player_Status(Actor &tonttu)
 			tonttu.hpp[i].max,
 			tonttu.hpp[i].ac);
 
-		my_printf(" Fire%03d Posn%03d Cold%03d Elec%03d Watr%03d Acid%03d\n%15s ",
-			tonttu.hpp[i].res.fire,
-			tonttu.hpp[i].res.poison,
-			tonttu.hpp[i].res.cold,
-			tonttu.hpp[i].res.elec,
-			tonttu.hpp[i].res.water,
-			tonttu.hpp[i].res.acid, "");
+		//resistances
+		tonttu.hpp[i].res.Display_Status();
 
 		if (tonttu.equips.is_usable(eqslot_from_hpslot[i]))
 		{
@@ -637,17 +632,6 @@ void Display::Player_Status(Actor &tonttu)
 			my_printf("Not usable!\n");
 		}
 		set_color(C_WHITE);
-
-		/*
-		  my_printf("%15s Fire=%3d Poison=%3d Cold=%3d "
-		  "Elec=%3d Water=%3d Acid=%3d\n", "",
-		  player.hpp[i].res.fire,
-		  player.hpp[i].res.poison,
-		  player.hpp[i].res.cold,
-		  player.hpp[i].res.elec,
-		  player.hpp[i].res.water,
-		  player.hpp[i].res.acid);
-		*/
 	}
 
 	set_color(C_GREEN);
@@ -664,7 +648,7 @@ void Display::Underline_Header(const char *txt, int color, int ucolor)
 	print_centered(0, txt);
 
 	set_color(ucolor);
-	drawline(1, '-');		
+	drawline(1, '-');
 }
 
 void Display::Redraw(level_type *level)
@@ -785,7 +769,7 @@ void Display::Stats(bool showmove)
 
 		gotoxy(1, 7);
 		my_printf("%6.1f gp",
-			((real)player.inv.copper) / valuables[MONEY_GOLD].value);		
+			((real)player.inv.copper) / valuables[MONEY_GOLD].value);
 	}
 
 	/* does experience need a redraw ? */
@@ -954,7 +938,7 @@ void Display::Title()
 				case '$': color=CH_YELLOW; break;
 				default: color=CH_WHITE; break;
 			}
-		
+
 			put_char(txt_logo[i], color);
 			i++;
 		}

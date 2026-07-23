@@ -2,6 +2,8 @@
 
 //Refactored 27.6.2021 - 4.12.2022 Paul K. Pekkarinen
 
+#include "damage.h"
+#include "output.h"
 #include "resist.h"
 #include "storage.h"
 
@@ -14,6 +16,44 @@ void resistpack::Clear()
 	elec=0;
 	water=0;
 	acid=0;
+}
+
+int resistpack::Get_Damage_Protection(int dam, int elem)
+{
+	int rv;
+
+	switch (elem)
+	{
+		case ELEMENT_FIRE: rv=fire; break;
+		case ELEMENT_POISON: rv=poison; break;
+		case ELEMENT_COLD: rv=cold; break;
+		case ELEMENT_ELEC: rv=elec; break;
+		case ELEMENT_WATER: rv=water; break;
+		case ELEMENT_ACID: rv=acid; break;
+		default: rv=-1; break;
+	}
+
+	if (rv==-1)
+		return 0;
+
+	return (int)((real)dam/100.0) * rv;
+}
+
+void resistpack::Display_Status()
+{
+	my_printf(" Fire%03d Posn%03d Cold%03d Elec%03d Watr%03d Acid%03d\n%16c",
+		fire, poison, cold, elec, water, acid, ' ');
+}
+
+void resistpack::Modify(resistpack &r)
+{
+	fire+=r.fire;
+	poison+=r.poison;
+	cold+=r.cold;
+	magic+=r.magic;
+	elec+=r.elec;
+	water+=r.water;
+	acid+=r.acid;
 }
 
 void resistpack::Save(Tar_Ball &tb)

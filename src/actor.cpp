@@ -179,36 +179,7 @@ void Actor::Damage_Issue(int element, int damage, int bodypart)
 		return;
 
 	/* for damage protection */
-	int dprot;
-	switch(element)
-	{
-		/* normal weapon hit damage */
-		case ELEMENT_NOTHING:
-			dprot=0;
-		break;
-		case ELEMENT_FIRE:
-			dprot=(int)(((real)damage/100.0) * hpp[bodypart].res.fire);
-		break;
-		case ELEMENT_POISON:
-			dprot=(int)(((real)damage/100.0) * hpp[bodypart].res.poison);
-		break;
-		case ELEMENT_COLD:
-			dprot=(int)(((real)damage/100.0) * hpp[bodypart].res.cold);
-		break;
-		case ELEMENT_ELEC:
-			dprot=(int)(((real)damage/100.0) * hpp[bodypart].res.elec);
-		break;
-		case ELEMENT_WATER:
-			dprot=(int)(((real)damage/100.0) * hpp[bodypart].res.water);
-		break;
-		case ELEMENT_ACID:
-			dprot=(int)(((real)damage/100.0) * hpp[bodypart].res.acid);
-		break;
-
-		default:
-			dprot=0;
-		break;
-	}
+	int dprot=hpp[bodypart].res.Get_Damage_Protection(damage, element);
 
 	/* armor protection */
 	if(hpp[bodypart].ac > damage)
@@ -225,7 +196,7 @@ void Actor::Damage_Issue(int element, int damage, int bodypart)
 	//   msg.vnewmsg(C_GREEN, "AC=%d, resprot=%d.", hpptr[bodypart].ac, dprot);
 	//   msg.vnewmsg(C_GREEN, "final=%d.", damage);
 
-	   /* substract damage */
+	/* substract damage */
 	hpp[bodypart].cur-=damage;
 
 	if(hpp[bodypart].cur<0)
