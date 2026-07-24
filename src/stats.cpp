@@ -17,35 +17,61 @@
 //Refactored 20.8.2021 - 27.2.2023 Paul K. Pekkarinen
 
 #include "game.h"
+#include "output.h"
 #include "stats.h"
 #include "storage.h"
 
-const char *txt_statnames[]=
+struct Stat_Data
 {
-   "Strength",
-   "Toughness",
-   "Constitution",
-   "Charisma",
-   "Dexterity",
-   "Wisdom",
-   "Intelligence",
-   "Luck",
-   "Speed",
-   0
+	const char *name;
+	const char *short_name;
+	const char *description;
 };
 
-const char *txt_statnames_short[]=
+Stat_Data stat_data[STAT_ARRAYSIZE]=
 {
-   "STR",
-   "TGH",
-   "CON",
-   "CHA",
-   "DEX",
-   "WIS",
-   "INT",
-   "LUC",
-   "SPD",
-   0
+	{"Strength", "STR",
+	"\007High strength makes you, well eh..., stronger. It affects your carrying "
+	"capasity and several other things like how hard you hit your foes. "
+	},
+	{"Toughness", "TGH",
+	"\007Toughness affects in many ways. High toughness makes you more tolerant "
+	"to attacks, affecting your defence rating. Low toughness makes the opposite. "
+	"There're some other situations too where high toughness does aid your "
+	"journeys."
+	},
+	{"Constitution", "CON",
+	"\007Constitution tells how your body is built. The natural strength of your "
+	"body. It affects your healing rate, how fast your wounds recover."
+	},
+	{"Charisma", "CHA",
+	"\007Charisma is your \"outlook\", how well you get by with others, how "
+	"good looking you are, and so on.\n\n"
+	"\001You can't edit this stat because it really doesn't affect anything "
+	"yet."
+	},
+	{"Dexterity", "DEX",
+	"\007Dexterity affects your speed and other speed related issues. High "
+	"dexterity allows you to act faster in all situations."
+	},
+	{"Wisdom", "WIS",
+	"\007Wisdom tells something about your general knowledge.\n\n"
+	"\001You can't edit this stat because it really doesn't affect anything "
+	"yet."
+	},
+	{"Intelligence", "INT",
+	"\007Intelligence affects your learning ability. The higher your intelligence "
+	"is, the better you can learn new skills, spells and so on.\n\n "
+	"\001You can't edit this stat because it really doesn't affect anything "
+	"yet."
+	},
+	{"Luck", "LUC",
+	"\007The amount of luck you have."
+	},
+	{"Speed", "SPD",
+	"\007Speed is a derived attribute, it's calculated mainly by using your "
+	"dexterity. High speed allows you to move faster."
+	}
 };
 
 const char *txt_statrating[]=
@@ -63,6 +89,25 @@ const char *txt_statrating[]=
    "Immortal",
    0
 };
+
+const char *Stat::Get_Name()
+{
+	return stat_data[st].name;
+}
+
+const char *Stat::Get_Short_Name()
+{
+	return stat_data[st].short_name;
+}
+
+void Stat::Show_Description(int top)
+{
+	my_wordwraptext(stat_data[st].description,
+		top, SCREEN_LINES, 1, SCREEN_COLS);
+	clrtobot();
+}
+
+//===
 
 int statpack::Get()
 {

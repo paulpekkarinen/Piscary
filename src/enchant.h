@@ -23,9 +23,9 @@ struct enchantments
 
 	/* special damage */
 	int dmat;  /* fire, cold etc. */
-	int ds;    /* dice sides */
-	int dt;    /* dice times */
-	int dmod;  /* dam modifier */
+	int dice_sides;
+	int dice_times;
+	int damage_mod;
 
 	enchantments& operator=(const enchantments& right)
 	{
@@ -33,14 +33,14 @@ struct enchantments
 
 		pos_eff=right.pos_eff;
 		neg_eff=right.neg_eff;
-		
+
 		res=right.res;
 		stats=right.stats;
 
 		dmat=right.dmat;
-		ds=right.ds;
-		dt=right.dt;
-		dmod=right.dmod;
+		dice_sides=right.dice_sides;
+		dice_times=right.dice_times;
+		damage_mod=right.damage_mod;
 
 		return *this;
 	}

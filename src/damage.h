@@ -16,6 +16,15 @@
 #define ELEMENT_WATER   5
 #define ELEMENT_ACID    6
 
+struct Damage
+{
+	int amount;
+	int element;
+	int bodypart;
+
+	Damage(int a, int e, int b) : amount(a), element(e), bodypart(b) { }
+};
+
 void damage_checkbodyparts(level_type *level, Actor *mptr);
 int damage_issue(level_type *level,
 	Actor *target, Actor *attacker,
@@ -23,5 +32,3 @@ int damage_issue(level_type *level,
 	const char *message);
 
 #endif
-
-

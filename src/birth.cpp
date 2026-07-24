@@ -197,10 +197,12 @@ void Birth::Randomeffect(int age)
 	else if (effect==RANDEFF_PLAGUE)
 	{
 		amount=(5+RANDU(10));
-		int stat=RANDU(STAT_BASICARRAY);
-		player.stat[stat].Change_Initial(amount, true);
+		const int st=RANDU(STAT_BASICARRAY);
+		player.stat[st].Change_Initial(amount, true);
 		amount=-amount;
-		my_printf(s.c_str(), age, 1+RANDU(5), amount, txt_statnames_short[stat]);
+
+		Stat stype(st);
+		my_printf(s.c_str(), age, 1+RANDU(5), amount, stype.Get_Short_Name());
 	}
 }
 
@@ -223,8 +225,10 @@ void Birth::Ask_Stats(bool automatic)
 
 	for (int i=0; i<7; i++)
 	{
+		Stat stype(i);
+
 		set_color(C_WHITE);
-		my_printf("%-20s: ", txt_statnames[i]);
+		my_printf("%-20s: ", stype.Get_Name());
 		stat_tx=get_cursor_x();
 		set_color(C_YELLOW);
 		cstat=player.stat[i].Get();
@@ -264,12 +268,14 @@ void Birth::Ask_Stats(bool automatic)
 		if ((ch==KEY_DOWN || ch=='z' || ch=='2') && cy<6)
 		{
 			cy++;
-			display->Stat_Description(cy, desc_y);
+			Stat stype(cy);
+			stype.Show_Description(desc_y);
 		}
 		else if ((ch==KEY_UP || ch=='a' || ch=='8') && cy>0)
 		{
 			cy--;
-			display->Stat_Description(cy, desc_y);
+			Stat stype(cy);
+			stype.Show_Description(desc_y);
 		}
 		else if ((ch=='+' || ch==KEY_RIGHT || ch=='6') && statpool>0)
 		{

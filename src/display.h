@@ -38,7 +38,6 @@ public:
 	void Player_Status(Actor &tonttu); //status screen
 	void Redraw(level_type *level); //redraw everything on the gameplay screen
 	void Selection_Prompt(int weight);
-	void Stat_Description(int st, int top);
 	void Stats(bool showmove); //print side and bottom line stats
 	void Story();
 	void Title();

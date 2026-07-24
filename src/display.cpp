@@ -68,62 +68,6 @@ const char *condition_txt[]=
      0,
 };
 
-const char *statdesc_str=
-"\007High strength makes you, well eh..., stronger. It affects your carrying "
-"capasity and several other things like how hard you hit your foes. ";
-
-const char *statdesc_dex=
-"\007Dexterity affects your speed and other speed related issues. High "
-"dexterity allows you to act faster in all situations. ";
-
-const char *statdesc_tgh=
-"\007Toughness affects in many ways. High toughness makes you more tolerant "
-"to attacks, affecting your defence rating. Low toughness makes the opposite. "
-"There're some other situations too where high toughness does aid your "
-"journeys.";
-
-const char *statdesc_con=
-"\007Constitution tells how your body is built. The natural strength of your "
-"body. It affects your healing rate, how fast your wounds recover.";
-
-const char *statdesc_cha=
-"\007Charisma is your \"outlook\", how well you get by with others, how "
-"good looking you are, and so on.\n\n"
-"\001You can't edit this stat because it really doesn't affect anything "
-"yet.\n";
-
-const char *statdesc_wis=
-"\007Wisdom tells something about your general knowledge.\n\n"
-"\001You can't edit this stat because it really doesn't affect anything "
-"yet.\n";
-
-const char *statdesc_int=
-"\007Intelligence affects your learning ability. The higher your intelligence "
-"is, the better you can learn new skills, spells and so on.\n\n "
-"\001You can't edit this stat because it really doesn't affect anything "
-"yet.\n";
-
-const char *statdesc_luc=
-"\007";
-
-const char *statdesc_spd=
-"\007Speed is a derived attribute, it's calculated mainly by using your "
-"dexterity. High speed allows you to move faster.";
-
-const char *txt_statdescs[]=
-{
-   statdesc_str,
-   statdesc_tgh,
-   statdesc_con,
-   statdesc_cha,
-   statdesc_dex,
-   statdesc_wis,
-   statdesc_int,
-   statdesc_luc,
-   statdesc_spd,
-   0
-};
-
 char itempstr[100];
 
 const char *food_condition[]=
@@ -746,12 +690,6 @@ void Display::Stat_Value(int wy, const char *txt, statpack *pstat)
 		set_color(CH_RED);
 		my_printf(" (%2d)",pstat->perm);
 	}
-}
-
-void Display::Stat_Description(int st, int top)
-{
-	my_wordwraptext(txt_statdescs[st], top, SCREEN_LINES, 1, SCREEN_COLS);
-	clrtobot();
 }
 
 void Display::Stats(bool showmove)

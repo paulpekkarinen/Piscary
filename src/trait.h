@@ -9,7 +9,7 @@
 struct Trait
 {
 	const char *name;
-	const char *attr;
+	int affected_stat;
 	int mod;
 	int skl_gen;
 	int skl_magic;

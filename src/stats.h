@@ -25,6 +25,20 @@
 #define STATMAX_GEN		99
 #define STATMIN_GEN		0
 
+class Stat
+{
+private:
+	int st;
+
+public:
+	Stat(int s) : st(s) { }
+
+	const char *Get_Name();
+	const char *Get_Short_Name();
+
+	void Show_Description(int top);
+};
+
 struct statpack
 {
 	int initial;	/* initial status value */
@@ -45,8 +59,6 @@ struct statpack
 	void Load(Tar_Ball &tb);
 };
 
-extern const char *txt_statnames[];
-extern const char *txt_statnames_short[];
 extern const char *txt_statrating[];
 
 #endif
