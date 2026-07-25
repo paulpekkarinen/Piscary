@@ -23,12 +23,17 @@ struct Damage
 	int bodypart;
 
 	Damage(int a, int e, int b) : amount(a), element(e), bodypart(b) { }
+	Damage(int a, int e);
+
+	void Critical_Hit();
+	void Increase(int a);
+	bool Whole_Body();
 };
 
 void damage_checkbodyparts(level_type *level, Actor *mptr);
-int damage_issue(level_type *level,
-	Actor *target, Actor *attacker,
-	int element, int damage, int bodypart,
+int damage_issue(level_type *level, Actor *target, Actor *attacker,
+	Damage &dmg, const char *message);
+int damage_issue(level_type *level, Actor *target, Damage &dmg,
 	const char *message);
 
 #endif

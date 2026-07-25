@@ -34,7 +34,7 @@ struct being : public Actor
 	void Check_Room(level_type *level);
 	void Checkstat(level_type *level);
 	void Checkturn(level_type *level);
-	void Damage_Message(int damage, int bodypart) override;
+	void Damage_Message(Damage &dmg) override;
 	void Gain_Experience(int gain) override;
 	void Getangry(level_type *level, Actor *kohde, bool always) override;
 	void Handle_Confusion(Condition *cond) override;

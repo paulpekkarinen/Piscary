@@ -69,16 +69,17 @@ namespace cmd
 		Close_Door,
 		Cast_Spell,
 		Eat_Food,
+		Entrap,
 		Throw_Or_Shoot,
 		Rest,
 
 		Talk,
 		Pay_Bill,
 		Check_Bill,
-	
+
 		Redraw_Screen,
 		Previous_Message,
-		Show_Message_Buffer,		
+		Show_Message_Buffer,
 		Show_Help_Menu,
 		Show_Keys,
 		Show_Error_Log,

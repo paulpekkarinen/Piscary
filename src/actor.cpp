@@ -170,25 +170,28 @@ bool Actor::Can_Carry(int weight)
 	return true;
 }
 
-void Actor::Damage_Issue(int element, int damage, int bodypart)
+void Actor::Damage_Issue(Damage &dmg)
 {
 	const int race=Get_Race();
+	const int bp=dmg.bodypart;
 
 	/* if target has no such bodypart, cancel out */
-	if(npc_races[race].bodyparts[bodypart] < 0)
+	if(npc_races[race].bodyparts[bp] < 0)
 		return;
 
+	int damage=dmg.amount;
+
 	/* for damage protection */
-	int dprot=hpp[bodypart].res.Get_Damage_Protection(damage, element);
+	int dprot=hpp[bp].res.Get_Damage_Protection(damage, dmg.element);
 
 	/* armor protection */
-	if(hpp[bodypart].ac > damage)
+	if (hpp[bp].ac > damage)
 		damage=0;
 	else
-		damage-=hpp[bodypart].ac;
+		damage-=hpp[bp].ac;
 
 	/* resistance protection */
-	if(dprot > damage)
+	if (dprot > damage)
 		damage=0;
 	else
 		damage-=dprot;
@@ -197,10 +200,10 @@ void Actor::Damage_Issue(int element, int damage, int bodypart)
 	//   msg.vnewmsg(C_GREEN, "final=%d.", damage);
 
 	/* substract damage */
-	hpp[bodypart].cur-=damage;
+	hpp[bp].cur-=damage;
 
-	if(hpp[bodypart].cur<0)
-		hpp[bodypart].cur=0;
+	if(hpp[bp].cur<0)
+		hpp[bp].cur=0;
 }
 
 void Actor::Death()

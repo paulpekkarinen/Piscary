@@ -158,23 +158,21 @@ bool meleeinner(
 	}
 
 	/* get a random target bodypart */
-	int tslot=bparts[RANDU(j)];
+	Damage d(damage, ELEMENT_NOTHING, bparts[RANDU(j)]);
 
 	//   inttotal=calculate_meleehit(iptr, player.skills, get_stat( &player.stat[STAT_LUC]),
 	//npc_races[mptr->m.race].bodyparts[tslot], player.tactic );
 
-	int inttotal=plr->Calculate_Meleehit(eqptr, mptr, tslot);
+	const int inttotal=plr->Calculate_Meleehit(eqptr, mptr, d.bodypart);
 
 	/* 1..100 */
-	int hitresult=1+RANDU(100);
+	const int hitresult=1+RANDU(100);
 
-	damage+=tactics_data[plr->tactic].dam;
-	if (damage<0)
-		damage=0;
+	d.Increase(tactics_data[plr->tactic].dam);
 
 	if (hitresult > inttotal)
 	{
-		damage=0;
+		d.amount=0;
 		msg.newmsg("You miss.", C_WHITE);
 	}
 	else
@@ -189,16 +187,16 @@ bool meleeinner(
 		{
 			i=4;
 			msg.newmsg("That was a critical hit(2xDAM)!", CH_WHITE);
-			damage+=damage;
+			d.Critical_Hit();
 		}
 
 		/* now increase melee weaponskills learning counter */
 		plr->skills.melee_learnskills(eqptr, i);
 	}
 
-	if (damage==0) return false;
+	if (d.amount==0) return false;
 
-	if (damage_issue(level, mptr, plr, ELEMENT_NOTHING, damage, tslot, NULL)<=0)
+	if (damage_issue(level, mptr, plr, d, 0)<=0)
 	{
 		plr->Killedmonster(mptr);
 		return true;
@@ -249,8 +247,6 @@ void monster_meleeattack(being *mptr, level_type *level, Actor *target)
 bool monster_meleeinner(
 	being *mptr, level_type *level, invnode *invptr, Actor *target)
 {
-	int i, j;
-
 	/* array for target bodyparts */
 	int bparts[HPSLOT_MAX+1]={0};
 
@@ -263,24 +259,9 @@ bool monster_meleeinner(
 
 	const int monrace=mptr->m.race;
 
-	int damage;
-	if (eqptr)
-	{
-		/* check if the item broke */ //note: are we checking it?
-		damage = throwdice(eqptr->melee_dt,
-			eqptr->melee_ds,
-			eqptr->meldam_mod);
-	}
-	else
-	{
-		damage = throwdice(npc_races[monrace].dam_dt,
-			npc_races[monrace].dam_ds,
-			npc_races[monrace].dam_mod);
-	}
-
 	/* targetting monster or player */
 	string targetname;
-	int trace=target->Get_Race();
+	const int trace=target->Get_Race();
 	const bool plr=target->Is_Player();
 
 	if (plr)
@@ -289,6 +270,7 @@ bool monster_meleeinner(
 		targetname=monster_sprintf(target, false, true);
 
 	/* collect target bodyparts which the race has */
+	int i, j;
 	for (j=0, i=0; i<HPSLOT_MAX; i++)
 	{
 		if (npc_races[trace].bodyparts[i]>=0)
@@ -298,21 +280,30 @@ bool monster_meleeinner(
 	}
 
 	/* get a random target bodypart */
-	int tslot=bparts[RANDU(j)];
-	Bodypart part(tslot);
+	Damage d(0, ELEMENT_NOTHING, bparts[RANDU(j)]);
+
+	if (eqptr)
+	{
+		/* check if the item broke */ //note: are we checking it?
+		d.amount = throwdice(eqptr->melee_dt,
+			eqptr->melee_ds,
+			eqptr->meldam_mod);
+	}
+	else
+	{
+		d.amount = throwdice(npc_races[monrace].dam_dt,
+			npc_races[monrace].dam_ds,
+			npc_races[monrace].dam_mod);
+	}
+
+	Bodypart part(d.bodypart);
 	const char *partname=part.Get_Name();
-
-	int inttotal=mptr->Calculate_Meleehit(eqptr, target, tslot);
-
+	int inttotal=mptr->Calculate_Meleehit(eqptr, target, d.bodypart);
 	real hittotal=(real)inttotal;
-
-	/* throw the dice */
 	int hitresult=throwdice(1, 100, 0);
 
 	/* add tactic effect damage */
-	damage+=tactics_data[mptr->tactic].dam;
-	if (damage<0)
-		damage=0;
+	d.Increase(tactics_data[mptr->tactic].dam);
 
 	string hitbonustxt;
 	const int x=mptr->x;
@@ -330,12 +321,12 @@ bool monster_meleeinner(
 		if (hitresult > (hittotal*0.95))
 		{
 			hitbonustxt=" hard";
-			damage+=throwdice(2, 3, 0);
+			d.Increase(throwdice(2, 3, 0));
 		}
 		else if (hitresult == inttotal)
 		{
 			hitbonustxt=" critically";
-			damage+=damage;
+			d.Critical_Hit();
 		}
 	}
 	else
@@ -371,7 +362,7 @@ bool monster_meleeinner(
 		actiontxt="hits";
 
 	string dmgmess;
-	if (!damage)
+	if (d.amount==0)
 	{
 		if (plr)
 		{
@@ -405,8 +396,7 @@ bool monster_meleeinner(
 	int thp=0;
 	if (plr)
 	{
-		thp=damage_issue(level, target, mptr,
-			ELEMENT_NOTHING, damage, tslot, dmgmess.c_str());
+		thp=damage_issue(level, target, mptr, d, dmgmess.c_str());
 	}
 	else
 	{
@@ -417,8 +407,7 @@ bool monster_meleeinner(
 			msg.add_dist(level, x, y, dmgmess.c_str(), C_RED,
 				"You hear angry noises!", C_WHITE);
 
-		thp=damage_issue(level, target, mptr, ELEMENT_NOTHING, damage, tslot,
-			dmgmess.c_str());
+		thp=damage_issue(level, target, mptr, d, dmgmess.c_str());
 	}
 
 	if (thp<=0)

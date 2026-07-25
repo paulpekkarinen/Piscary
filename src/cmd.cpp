@@ -146,6 +146,7 @@ Command_Data cmdtable[Amt_Of_Commands]=
 	{"Close door", {'c', 0, 0, 0, 0}, Actions, false},
 	{"Cast a spell", {'Z', 0, 0, 0, 0}, Actions, false},
 	{"Eat food", {'e', 0, 0, 0, 0}, Actions, true},
+	{"Entrap", {'E', 0, 0, 0, 0}, Actions, true},
 	{"Throw/Shoot", {'t', 0, 0, 0, 0}, Actions, true},
 	{"Rest (pass one turn)", {'.', 0, 0, 0, 0}, Actions, false},
 
@@ -344,6 +345,7 @@ void run_command(playerinfo *plr, const int command)
 		case Close_Door: close_door(plr, level); break;
 		case Cast_Spell: use_skill(plr, level, SKILLGRP_MAGIC, -1); break;
 		case Eat_Food: eat_food(plr, level); break;
+		case Entrap: break;
 		case Throw_Or_Shoot: ranged_attack(plr, level); break;
 		case Rest: moveplayer(plr, DIR_SELF, level, false); break;
 

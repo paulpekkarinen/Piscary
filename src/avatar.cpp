@@ -169,17 +169,19 @@ void playerinfo::Checkstat(level_type *level, bool lower, bool showmsg)
 	}
 }
 
-void playerinfo::Damage_Message(int damage, int bodypart)
+void playerinfo::Damage_Message(Damage &dmg)
 {
-	if (bodypart<0 || bodypart>=HPSLOT_MAX)
+	if (dmg.Whole_Body())
 	{
 		msg.newmsg("Your whole body takes damage.", C_RED);
 		return;
 	}
 
-	const real rhp=hpp[bodypart].cur;
+	const int bp=dmg.bodypart;
+	const int damage=dmg.amount;
+	const real rhp=hpp[bp].cur;
 
-	Bodypart part(bodypart);
+	Bodypart part(bp);
 	const char *partname=part.Get_Name();
 	const char *partart=part.Get_Art();
 

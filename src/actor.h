@@ -16,6 +16,8 @@
 #include "skills.h"
 #include "stats.h"
 
+struct Damage;
+
 //Creature's dynamic data, either player or npc.
 class Actor
 {
@@ -72,8 +74,8 @@ public:
 	void Advance_Level(); //set to next experience level
 	int Calc_Carryweight(); //how much the actor can carry items
 	void Calculate_Totalhp(); //just sum all hpslots together
-	void Damage_Issue(int element, int damage, int bodypart);
-	virtual void Damage_Message(int damage, int bodypart) = 0;
+	void Damage_Issue(Damage &dmg);
+	virtual void Damage_Message(Damage &dmg) = 0;
 	void Drop_Item(invnode *in_src, int count, const Coord &c);
 	void Drop_Single_Item(invnode *in_src, const Coord &c);
 	void Death(); //set death condition

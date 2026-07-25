@@ -24,6 +24,7 @@
 #include "caves.h"
 #include "condit.h"
 #include "damage.h"
+#include "dice.h"
 #include "game.h"
 #include "gameview.h"
 #include "invnode.h"
@@ -33,6 +34,37 @@
 #include "pack.h"
 
 using std::string;
+
+Damage::Damage(int a, int e)
+	: amount(a), element(e)
+{
+	bodypart=RANDU(HPSLOT_MAX+1);
+}
+
+void Damage::Critical_Hit()
+{
+	amount+=amount;
+}
+
+void Damage::Increase(int a)
+{
+	amount+=a;
+
+	//negative damage not allowed
+	if (amount<0)
+		amount=0;
+}
+
+bool Damage::Whole_Body()
+{
+	//-1 can be used to refer whole body
+	if (bodypart<0 || bodypart>=HPSLOT_MAX)
+		return true;
+
+	return false;
+}
+
+//===
 
 void damage_checkbodyparts(level_type *level, Actor *mptr)
 {
@@ -216,36 +248,37 @@ void damage_checkbodyparts(level_type *level, Actor *mptr)
 	}
 }
 
-int damage_issue(level_type *level, //note: need damage routine without attacker..
-	Actor *target, Actor *attacker,
-	int element, int damage, int bodypart,
-	const char *message)
+int damage_issue(level_type *level, Actor *target, Actor *attacker,
+	Damage &dmg, const char *message)
 {
-	//..so this check can be removed
-	if (target==0)
+	//can't damage if already dead, in that case return zero hit points
+	if (target->Is_Alive()==false)
 		return 0;
 
-	int i, st=0, ed=0;
-	bool bodydam=false;
-	int idam;
+	int first=0;
+	int last=0;
+	bool bodydam;
+	const int damage=dmg.amount; //save original amount
 
-	if(bodypart<0 || bodypart>=HPSLOT_MAX)
+	if (dmg.Whole_Body())
 	{
-		st=0;
-		ed=HPSLOT_MAX;
+		//whole body damage
+		first=0;
+		last=HPSLOT_MAX;
 		bodydam=true;
 	}
 	else
 	{
+		//damage only one bodypart
+		first=dmg.bodypart;
+		last=dmg.bodypart+1;
 		bodydam=false;
-		st=bodypart;
-		ed=bodypart+1;
 	}
 
 	const bool is_plr=target->Is_Player();
 
 	/* show the hit message */
-	if(message!=0)
+	if (message!=0)
 	{
 		if (is_plr)
 			msg.newmsg(message, C_RED);
@@ -256,20 +289,18 @@ int damage_issue(level_type *level, //note: need damage routine without attacker
 		}
 	}
 
-	target->Damage_Message(damage, bodypart);
+	target->Damage_Message(dmg);
 
 	/* issue damage */
-	for(i=st; i<ed; i++)
+	for (int i=first; i<last; i++)
 	{
 		if (bodydam)
 		{
 			Bodypart part(i);
-			idam=(int)(part.Get_HP_Mod() * (real)damage);
+			dmg.amount=(int)(part.Get_HP_Mod() * (real)damage);
 		}
-		else
-			idam=damage;
 
-		target->Damage_Issue(element, idam, i);
+		target->Damage_Issue(dmg);
 	}
 
 	/* return remaining hitpoints */
@@ -279,7 +310,7 @@ int damage_issue(level_type *level, //note: need damage routine without attacker
 
 		damage_checkbodyparts(level, target);
 
-		if (target->Is_Alive())
+		if (target->Is_Alive() && attacker!=0)
 		{
 			/* lets make the monster really angry */
 			if (attacker->Is_Player())
@@ -300,4 +331,10 @@ int damage_issue(level_type *level, //note: need damage routine without attacker
 	GAME_NOTIFYFLAGS|=GAME_HPSPCHG;
 	player.Checkstat(level, true, true);
 	return player.Get_Hit_Points();
+}
+
+int damage_issue(level_type *level, Actor *target, Damage &dmg,
+	const char *message)
+{
+	return damage_issue(level, target, 0, dmg, message);
 }

@@ -245,7 +245,7 @@ void being::Checkturn(level_type *level)
 	}
 }
 
-void being::Damage_Message(int damage, int bodypart)
+void being::Damage_Message(Damage &dmg)
 {
 	int gindex;
 
@@ -258,7 +258,7 @@ void being::Damage_Message(int damage, int bodypart)
 	Gender gen(gindex);
 	const char *gen_art3=gen.Get_Art(3);
 
-	if(bodypart<0 || bodypart>=HPSLOT_MAX)
+	if (dmg.Whole_Body())
 	{
 		if (gameview.Is_Visible(x, y))
 		{
@@ -272,9 +272,11 @@ void being::Damage_Message(int damage, int bodypart)
 		return;
 	}
 
-	const real rhp=hpp[bodypart].cur;
+	const int damage=dmg.amount;
+	const int bp=dmg.bodypart;
+	const real rhp=hpp[bp].cur;
 
-	Bodypart part(bodypart);
+	Bodypart part(bp);
 	const char *partname;
 
 	if(npc_races[m.race].behave & BEHV_FLYING)

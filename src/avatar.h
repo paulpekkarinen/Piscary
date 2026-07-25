@@ -44,7 +44,7 @@ struct playerinfo : public being
 	void Changetactics();
 	void Check_Bill() const;
 	void Checkstat(level_type *level, bool lower, bool showmsg);
-	void Damage_Message(int damage, int bodypart) override;
+	void Damage_Message(Damage &dmg) override;
 	void Eat_Addnutr(item_def *item, int weight);
 	void Gain_Experience(int gain) override;
 

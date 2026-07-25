@@ -186,13 +186,6 @@ void ranged_attack(playerinfo *plr, level_type *level)
 bool ranged_checkhit(level_type *level, Actor *ranger,
 	int x, int y, bool visible, int skill)
 {
-	int damage;
-	int i, j;
-	const bool playerhere=player.Is_At(x, y);
-
-	/* an array for target bodyparts */
-	int bparts[HPSLOT_MAX+1]={0};
-
 	//if at the origin of shooting
 	if (x==ranger->x && y==ranger->y)
 		return false;
@@ -201,6 +194,7 @@ bool ranged_checkhit(level_type *level, Actor *ranger,
 
 	/* is there a monster? */
 	being *mptr=gameview.Get_Monster(c);
+	const bool playerhere=player.Is_At(x, y);
 
 	/* no, no action required */
 	if (!mptr && !playerhere)
@@ -212,7 +206,11 @@ bool ranged_checkhit(level_type *level, Actor *ranger,
 	else if (playerhere)
 		trace=player.Get_Race();
 
+	/* an array for target bodyparts */
+	int bparts[HPSLOT_MAX+1]={0};
+
 	/* collect target bodyparts which the race has */
+	int i, j;
 	for (j=0, i=0; i<HPSLOT_MAX; i++)
 	{
 		if (npc_races[trace].bodyparts[i]>=0)
@@ -220,14 +218,13 @@ bool ranged_checkhit(level_type *level, Actor *ranger,
 	}
 
 	/* now get a random target bodypart */
-	int bodyp=bparts[RANDU(j)];
+	Damage d(0, ELEMENT_NOTHING, bparts[RANDU(j)]);
 
-	inventory *inv=&ranger->inv;
 	const int bonpts=ranger->attackbonus;
 	item_def *projectile=ranger->equips.get_item(EQUIP_MISSILE);
 	equipment &gear=ranger->equips;
 	const bool is_plr=ranger->Is_Player();
-	Bodypart part(bodyp);
+	Bodypart part(d.bodypart);
 	const char *partname=part.Get_Name();
 
 	string shootmess;
@@ -274,7 +271,7 @@ bool ranged_checkhit(level_type *level, Actor *ranger,
 	}
 
 	/* we hit! */
-	damage=throwdice(projectile->missi_dt,
+	d.amount=throwdice(projectile->missi_dt,
 		projectile->missi_ds,
 		projectile->missi_ds + bonpts);
 
@@ -284,8 +281,7 @@ bool ranged_checkhit(level_type *level, Actor *ranger,
 		if (visible)
 			msg.add(shootmess.c_str(), C_WHITE);
 
-		if (damage_issue(level, mptr, ranger, ELEMENT_NOTHING, damage,
-			bodyp, NULL) <= 0)
+		if (damage_issue(level, mptr, ranger, d, 0) <= 0)
 		{
 			if (is_plr==false)
 				ranger->Gain_Experience(mptr->Experience_Points_Earned());
@@ -295,8 +291,7 @@ bool ranged_checkhit(level_type *level, Actor *ranger,
 	}
 	else if (is_plr==false)
 	{
-		if (damage_issue(level, &player, ranger, ELEMENT_NOTHING, damage,
-			bodyp, NULL) <= 0)
+		if (damage_issue(level, &player, ranger, d, 0) <= 0)
 		{
 			ranger->Gain_Experience(player.Experience_Points_Earned());
 		}

@@ -96,40 +96,38 @@ bool handletrap(level_type *level, const Coord &d, Actor *monster)
 
 bool trap_eshock(level_type *level, Trap &t)
 {
-	Coord d=t.Get_Location();
+	Coord pos=t.Get_Location();
 
-	Actor *mptr=gameview.Get_Actor(d);
+	Actor *mptr=gameview.Get_Actor(pos);
 
-	if (gameview.Is_Visible(d))
+	Damage d(t.Get_Damage(), ELEMENT_ELEC);
+
+	if (player.Is_At(pos))
 	{
-		const int trap_damage=t.Get_Damage();
-
-		if (player.Is_At(d))
-		{
+		msg.add("Zap...", CH_RED);
+		if (damage_issue(level, &player, d, 0)<=0)
 			player_killer("Got zapped by an electric trap.");
-			msg.add("Zap...", CH_RED);
-			damage_issue(level, &player, NULL, ELEMENT_ELEC,
-				trap_damage, RANDU(HPSLOT_MAX+1), NULL);
-		}
-		else if (mptr)
+	}
+	else if (mptr)
+	{
+		if (gameview.Is_Visible(pos))
 		{
 			string moname=monster_sprintf(mptr, true, true);
 			msg.vadd(C_WHITE, "%s got zapped.",
 				moname.c_str());
-			damage_issue(level, mptr, NULL, ELEMENT_ELEC,
-				trap_damage, RANDU(HPSLOT_MAX+1), NULL);
 		}
+		damage_issue(level, mptr, d, 0);
+	}
 
-		Coord c=gameview.Get_Screen_Location(d);
+	Coord c=gameview.Get_Screen_Location(pos);
 
-		for (int i=0; i<8; i++)
-		{
-			my_setcolor(RANDU(16));
-			put_char_to('*', c);
+	for (int i=0; i<8; i++)
+	{
+		my_setcolor(RANDU(16));
+		put_char_to('*', c);
 
-			refresh();
-			delay(200);
-		}
+		refresh();
+		delay(200);
 	}
 
 	return true;
@@ -163,7 +161,6 @@ bool trap_boulder(level_type *level, Trap &t, int tx, int ty)
 	}
 
 	/* do until hits a wall */
-
 	int force=5+RANDU(10);
 	bool moveres=false;
 	bool hitsome;
@@ -182,7 +179,7 @@ bool trap_boulder(level_type *level, Trap &t, int tx, int ty)
 
 		Coord tc(tx, ty);
 
-		const int trap_damage=t.Get_Damage();
+		Damage d(t.Get_Damage(), ELEMENT_NOTHING, -1);
 
 		if (gameview.Is_Visible(tx, ty))
 		{
@@ -191,11 +188,10 @@ bool trap_boulder(level_type *level, Trap &t, int tx, int ty)
 
 			if (player.Is_At(tx, ty))
 			{
-				player_killer("a nasty rolling boulder.");
-				msg.newmsg("You're crushed by the boulder.", CH_RED);
-				damage_issue(level, NULL, NULL, ELEMENT_NOTHING,
-					trap_damage, -1,
-					NULL);
+				if (damage_issue(level, &player, d,
+					"You're crushed by a boulder.")<=0)
+						player_killer("a nasty rolling boulder.");
+
 				hitsome=true;
 			}
 			else
@@ -205,11 +201,9 @@ bool trap_boulder(level_type *level, Trap &t, int tx, int ty)
 				if (mptr)
 				{
 					string moname=monster_sprintf(mptr, true, true);
-					msg.vnewmsg(C_WHITE, "%s is crushed by rolling boulder.",
+					msg.vnewmsg(C_WHITE, "%s is crushed by a rolling boulder.",
 						moname.c_str());
-					damage_issue(level, mptr, NULL, ELEMENT_NOTHING,
-						trap_damage, -1,
-						NULL);
+					damage_issue(level, mptr, d, 0);
 					hitsome=true;
 				}
 			}
@@ -231,53 +225,49 @@ bool trap_boulder(level_type *level, Trap &t, int tx, int ty)
 
 bool trap_bomb(level_type *level, Trap &t)
 {
-	int j, i, ci=0;
-	int bx, by;
+	int color_index=0;
 	bool somevis;
 
 	const char bomb_seq[]="-+x*X*x+-";
 	const int16u bomb_col[]={C_YELLOW, C_RED, CH_YELLOW,
 		CH_RED, CH_RED, 0xffff};
 
-	Coord d=t.Get_Location();
+	Coord traploc=t.Get_Location();
+	Coord b;
 
 	/* destroy some dungeon first */
-	for (i=1; i<10; i++)
+	for (int i=1; i<10; i++)
 	{
-		bx=d.x + move_dx[i];
-		by=d.y + move_dy[i];
-		level->Set_Terrain(bx, by, TYPE_PASSAGE);
+		b.x=traploc.x + move_dx[i];
+		b.y=traploc.y + move_dy[i];
+		level->Set_Terrain(b, TYPE_PASSAGE);
 	}
 
 	/* calculate new los */
-	//note: may need to set fov recalculation flag
 	gameview.Show();
 
-	for (j=0; j<(int)strlen(bomb_seq); j++)
+	for (int j=0; j<(int)strlen(bomb_seq); j++)
 	{
 		somevis=false;
 
-		for (i=1; i<10; i++)
+		for (int i=1; i<10; i++)
 		{
-			bx=d.x + move_dx[i];
-			by=d.y + move_dy[i];
+			b.x=traploc.x + move_dx[i];
+			b.y=traploc.y + move_dy[i];
 
 			/* make some damage for monsters and level structures */
 			if (!j)
 			{
-				Coord e(bx, by);
-				const int trap_damage=t.Get_Damage();
+				Damage d(t.Get_Damage(), ELEMENT_FIRE, -1);
 
-				if (player.Is_At(e))
+				if (player.Is_At(b))
 				{
-					player_killer("Roasted by a fire trap.");
-					msg.newmsg("You're burned by the soaring flames..", CH_RED);
-					damage_issue(level, NULL, NULL, ELEMENT_FIRE,
-						trap_damage, -1,
-						NULL);
+					if (damage_issue(level, &player, d,
+						"You're burned by the soaring flames..")<=0)
+							player_killer("Roasted by a fire trap.");
 				}
 
-				being *mptr=gameview.Get_Monster(e);
+				being *mptr=gameview.Get_Monster(b);
 
 				if (mptr)
 				{
@@ -287,19 +277,16 @@ bool trap_bomb(level_type *level, Trap &t)
 						"%s is burned by the flames.",
 						moname.c_str());
 
-					damage_issue(level, mptr, NULL, ELEMENT_FIRE,
-						trap_damage, -1,
-						NULL);
+					damage_issue(level, mptr, d, 0);
 				}
-
 			}
 
 			/* display it if player sees */
-			if (gameview.Is_Visible(bx, by))
+			if (gameview.Is_Visible(b))
 			{
 				somevis=true;
-				set_color(bomb_col[ci]);
-				Coord c; //=player.Screen_Location(bx, by); //note: fix later
+				set_color(bomb_col[color_index]);
+				Coord c=gameview.Get_Screen_Location(b);
 
 				put_char_to(bomb_seq[j], c);
 			}
@@ -311,9 +298,9 @@ bool trap_bomb(level_type *level, Trap &t)
 			delay(70);
 		}
 
-		ci++;
-		if (bomb_col[ci]==0xffff)
-			ci=0;
+		color_index++;
+		if (bomb_col[color_index]==0xffff)
+			color_index=0;
 	}
 
 	return true;
