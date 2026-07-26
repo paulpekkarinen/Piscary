@@ -784,7 +784,7 @@ bool player_push(playerinfo *plr, level_type *level, int dir)
 	else
 		automode=true;
 
-	if (dir==5 || dir>9 || dir<1)
+	if (dir==Way::Yourself || dir<1)
 	{
 		if (!automode)
 			msg.newmsg("Not a good idea.", C_WHITE);

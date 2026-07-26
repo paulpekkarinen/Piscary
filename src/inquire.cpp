@@ -43,7 +43,7 @@ bool reveal_secret_door(level_type *level, const Coord &c);
 void lookdir(playerinfo *plr, level_type *level)
 {
 	const int dir=dir_askdir("Look at", true);
-	if (dir>9) return;
+	if (dir==0) return;
 
 	Coord nc=move_to_direction(dir, plr);
 

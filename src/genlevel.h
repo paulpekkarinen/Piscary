@@ -16,7 +16,6 @@ private:
 	void Add_Room(roomdef &r);
 	void Create_Stairs_Down(int8u number, bool first_town_level);
 	void Create_Stairs_Up(int8u number);
-	void Create_Trap(int type, const Coord &c);
 
 protected:
 	void Create_Stairs();

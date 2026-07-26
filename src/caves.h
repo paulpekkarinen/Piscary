@@ -85,6 +85,7 @@ struct level_type
 	void Clear_Svalbards();
 	void Clear_Terrain(int terraintype); //clear the entire level's terrain
 	bool Close_Door(const Coord &c);
+	int Create_Trap(int type, const Coord &c);
 	void Explore(); //set level explored
 	void Refresh_Gameview(); //copy current level data to gameview
 	bool Open_Door(const Coord &c);

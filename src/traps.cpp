@@ -16,9 +16,10 @@
 
 //Refactored 25.9.2021 - 21.9.2025 Paul K. Pekkarinen
 
-#include "colors.h"
 #include "dice.h"
 #include "gameview.h"
+#include "input.h"
+#include "output.h"
 #include "storage.h"
 #include "traps.h"
 
@@ -54,6 +55,12 @@ Coord &Trap::Get_Location()
 	return pos;
 }
 
+void Trap::Show_Data()
+{
+	my_printf("%s (damage: %d) at %d, %d\n",
+		list_traps[type].name, damage, pos.x, pos.y);
+}
+
 void Trap::Save(Tar_Ball &tb)
 {
 	tb.Put(type);
@@ -67,6 +74,8 @@ void Trap::Load(Tar_Ball &tb)
 	damage=tb.Get_Next_Value();
 	pos.Load(tb);
 }
+
+//===
 
 Trap &Traps::Get(const Coord &c)
 {
@@ -82,23 +91,28 @@ Trap &Traps::Get(const Coord &c)
 	return dummy_trap;
 }
 
-void Traps::Create(int type, const Coord &c, int16u trapflag)
+void Traps::Create(int type, const Coord &c)
 {
-	int tt;
+	traplist.push_back(Trap(type, c));
+}
 
-	/* check for a legal trap */
-	if ((type<=0) || (type>TRAP_MAXNUM))
-		tt=random_number(TRAP_DISARMED+1, TRAP_MAXNUM);
-	else
-		tt = type;
+bool Traps::Debug_List()
+{
+	clear_screen();
 
-	/* search a legal trap, depending on a location of level */
-	while (!(list_traps[tt].flags & trapflag))
+	if (traplist.empty())
 	{
-		tt=random_number(TRAP_DISARMED+1, TRAP_MAXNUM);
+		print_text("No traps on this level.");
+		wait_key();
+		return false;
 	}
 
-	traplist.push_back(Trap(tt, c));
+	for (trap_iter i=traplist.begin(); i!=traplist.end(); ++i)
+	{
+		(*i).Show_Data();
+	}
+
+	return true;
 }
 
 bool Traps::Remove(const Coord &c)

@@ -281,9 +281,8 @@ void talk_quest(being *monster)
 
 void chat(playerinfo *plr)
 {
-	int dir=dir_askdir("Talk to", true);
-
-	if (dir>9) return;
+	const int dir=dir_askdir("Talk to", true);
+	if (dir==0) return;
 
 	Coord nc=move_to_direction(dir, plr);
 

@@ -485,6 +485,42 @@ void level_type::Clear_Terrain(int terraintype)
 	}
 }
 
+int level_type::Create_Trap(int type, const Coord &c)
+{
+	//this location already has a trap
+	if (Has_Object(c, OBJECT_TRAP))
+		return -1;
+
+	int16u trapflag;
+	if (Is_Door(c))
+		trapflag=TRAPF_DOORTRAP;
+	else
+		trapflag=TRAPF_CAVETRAP;
+
+	/* check for a legal trap */
+	if (type<TRAP_BOULDER || type>=TRAP_MAXNUM)
+	{
+		/* search a legal trap, depending on a location of level */
+		while (!(list_traps[type].flags & trapflag))
+		{
+			type=random_number(TRAP_BOULDER, TRAP_MAXNUM-1);
+		}
+	}
+	else
+	{
+		//can't create the trap here
+		if (!(list_traps[type].flags & trapflag))
+			return -2;
+	}
+
+	traps.Create(type, c);
+
+	//this location now has a trap of some kind
+	Set_Object(c, OBJECT_TRAP);
+
+	return 0;
+}
+
 void level_type::reveal()
 {
 	Coord c;
@@ -565,7 +601,7 @@ void level_type::Display_Tile(int y, int x)
 {
 	char ch='?';
 	int color=CH_RED;
-	
+
 	//has trap been identified here
 	if (loc[y][x].flags & CAVE_TRAPIDENT)
 	{
@@ -589,7 +625,7 @@ void level_type::Display_Tile(int y, int x)
 		color=terrains[loc[y][x].type].color;
 	}
 
-	put_char(ch, color);	
+	put_char(ch, color);
 }
 
 void level_type::Display_Data()
@@ -610,7 +646,7 @@ void level_type::Display_Data()
 void level_type::List_Rooms()
 {
 	clear_screen();
-	
+
 	const int a=get_amount_of_rooms();
 	if (a==0)
 	{
@@ -650,7 +686,7 @@ void level_type::List_Terrain()
 	{
 		const int amt=tiles[t];
 		if (amt==0) continue; //don't show if no tiles of this type found
-		
+
 		display->Draw_Terrain(t, Viewtile::Visible);
 		standend();
 		Terratype tt(t);

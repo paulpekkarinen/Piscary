@@ -37,8 +37,8 @@ bool is_handle_stuck(Actor *tonttu, level_type *level, const Coord &c);
 
 void close_door(playerinfo *plr, level_type *level)
 {
-	int dir=dir_askdir("Close door -", true);
-	if (dir>9) return;
+	const int dir=dir_askdir("Close door -", true);
+	if (dir==0) return;
 
 	Coord nc=move_to_direction(dir, plr);
 
@@ -233,8 +233,8 @@ bool disarm_trap(playerinfo *plr, level_type *level)
 
 void open_door(playerinfo *plr, level_type *level)
 {
-	int dir=dir_askdir("Open door -", true);
-	if (dir>9) return;
+	const int dir=dir_askdir("Open door -", true);
+	if (dir==0) return;
 
 	Coord nc=move_to_direction(dir, plr);
 

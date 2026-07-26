@@ -158,7 +158,7 @@ void Debug::View_Level()
 		e.Set_Location(c.x+SCREEN_COLS/2, c.y+(SCREEN_LINES-1)/2);
 
 		const char *nimi=0;
-		
+
 		vt=gameview.Get(e);
 		if (vt!=0)
 		{
@@ -168,7 +168,7 @@ void Debug::View_Level()
 			}
 			else if (vt->esine!=0)
 			{
-				nimi=vt->esine->Get_Name();		
+				nimi=vt->esine->Get_Name();
 			}
 		}
 
@@ -177,7 +177,7 @@ void Debug::View_Level()
 			const int et=level->Get_Terrain(e);
 			nimi=terrains[et].desc;
 		}
-				
+
 		mvprintw(0, 0, "Viewing level '%s' at %d, %d (%s) (t=teleport, d=tile data, x=exit)",
 			world->Get_Level_Name(), e.x, e.y, nimi);
 		clrtoeol(); //clear possible trails
@@ -191,7 +191,7 @@ void Debug::View_Level()
 
 				vt=gameview.Get(d);
 				bool displayed_object=false;
-				
+
 				if (vt!=0)
 					displayed_object=vt->Show_Object();
 
@@ -205,7 +205,7 @@ void Debug::View_Level()
 		}
 
 		gotoxy(SCREEN_COLS/2, (SCREEN_LINES-1)/2);
-		
+
 		const int k=my_getch();
 
 		switch (k)
@@ -266,18 +266,20 @@ void Debug::List_Objects()
 			"2. Items\n"
 			"3. Creatures\n"
 			"4. Terrain\n"
+			"5. Traps\n"
 			"x) Exit"
 		);
 
 		key=my_getch();
 		bool listed=true;
-		
+
 		switch (key)
 		{
 			case '1': level->List_Rooms(); break;
 			case '2': level->inv.List_Items(); break;
 			case '3': level->crew.Full_Debug_List(); break;
 			case '4': level->List_Terrain(); break;
+			case '5': listed=level->traps.Debug_List(); break;
 			default: listed=false; break;
 		}
 

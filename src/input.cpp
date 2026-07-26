@@ -34,6 +34,7 @@
 #include "score.h"
 #include "terrain.h"
 #include "textdata.h"
+#include "way.h"
 
 using std::string;
 
@@ -90,14 +91,14 @@ bool confirm_yn(const char *prompt, bool defaultresult, bool showprompt)
 */
 int dir_askdir(const char *prompt, bool self)
 {
-	int dir=0;
-	int key;
+	int dir=Way::Nowhere;
 
 	if (self)
 		msg.vadd(C_WHITE, "%s which direction [84261397.]?", prompt);
 	else
 		msg.vadd(C_WHITE, "%s which direction [84261397]?", prompt);
-	key=my_getch();
+
+	const int key=my_getch();
 
 	switch (key)
 	{
@@ -110,25 +111,17 @@ int dir_askdir(const char *prompt, bool self)
 		case '8':
 		case '9':
 			dir=key-'0';
-			break;
-		case '5':
+		break;
+		case '5': dir=Way::Yourself; break;
 		case '.':
-			dir=5;
-			break;
-		case KEY_UP:
-			dir=8;
-			break;
-		case KEY_DOWN:
-			dir=2;
-			break;
-		case KEY_LEFT:
-			dir=4;
-			break;
-		case KEY_RIGHT:
-			dir=6;
-			break;
+			if (self)
+				dir=Way::Yourself;
+		break;
+		case KEY_UP: dir=Way::North; break;
+		case KEY_DOWN: dir=Way::South; break;
+		case KEY_LEFT: dir=Way::West; break;
+		case KEY_RIGHT: dir=Way::East; break;
 		default:
-			dir=10;
 			msg.newmsg("Not a valid direction!", C_WHITE);
 			break;
 	}

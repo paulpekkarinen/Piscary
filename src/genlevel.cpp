@@ -64,7 +64,7 @@ bool Genlevel::Create_Door(int x, int y, bool special)
 	if(!dl)
 		dl = CHANCE_DOORTRAP;
 
-	if(RANDU(100) < dl)
+	if (RANDU(100) < dl)
 	{
 		/* create a random trap */
 		//note: at the moment this is the only place traps are created, there are no ground traps yet
@@ -139,24 +139,6 @@ void Genlevel::Create_Stairs_Up(int8u number)
 	Coord c=find_random_location(this, 1);
 
 	loc[c.y][c.x].stairs_up(number);
-}
-
-void Genlevel::Create_Trap(int type, const Coord &c)
-{
-	//this location already has a trap
-	if (Has_Object(c, OBJECT_TRAP))
-		return;
-
-	int16u trapflag;
-	if (Is_Door(c))
-		trapflag=TRAPF_DOORTRAP;
-	else
-		trapflag=TRAPF_CAVETRAP;
-
-	traps.Create(type, c, trapflag);
-
-	//flag that this location has a trap of some kind
-	Set_Object(c, OBJECT_TRAP);
 }
 
 void Genlevel::Create_Wall(const Coord &c, int wall, bool nocarve, bool dark)

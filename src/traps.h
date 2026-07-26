@@ -45,6 +45,8 @@ public:
 	int Get_Damage() const { return damage; }
 	int Get_Type() const { return type; }
 
+	void Show_Data();
+
 	void Save(Tar_Ball &tb);
 	void Load(Tar_Ball &tb);
 };
@@ -58,9 +60,10 @@ private:
 
 public:
 	Trap &Get(const Coord &c);
-	void Create(int type, const Coord &c, int16u trapflag);
-	bool Remove(const Coord &c);
 
+	void Create(int type, const Coord &c);
+	bool Debug_List();
+	bool Remove(const Coord &c);
 	void Refresh();
 
 	void Save(Tar_Ball &tb);

@@ -159,11 +159,9 @@ bool spell_zap(
 
 		if (chstr[0]=='d')
 		{
-			int sd = dir_askdir("Cast into", true);
+			const int sd = dir_askdir("Cast into", true);
 
-			if (sd > 9)
-				sd=0;
-			else
+			if (sd != 0)
 				t.pos=move_to_direction(sd, plr);
 		}
 		else if (chstr[0]=='i')

@@ -35,12 +35,58 @@
 #include "terrain.h"
 #include "trapdash.h"
 #include "way.h"
+#include "window.h"
+#include "world.h"
 
 using std::string;
 
 bool trap_bomb(level_type *level, Trap &t);
 bool trap_boulder(level_type *level, Trap &t, int tx, int ty);
 bool trap_eshock(level_type *level, Trap &t);
+
+//Create a trap.
+void entrap_location(level_type *level)
+{
+	const int dir=dir_askdir("Entrap", false);
+	if (dir==0) return;
+
+	Window menuwin("Which trap?", 30, 10, 27, TRAP_MAXNUM+2, CH_GREEN, CH_WHITE);
+
+	string s;
+	char ch='a';
+	for (int i=TRAP_BOULDER; i<TRAP_MAXNUM; i++)
+	{
+		s.push_back(ch);
+		s.append(") ");
+		s.append(list_traps[i].name);
+		s.append("\n");
+
+		ch++;
+	}
+
+	menuwin.Draw(s.c_str());
+
+	const int t=my_getch()-(int)'a'+TRAP_BOULDER;
+	display->Redraw(world->Get_Current_Level());
+
+	if (t<TRAP_BOULDER || t>=TRAP_MAXNUM)
+	{
+		msg.newmsg("You cancel creating the trap.");
+		return;
+	}
+
+	Coord c=move_to_direction(dir, &player);
+
+	const int rv=level->Create_Trap(t, c);
+
+	switch (rv)
+	{
+		case 0: msg.newmsg("You created a trap."); break;
+		case -1: msg.newmsg("There already is a trap in there!"); break;
+		case -2: msg.newmsg("You fail to create trap there."); break;
+		default: break;
+	}
+}
 
 /* handle trapped door, return true if the trap removed the door */
 bool handletrap(level_type *level, const Coord &d, Actor *monster)
@@ -61,13 +107,15 @@ bool handletrap(level_type *level, const Coord &d, Actor *monster)
 	}
 	else
 	{
-		//gameview.Show(); //note: test if needed
+		gameview.Show();
 		msg.add("You trigger a trap...", C_RED);
 	}
 
 	bool tres;
 	Trap &t=level->Get_Trap(d);
 	const int tid=t.Get_Type();
+
+	msg.newmsg(C_WHITE, "The trap is %s.", list_traps[tid].name);
 
 	switch (tid)
 	{
@@ -150,8 +198,6 @@ bool trap_boulder(level_type *level, Trap &t, int tx, int ty)
 	/* create a boulder */
 	invnode *boulder = spw.Create_Item(c,
 		IS_SPECIAL, SPECIAL_BOULDER, 1, -1);
-
-	gameview.Show();
 
 	if (!boulder)
 		return false;
@@ -242,9 +288,6 @@ bool trap_bomb(level_type *level, Trap &t)
 		b.y=traploc.y + move_dy[i];
 		level->Set_Terrain(b, TYPE_PASSAGE);
 	}
-
-	/* calculate new los */
-	gameview.Show();
 
 	for (int j=0; j<(int)strlen(bomb_seq); j++)
 	{
