@@ -190,6 +190,7 @@ Npcrace npc_races[]=
        0,
        { 0, 0, 0, 0, 0, 0, 0 },
     {48, 52, 53, 52, 57, 54, 44, 12, BASE_SPEED-1}},
+
      { "dark elf", racedesc_elfs, '@', CH_DGRAY, 0, 0, 60000, 0,
        CHAOTIC, 1, 6, 3, 4, 12, 12, 0, 0, 26,
        3, 2, 1,
@@ -230,7 +231,8 @@ Npcrace npc_races[]=
        0,
        { 0, 0, 0, 0, 0, 0, 0 },
     {60, 30, 40, 60, 20, 30, 70, 5, BASE_SPEED-1}},
-     { "snake", racedesc_snake, 's', C_YELLOW, ATTACK_BITE, BEHV_ANIMAL, 4000, 0,
+
+     { "pit snake", racedesc_snake, 's', C_YELLOW, ATTACK_BITE, BEHV_ANIMAL, 4000, 0,
        CHAOTIC, 4, 2, 1, 2, 4, 4, 0, 0, 10,
        2, 2, 1,
        TARGET_LHAND | TARGET_RHAND | TARGET_LEGS,
@@ -238,7 +240,7 @@ Npcrace npc_races[]=
        0,
        { 0, 0, 0, 0, 0, 0, 0 },
     {30, 60, 55, 40, 10, 60, 50, 10, BASE_SPEED+1}},
-     { "spider", racedesc_spiders, 'x', CH_DGRAY, ATTACK_BITE, BEHV_ANIMAL, 5500, 0,
+     { "cave spider", racedesc_spiders, 'x', CH_DGRAY, ATTACK_BITE, BEHV_ANIMAL, 5500, 0,
        CHAOTIC, 2, 4, 1, 2, 10, 2, 0, 0, 10,
        1, 4, 0,
        TARGET_LEGS,
@@ -246,7 +248,7 @@ Npcrace npc_races[]=
        0,
        { 0, 0, 0, 0, 0, 0, 0 },
     {56, 10, 65, 40, 10, 10, 55, 10, BASE_SPEED+1}},
-     { "large spider", racedesc_spiders, 'x', CH_DGRAY, ATTACK_BITE|ATTACK_HIT, BEHV_ANIMAL, 5500, 0,
+     { "hunter spider", racedesc_spiders, 'x', CH_DGRAY, ATTACK_BITE|ATTACK_HIT, BEHV_ANIMAL, 5500, 0,
        CHAOTIC, 3, 4, 1, 2, 15, 2, 0, 0, 10,
        3, 2, 1,
        TARGET_LHAND | TARGET_RHAND | TARGET_LEGS,
@@ -262,7 +264,7 @@ Npcrace npc_races[]=
        0,
        { 0, 0, 0, 0, 0, 0, 0 },
          {65, 10, 58, 40, 10, 10, 55, 10, BASE_SPEED+1}},
-     { "bat", racedesc_bat, 'b', CH_DGRAY, ATTACK_BITE, BEHV_FLYING|BEHV_ANIMAL, 2000, 0,
+     { "fruit bat", racedesc_bat, 'b', CH_DGRAY, ATTACK_BITE, BEHV_FLYING|BEHV_ANIMAL, 2000, 0,
        RANDALIGN, 1, 3, 1, 1, 6, 1, 0, 0, 15,
        2, 2, 1,
        TARGET_HEAD | TARGET_BODY | TARGET_LHAND | TARGET_RHAND | TARGET_LEGS,
@@ -270,6 +272,7 @@ Npcrace npc_races[]=
        0,
        { 0, 0, 0, 0, 0, 0, 0 },
          {30, 20, 65, 60, 20, 10, 30, 10, BASE_SPEED+2}},
+
      { "gorilla", racedesc_monkeys, 'G', C_YELLOW, 0, BEHV_CANUSEITEM|BEHV_ANIMAL, 86000, 0,
        RANDALIGN, 4, 5, 0, 0, 22, 0, 0, 0, 30,
        3, 4, 1,
@@ -286,8 +289,7 @@ Npcrace npc_races[]=
        0,
        { 0, 0, 0, 0, 0, 0, 0 },
          {70, 26, 60, 65, 30, 24, 65, 4, BASE_SPEED+2}},
-
-     { "deer", racedesc_nodesc, 'd', C_WHITE, 0, BEHV_ANIMAL, 122000, 0,
+	{ "deer", racedesc_nodesc, 'd', C_WHITE, 0, BEHV_ANIMAL, 122000, 0,
        RANDALIGN, 4, 5, 0, 0, 22, 0, 0, 0, 30,
        2, 4, 0,
        TARGET_HEAD | TARGET_BODY | TARGET_LHAND | TARGET_RHAND | TARGET_LEGS,
@@ -325,8 +327,3 @@ const int eqslot_from_hpslot[]=
      EQUIP_LEGS,
      0
 };
-
-void Npcrace::Draw_Glyph()
-{
-	put_char(out, color);
-}

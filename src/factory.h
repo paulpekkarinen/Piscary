@@ -17,13 +17,15 @@ private:
 	void Init_Moneyitem(int subtype, item_def *i);
 	void Monster_Initrandom(being *newptr, int type);
 	void Monster_Postgeneration(level_type *level, being *mptr);
-	being *New_Empty_Monster();
+	being *New_Empty_Monster(int sp);
 	void Plant_Monster(being *b, const Coord &c);
 	void Set_Alignment(item_def *i);
 	void Set_Material(item_def *i, int material);
 
 public:
+	int Get_Species_From_Char(char ch);
 	void Add_Monster(level_type *level, int x, int y, int type);
+	void Add_Random_Monster(level_type *level, const Coord &c);
 	void Add_Shopkeeper(level_type *level, int roomnum);
 	void Add_Special_Monsters(level_type *level);
 	invnode *New_Item(const Itempack &ip);

@@ -13,7 +13,6 @@ class Uncover
 public:
 	void Inventory_Item(invnode *iptr, int index, int x, int y);
 	void Item_Data(item_def &item);
-	void Monsterdef_Info(int race);
 	void Program_Data();
 };
 

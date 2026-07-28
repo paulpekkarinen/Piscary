@@ -21,31 +21,31 @@ using std::string;
 monsterdef npc_list[] =
 {
 	{"dull looking chairman", "Gill Bates", NPC_BILLGATES, 48000, 4, CHAOTIC, NPC_BILLGATES,
-		RACE_HUMAN, CLASS_MERCHANT, SEX_MALE, 0, 0,
+		Species::Human, CLASS_MERCHANT, SEX_MALE, 0, 0,
 		{50, 50, 30, 50, 50, 50, 50, 20, BASE_SPEED}, 0},
 	{"scar faced knight", "Sparhawk", NPC_SPARHAWK, 121000, 6, LAWFUL, NPC_SPARHAWK,
-		RACE_HIGHELF, CLASS_KNIGHT, SEX_MALE, 0, BEHV_FRIENDLY,
+		Species::High_Elf, CLASS_KNIGHT, SEX_MALE, 0, BEHV_FRIENDLY,
 		{50, 50, 56, 70, 50, 50, 50, 20, BASE_SPEED+1}, 0},
 	{"very corrupted adventurer", "Thomas Biskup", NPC_THOMAS, 77500, 12, LAWFUL, NPC_THOMAS,
-		RACE_HUMAN, CLASS_MAGE, SEX_MALE, 0, BEHV_FRIENDLY,
+		Species::Human, CLASS_MAGE, SEX_MALE, 0, BEHV_FRIENDLY,
 		{50, 60, 53, 50, 50, 50, 50, 20, BASE_SPEED+2}, 0},
 	{"beautiful cat lady", "Natasha", NPC_NATASHA, 44500, 8, NEUTRAL, NPC_NATASHA,
-		RACE_CATHUMAN, CLASS_MAGE, SEX_FEMALE, 0, BEHV_FRIENDLY,
+		Species::Cathuman, CLASS_MAGE, SEX_FEMALE, 0, BEHV_FRIENDLY,
 		{45, 55, 55, 55, 68, 60, 50, 25, BASE_SPEED+3}, 0},
 	{ "", "" }
 };
 
 monsterdef shopkeeper_list[] =
 {
-     {"merchant", "", 0, 48000, 24, NEUTRAL, 0, RACE_HUMAN, CLASS_MERCHANT, SEX_MALE, 0, 0,
+     {"merchant", "", 0, 48000, 24, NEUTRAL, 0, Species::Human, CLASS_MERCHANT, SEX_MALE, 0, 0,
     {67, 64, 55, 75, 46, 55, 65, 20, BASE_SPEED+1}, MST_SHOPKEEPER },
-     {"trader", "", 0, 48000, 24, NEUTRAL, 0, RACE_HUMAN, CLASS_MERCHANT, SEX_MALE, 0, 0,
+     {"trader", "", 0, 48000, 24, NEUTRAL, 0, Species::Human, CLASS_MERCHANT, SEX_MALE, 0, 0,
     {67, 64, 55, 75, 46, 55, 65, 20, BASE_SPEED+1}, MST_SHOPKEEPER },
-     {"dealer", "", 0, 48000, 24, NEUTRAL, 0, RACE_HUMAN, CLASS_MERCHANT, SEX_MALE, 0, 0,
+     {"dealer", "", 0, 48000, 24, NEUTRAL, 0, Species::Human, CLASS_MERCHANT, SEX_MALE, 0, 0,
     {67, 64, 55, 75, 46, 55, 65, 20, BASE_SPEED+1}, MST_SHOPKEEPER },
-     {"shopkeeper", "", 0, 48000, 24, NEUTRAL, 0, RACE_HUMAN, CLASS_MERCHANT, SEX_MALE, 0, 0,
+     {"shopkeeper", "", 0, 48000, 24, NEUTRAL, 0, Species::Human, CLASS_MERCHANT, SEX_MALE, 0, 0,
     {67, 64, 55, 75, 46, 55, 65, 20, BASE_SPEED+1}, MST_SHOPKEEPER },
-     {"storekeeper", "", 0, 48000, 24, NEUTRAL, 0, RACE_HUMAN, CLASS_MERCHANT, SEX_MALE, 0, 0,
+     {"storekeeper", "", 0, 48000, 24, NEUTRAL, 0, Species::Human, CLASS_MERCHANT, SEX_MALE, 0, 0,
     {67, 64, 55, 75, 46, 55, 65, 20, BASE_SPEED+1}, MST_SHOPKEEPER },
 	{ "", "" , 0}
 };
@@ -57,7 +57,7 @@ void monsterdef::playerize()
 	level=1;
 	align=RANDU(LAWFUL_E);
 	gender=SEX_MALE;
-	race=RACE_HUMAN;
+	race=Species::Human;
 	mclass=CLASS_FIGHTER;
 	weight=75000;
 

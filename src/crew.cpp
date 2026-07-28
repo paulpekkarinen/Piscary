@@ -253,7 +253,7 @@ void Crew::Full_Debug_List()
 		being *b=(*ii);
 
 		my_printf("%u: '%s' ", b->id, b->Get_Name());
-		uncover.Monsterdef_Info(b->m.race);
+		b->buffoon.Debug_Info();
 
 		standend();
 

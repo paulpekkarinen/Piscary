@@ -66,26 +66,24 @@ Appearlist appearlist[] =
 /* Create a monster */
 void Factory::Add_Monster(level_type *level, int x, int y, int type)
 {
-	being *newptr=New_Empty_Monster();
+	being *newptr=New_Empty_Monster(type);
 	level->crew.Add_Monster(newptr);
-
 	Monster_Initrandom(newptr, type);
+
 	Coord c(x, y);
 	Plant_Monster(newptr, c);
 	Monster_Postgeneration(level, newptr);
 }
 
+void Factory::Add_Random_Monster(level_type *level, const Coord &c)
+{
+	const int type=random_number(0, Species::Max_Amount-1);
+
+	Add_Monster(level, c.x, c.y, type);
+}
+
 void Factory::Add_Shopkeeper(level_type *level, int roomnum)
 {
-	being *b=New_Empty_Monster();
-	level->crew.Add_Monster(b);
-
-	/* get a random shopkeeper template */
-	const int index=RANDU(mucho.num_shopkeepers);
-
-	/* copy data */
-	b->m=shopkeeper_list[index];
-
 	/* get a random race */
 	int rrace;
 	while (1)
@@ -97,6 +95,14 @@ void Factory::Add_Shopkeeper(level_type *level, int roomnum)
 			break;
 	}
 
+	/* get a random shopkeeper template */
+	const int index=RANDU(mucho.num_shopkeepers);
+
+	being *b=New_Empty_Monster(rrace);
+	level->crew.Add_Monster(b);
+
+	/* copy data */
+	b->m=shopkeeper_list[index];
 	b->m.race=rrace;
 
 	random_name(b->m.name, CNAME_MAX-1);
@@ -139,12 +145,14 @@ void Factory::Add_Special_Monsters(level_type *level)
 	{
 		if (world->Is_Matching_Place(aptr->dungeon_type, aptr->LEVEL))
 		{
+			const int sp=monptr->race;
+
 			/* create a new node */
-			being *b=New_Empty_Monster();
+			being *b=New_Empty_Monster(sp);
 			level->crew.Add_Monster(b);
 
 			/* just in case, init a random monster */
-			Monster_Initrandom(b, 0);
+			Monster_Initrandom(b, sp);
 
 			b->m=*monptr; //this should copy values, because mondef has = operator
 
@@ -207,42 +215,32 @@ void Factory::Init_Moneyitem(int subtype, item_def *i)
 	i->weight=valuables[subtype].weight;
 }
 
+//Returns monster type from char. Assumes that each monster has a dedicated
+//output character.
+int Factory::Get_Species_From_Char(char ch)
+{
+	Npcrace *stdmon=npc_races;
+	int index=0;
+
+	while (stdmon->name)
+	{
+		//found it!
+		if (stdmon->out==ch)
+			return index;
+
+		index++;
+		stdmon++;
+	}
+
+	return -1; //failed to find the matching species
+}
+
 /* init monster struct with random data */
 void Factory::Monster_Initrandom(being *newptr, int type)
 {
-	Npcrace *stdmon;
-	int randrace;
+	Npcrace *stdmon=npc_races+type;
 
-	int i=0;
-	int j=0;
-
-	if (type)
-	{
-		stdmon=npc_races;
-		while (stdmon->name)
-		{
-			if (stdmon->out==type)
-			{
-				j=1;
-				break;
-			}
-			i++;
-			stdmon++;
-		}
-	}
-
-	if (j==1)
-	{
-		randrace=i;
-		stdmon=npc_races + i;
-	}
-	else
-	{
-		randrace=RANDU(mucho.num_npcraces);
-		stdmon=npc_races + randrace;
-	}
-
-	newptr->m.randomize(stdmon, randrace);
+	newptr->m.randomize(stdmon, type);
 
 	if (stdmon->behave & BEHV_ANIMAL)
 	{
@@ -250,8 +248,8 @@ void Factory::Monster_Initrandom(being *newptr, int type)
 		newptr->skills.add_new_skill(SKILLGRP_WEAPON, SKILL_HAND, 5+RANDU(20));
 	}
 
-	newptr->base_hp=npc_races[newptr->m.race].hp_base;
-	newptr->mana.Initialize(npc_races[newptr->m.race].sp_base);
+	newptr->base_hp=npc_races[type].hp_base;
+	newptr->mana.Initialize(npc_races[type].sp_base);
 }
 
 void Factory::Monster_Postgeneration(level_type *level, being *mptr)
@@ -377,14 +375,14 @@ invnode *Factory::New_Rock()
 	return New_Item(Itempack(IS_WEAPON1H, WEAPONS_ROCK, 1, MAT_STONE));
 }
 
-being *Factory::New_Empty_Monster()
+being *Factory::New_Empty_Monster(int sp)
 {
 	being *b=0;
 
 	// create a new empty nondescriptive creature
 	try
 	{
-		b=new being;
+		b=new being(sp);
 	}
 	catch (const std::bad_alloc& e)
 	{

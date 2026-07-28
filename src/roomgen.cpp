@@ -535,7 +535,7 @@ bool generatelair(Genlevel *level)
 					lastattr=terrains[TYPE_ROOMFLOOR].flags;
 				break;
 				case '?': //add room owner
-					factory.Add_Monster(level, c.x, c.y, 0);
+					factory.Add_Random_Monster(level, c);
 				break;
 				case '!': //door
 					level->Create_Door(c.x, c.y, false);
@@ -543,11 +543,16 @@ bool generatelair(Genlevel *level)
 				break;
 				default:
 				{
-					//note: works only if each monster has a unique letter, because
-					//Add_Monster's 'type' parameter is the ascii letter of
-					//the monster (should probably replace with enum for types)
+					//note: works only if each monster has a unique letter
 					if (is_alpha(tile))
-						factory.Add_Monster(level, c.x, c.y, tile);
+					{
+						const int sp=factory.Get_Species_From_Char(tile);
+						if (sp!=-1)
+							factory.Add_Monster(level, c.x, c.y, sp);
+						else
+							debug->Message(
+								"Unknown monster '%c' in generatelair.", tile);
+					}
 					else
 						debug->Message(
 							"Lair generator, unknown type: %c.", tile);

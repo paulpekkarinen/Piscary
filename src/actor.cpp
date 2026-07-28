@@ -29,7 +29,8 @@
 #include "storage.h"
 #include "tactics.h"
 
-Actor::Actor()
+Actor::Actor(int sp)
+	: buffoon(sp)
 {
 	Reset();
 }
@@ -431,7 +432,7 @@ void Actor::Reset()
 	timetaken=BASE_TIMENEED;
 	x=0;
 	y=0;
-	
+
 	for (int t=0; t<HPSLOT_MAX; t++)
 		hpp[t].Clear();
 
@@ -482,10 +483,11 @@ void Actor::Save(Tar_Ball &tb)
 {
 	tb.Put(attackbonus);
 	tb.Put(bill);
+	tb.Put(buffoon.Get());
 	conditions.save(tb);
 	tb.Put(exp);
 	health.Save(tb);
-	
+
 	for (int i=0; i<HPSLOT_MAX; i++)
 		hpp[i].Save(tb);
 
@@ -513,10 +515,11 @@ void Actor::Load(Tar_Ball &tb)
 {
 	attackbonus=tb.Get_Next_Value();
 	bill=tb.Get_Next_Value();
+	buffoon.Mutate(tb.Get_Next_Value());
 	conditions.load(tb);
 	exp=tb.Get_Next_Value();
 	health.Load(tb);
-	
+
 	for (int i=0; i<HPSLOT_MAX; i++)
 		hpp[i].Load(tb);
 

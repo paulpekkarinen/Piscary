@@ -22,7 +22,8 @@ struct being : public Actor
 	int sindex; // special index, ie for shopkeepers guard route
 	int last_room; //last room visited
 
-	being();
+	being() { }
+	being(int sp);
 	~being();
 
 	int In_Room(); //which room the being is now (-1 if none)

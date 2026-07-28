@@ -10,12 +10,6 @@
 
 #define CNAME_MAX  20
 
-#define RACE_HUMAN	 0
-#define RACE_CATHUMAN 1
-#define RACE_HIGHELF  2
-#define RACE_GRAYELF	 3
-#define RACE_DARKELF	 4
-
 #define RACEGEN_SPECIAL	0x00000001 /* special race, not for random monsters */
 
 /* define bits for monster status flags */
@@ -60,11 +54,6 @@
 #define TARGET_RHAND	0x08
 #define TARGET_LEGS	0x10
 
-/* carrying weight burnen levels */
-#define WGH_OVERLOAD    98 /* values out of 100 which is the capasity */
-#define WGH_STRAIN      90
-#define WGH_BURDEN      75
-
 /*
 ** npc race definition
 */
@@ -105,8 +94,6 @@ struct Npcrace
 
 	resistpack res; // race resistances
 	Ability stats; // class starting values
-
-	void Draw_Glyph();
 };
 
 /* public tables and variables */

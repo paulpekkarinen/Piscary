@@ -162,7 +162,7 @@ void Feature_Level::Create(int dtype)
 	{
 		Coord c=find_random_location(this, 2, true);
 
-		factory.Add_Monster(this, c.x, c.y, 0);
+		factory.Add_Random_Monster(this, c);
 	}
 
 	/* generate lairs and dungeon shops */

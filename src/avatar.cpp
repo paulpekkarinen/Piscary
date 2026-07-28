@@ -54,6 +54,8 @@ using std::string;
 
 playerinfo player; // this holds the player info
 
+//Using non-species constructor which means Initialize() is setting
+//character for a new game.
 playerinfo::playerinfo()
 {
 	backpack=new SelectItemsPack(inv, -1);
@@ -356,6 +358,7 @@ void playerinfo::Initialize()
 {
 	Reset();
 	m.playerize();
+	buffoon.Mutate(Species::Human);
 	lastdir=STAIROUT; //reset to stairout
 	color=CH_RED;
 	nutr=FOOD_SATIATED;

@@ -33,13 +33,13 @@ void Uncover::Inventory_Item(invnode *iptr, int index, int x, int y)
 	my_printf("%d) ", index);
 
 	const int ic=iptr->count;
-	
+
 	if (ic>1)
 		my_printf("%d ", ic);
 
 	Item_Data(iptr->i);
 
-	my_printf(" (%d, %d)", iptr->x, iptr->y);	
+	my_printf(" (%d, %d)", iptr->x, iptr->y);
 }
 
 void Uncover::Item_Data(item_def &item)
@@ -67,15 +67,9 @@ void Uncover::Item_Data(item_def &item)
 			my_printf("%s", item_flag_debug_names[t]);
 		}
 	}
-	
+
 	if (found)
 		my_printf("] ");
-}
-
-void Uncover::Monsterdef_Info(int race)
-{
-	my_printf("%s ", npc_races[race].name);
-	npc_races[race].Draw_Glyph();
 }
 
 void Uncover::Program_Data()
@@ -86,7 +80,7 @@ void Uncover::Program_Data()
 	gameview.Show_Data();
 	Coord pc=player.Get_Location();
 	my_printf("Player's location: %d, %d\n", pc.x, pc.y);
-	
+
 	mucho.Show_Data();
 
 	wait_key();

@@ -41,8 +41,8 @@
 
 using std::string;
 
-being::being()
-	: base_hp(0), roomnum(-1), sindex(-1), last_room(-1)
+being::being(int sp)
+	: Actor(sp), base_hp(0), roomnum(-1), sindex(-1), last_room(-1)
 {
 	Reset();
 

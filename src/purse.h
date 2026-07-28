@@ -13,6 +13,11 @@ struct Itempack;
 class Pocket;
 struct Target;
 
+/* carrying weight burnen levels */
+#define WGH_OVERLOAD    98 /* values out of 100 which is the capasity */
+#define WGH_STRAIN      90
+#define WGH_BURDEN      75
+
 //Inventory holds a linked list of items.
 class inventory
 {
@@ -21,7 +26,7 @@ public:
 
 private:
 	friend class Display;
-	
+
 	int capasity;
 	int copper; //money amount in copper coins (10 copper = 1 gold)
 	int weight; //total weight (1000 is 1kg)

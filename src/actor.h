@@ -14,6 +14,7 @@
 #include "purse.h"
 #include "rig.h"
 #include "skills.h"
+#include "species.h"
 #include "stats.h"
 
 struct Damage;
@@ -24,6 +25,7 @@ class Actor
 public:
 	int attackbonus; //increases damage in some attacks
 	int bill; //bill to the shop, how much you owe to the shopkeeper
+	Species buffoon; //which type this creature is
 	Ailments conditions; //states like hungry, cursed, poisoned etc.
 	int exp; //experience points
 	Attribute health; //hit points
@@ -44,7 +46,8 @@ public:
 	int x; //x position (Coord not used for backwards compatibility reasons...)
 	int y; //y position
 
-	Actor();
+	Actor() { } //empty constructor when loading from file
+	Actor(int sp);
 	virtual ~Actor() { }
 
 	int Calculate_Meleehit(item_def *iptr, Actor *target, int bodypart);
