@@ -24,7 +24,7 @@ struct Equipslot
 	bool Is_Usable();
 
 	void Clear();
-	
+
 	void Save(Tar_Ball &tb);
 	void Load(Tar_Ball &tb, inventory &inv, int slot);
 };

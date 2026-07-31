@@ -1,4 +1,4 @@
-//hitpoint.h
+//Legend of Saladir - hitpoint.h
 
 //Unit hitpoint: Hitpoint datatype.
 
@@ -29,9 +29,11 @@ struct hpslot
 	int dv;     /* defence value */
 	resistpack res; /* element resistances */
 
+	void Additembonus(invnode *item);
 	void Clear();
 	void Clear_Bonuses();
 	void Set_Points(int v);
+	void Set_Race_Values(int race);
 
 	void Save(Tar_Ball &tb);
 	void Load(Tar_Ball &tb);

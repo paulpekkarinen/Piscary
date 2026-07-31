@@ -5,8 +5,69 @@
 #include "avatar.h"
 #include "caves.h"
 #include "dice.h"
+#include "saldebug.h"
 #include "spot.h"
 #include "terrain.h"
+
+using std::deque;
+
+Coord Places::Get_Random()
+{
+	Coord rv(-1, -1); //failed location
+
+	const int amt=Get_Size();
+
+	if (amt<1)
+	{
+		//if this routine fails, inform in debug message
+		debug->Message("Out of coordinates in Places.");
+		return rv;
+	}
+
+	const int r=RANDU(amt);
+	rv=spots.at(r);
+
+	//erase the place so it's not selected again
+	deque<Coord>::iterator vi=spots.begin();
+	spots.erase(vi+r);
+
+	return rv;
+}
+
+int Places::Get_Size()
+{
+	return (int)spots.size();
+}
+
+bool Places::Is_Empty()
+{
+	return spots.empty();
+}
+
+void Places::Add_Place(const Coord &c)
+{
+	//check if the last location was a duplicate
+	if (spots.empty()==false)
+	{
+		deque<Coord>::iterator i=spots.end()-1;
+		if ((*i)==c) return;
+	}
+
+	spots.push_back(c);
+}
+
+void Places::Add_Place(int dx, int dy)
+{
+	Coord c(dx, dy);
+	Add_Place(c);
+}
+
+void Places::Clear()
+{
+	spots.clear();
+}
+
+//===
 
 Coord find_downstairs_place(level_type *level, bool first_town_level)
 {

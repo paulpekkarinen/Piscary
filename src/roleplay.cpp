@@ -64,29 +64,6 @@ Roleplay::Roleplay()
 	}
 }
 
-void Roleplay::Additembonus(hpslot *hpslot, Equipslot *eqslot)
-{
-	if (!hpslot || !eqslot)
-		return;
-
-	if (eqslot->item == 0)
-		return;
-
-	/* armor class (damage protection) */
-	hpslot->ac += eqslot->item->i.ac;
-
-	/*
-	 * defence value, substracted directly from attack
-	 * skill on melee attacks
-	 */
-	hpslot->dv += eqslot->item->i.dv;
-
-	if (eqslot->item->i.status & ITEM_ENCHANTED)
-	{
-		hpslot->res.Modify(eqslot->item->i.ench.res);
-	}
-}
-
 int Roleplay::Get_Con_HP(int index)
 {
 	return CON_HITP[index];
@@ -251,42 +228,40 @@ void Roleplay::Calculate_Itembonus(Actor *actor)
 	/* items which affect every bodypart */
 	for (i=0; i<HPSLOT_MAX; i++)
 	{
-		/* set race ac */
-		hpp[i].ac=npc_races[prace].ac;
+		hpslot &hs=hpp[i];
 
-		/* set race resistances */
-		hpp[i].res=npc_races[prace].res;
+		hs.Set_Race_Values(prace);
 
-		Additembonus(&hpp[i], &equip[EQUIP_NECK]);
-		Additembonus(&hpp[i], &equip[EQUIP_LRING]);
-		Additembonus(&hpp[i], &equip[EQUIP_RRING]);
-		Additembonus(&hpp[i], &equip[EQUIP_CLOAK]);
+		hs.Additembonus(equip[EQUIP_NECK].item);
+		hs.Additembonus(equip[EQUIP_LRING].item);
+		hs.Additembonus(equip[EQUIP_RRING].item);
+		hs.Additembonus(equip[EQUIP_CLOAK].item);
 
 		/* weapons are considered like this */
-		Additembonus(&hpp[i], &equip[EQUIP_LHAND]);
-		Additembonus(&hpp[i], &equip[EQUIP_RHAND]);
-		Additembonus(&hpp[i], &equip[EQUIP_TOOL]);
+		hs.Additembonus(equip[EQUIP_LHAND].item);
+		hs.Additembonus(equip[EQUIP_RHAND].item);
+		hs.Additembonus(equip[EQUIP_TOOL].item);
 	}
 
 	/* items which affect only head */
-	Additembonus(&hpp[HPSLOT_HEAD], &equip[EQUIP_HEAD]);
+	hpp[HPSLOT_HEAD].Additembonus(equip[EQUIP_HEAD].item);
 
 	/* items which affect only legs */
-	Additembonus(&hpp[HPSLOT_LEGS], &equip[EQUIP_PANTS]);
-	Additembonus(&hpp[HPSLOT_LEGS], &equip[EQUIP_BOOTS]);
-	Additembonus(&hpp[HPSLOT_LEGS], &equip[EQUIP_LEGS]);
+	hpp[HPSLOT_LEGS].Additembonus(equip[EQUIP_PANTS].item);
+	hpp[HPSLOT_LEGS].Additembonus(equip[EQUIP_BOOTS].item);
+	hpp[HPSLOT_LEGS].Additembonus(equip[EQUIP_LEGS].item);
 
 	/* items which affect only body */
-	Additembonus(&hpp[HPSLOT_BODY], &equip[EQUIP_BODY]);
-	Additembonus(&hpp[HPSLOT_BODY], &equip[EQUIP_SHIRT]);
+	hpp[HPSLOT_BODY].Additembonus(equip[EQUIP_BODY].item);
+	hpp[HPSLOT_BODY].Additembonus(equip[EQUIP_SHIRT].item);
 
 	/* items which affect only left hand */
-	Additembonus(&hpp[HPSLOT_LEFTHAND], &equip[EQUIP_LARM]);
-	Additembonus(&hpp[HPSLOT_LEFTHAND], &equip[EQUIP_GLOVES]);
+	hpp[HPSLOT_LEFTHAND].Additembonus(equip[EQUIP_LARM].item);
+	hpp[HPSLOT_LEFTHAND].Additembonus(equip[EQUIP_GLOVES].item);
 
 	/* items which affect only left hand */
-	Additembonus(&hpp[HPSLOT_RIGHTHAND], &equip[EQUIP_RARM]);
-	Additembonus(&hpp[HPSLOT_RIGHTHAND], &equip[EQUIP_GLOVES]);
+	hpp[HPSLOT_RIGHTHAND].Additembonus(equip[EQUIP_RARM].item);
+	hpp[HPSLOT_RIGHTHAND].Additembonus(equip[EQUIP_GLOVES].item);
 }
 
 void Roleplay::Calculate_Raisestats(playerinfo &plr)
@@ -453,7 +428,7 @@ void Roleplay::Check_Expneeded(playerinfo &plr)
 {
 	const int exp_level=plr.Get_Experience_Level();
 	const int needed=expneeded[exp_level+1]-plr.exp;
-	
+
 	set_color(C_WHITE);
 
 	my_printf("Level %d with %d exp points, %d points to next level.\n",

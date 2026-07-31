@@ -34,7 +34,8 @@ private:
 	int DEX_SPEED[Table_Len]; //How dexterity changes speed (time units consumination)
 	int CON_HITP[Table_Len]; //constitution to hit points regeneration
 
-	void Additembonus(hpslot *hpslot, Equipslot *eqslot);
+	void Advance_Levels(being *mptr); //advance creature ONE level up
+	void Calculate_Raisestats(playerinfo &plr); //advance player one level up
 
 public:
 	Roleplay();
@@ -44,10 +45,8 @@ public:
 	int Get_Experience_Levels(int &level, int exp); //new experience levels based on points
 
 	void Advance_To_Level(being *b, int lvl);
-	void Advance_Levels(being *mptr); //advance creature ONE level up
 	void Calculate_HP(hpslot *hpack, int basehp, int race);
 	void Calculate_Itembonus(Actor *actor);
-	void Calculate_Raisestats(playerinfo &plr); //advance player one level up
 	int Calculate_Slot_AC(int bodypart, Equipslot *eqslots); //note: not used at the moment
 	int Calculate_Slot_PV(int bodypart, Equipslot *eqslots); //note: not used at the moment
 	void Check_Expneeded(playerinfo &plr);
