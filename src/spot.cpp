@@ -11,6 +11,12 @@
 
 using std::deque;
 
+Places::Places()
+	: level(0)
+{
+
+}
+
 Coord Places::Get_Random()
 {
 	Coord rv(-1, -1); //failed location
@@ -44,6 +50,29 @@ bool Places::Is_Empty()
 	return spots.empty();
 }
 
+bool Places::Is_Spot(const Coord &c)
+{
+	bool rv=false;
+
+	switch (type)
+	{
+		case Stairs_Sites:
+			rv=level->Is_Passable(c);
+		break;
+		case First_Level_Downstairs:
+			if (level->Get_Terrain(c)==TYPE_ROOMFLOOR)
+			{
+				//don't create stairs in shops
+				if (level->Is_Shop_Tile(c)==false)
+					rv=true;
+			}
+		break;
+		default: break;
+	}
+
+	return rv;
+}
+
 void Places::Add_Place(const Coord &c)
 {
 	//check if the last location was a duplicate
@@ -56,15 +85,42 @@ void Places::Add_Place(const Coord &c)
 	spots.push_back(c);
 }
 
-void Places::Add_Place(int dx, int dy)
-{
-	Coord c(dx, dy);
-	Add_Place(c);
-}
-
 void Places::Clear()
 {
 	spots.clear();
+}
+
+void Places::Change_Area(level_type *cave)
+{
+	level=cave; //when changing level this is set
+	Change_Area(0, 0, cave->sizex, cave->sizey);
+}
+
+void Places::Change_Area(int sx, int sy, int sw, int sh)
+{
+	rect.Reset(sx, sy, sw, sh);
+	Clear();
+}
+
+void Places::Scan(int what)
+{
+	type=what;
+	Clear();
+	Coord c;
+	int a=0;
+
+	for (c.y=rect.y; c.y<rect.y+rect.height; c.y++)
+	{
+		for (c.x=rect.x; c.x<rect.x+rect.width; c.x++)
+		{
+			if (Is_Spot(c))
+				Add_Place(c);
+
+			a++;
+		}
+	}
+
+	debug->Message("%d places scanned, %d locations found.", a, Get_Size());
 }
 
 //===

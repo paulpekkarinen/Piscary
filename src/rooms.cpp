@@ -44,6 +44,11 @@ const char *roomdef::Get_Name()
 	return roomnames[type];
 }
 
+bool roomdef::Is_Shop()
+{
+	return kauppa.Is_Open();
+}
+
 bool roomdef::Is_Visited()
 {
 	return ((flags & ROOM_IS_VISITED) == 1);
@@ -100,14 +105,14 @@ void roomdef::make_shop(level_type *level)
 void roomdef::Project_Room_Id(int id)
 {
 	Coord c;
-	
+
 	for (c.y=nw.y; c.y<=se.y; c.y++)
 	{
 		for (c.x=nw.x; c.x<=se.x; c.x++)
 		{
 			gameview.Set_Room_Id(c, id);
 		}
-	}	
+	}
 }
 
 void roomdef::Display_Data(int rindex)
@@ -139,7 +144,7 @@ void roomdef::Display_Data(int rindex)
 void roomdef::Save(Tar_Ball &tb, level_type *lvl)
 {
 	Area::Save(tb);
-	
+
 	tb.Put(type);
 	tb.Put_Char(flags);
 
@@ -161,7 +166,7 @@ void roomdef::Save(Tar_Ball &tb, level_type *lvl)
 void roomdef::Load(Tar_Ball &tb, level_type *lvl)
 {
 	Area::Load(tb);
-	
+
 	type=tb.Get_Next_Value();
 	flags=tb.Get_Next_Char();
 

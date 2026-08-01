@@ -265,7 +265,7 @@ void Debug::List_Objects()
 			"1. Rooms\n"
 			"2. Items\n"
 			"3. Creatures\n"
-			"4. Terrain\n"
+			"4. Terrain and stairs\n"
 			"5. Traps\n"
 			"x) Exit"
 		);

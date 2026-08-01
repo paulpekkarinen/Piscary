@@ -102,41 +102,44 @@ void Genlevel::Create_Stairs()
 
 	if (levptr->outx && levptr->outy) doout=true;
 
-	const bool first_town_level=world->Is_First_Level_Of_Town();
-
-	if (first_town_level)
+	if (world->Is_First_Level_Of_Town())
 	{
 		doup1=false;
 		doup2=false;
 		doout=false;
+		places.Scan(Places::First_Level_Downstairs);
+	}
+	else
+	{
+		places.Scan(Places::Stairs_Sites);
 	}
 
 	if (doup1)
 		Create_Stairs_Up(STAIRUP1);
 
 	if (dodown1)
-		Create_Stairs_Down(STAIRDOWN1, first_town_level);
+		Create_Stairs_Down(STAIRDOWN1);
 
 	if (doup2)
 		Create_Stairs_Up(STAIRUP2);
 
 	if (dodown2)
-		Create_Stairs_Down(STAIRDOWN2, first_town_level);
+		Create_Stairs_Down(STAIRDOWN2);
 
 	if (doout)
 		Create_Stairs_Up(STAIROUT);
 }
 
-void Genlevel::Create_Stairs_Down(int8u number, bool first_town_level)
+void Genlevel::Create_Stairs_Down(int8u number)
 {
-	Coord c=find_downstairs_place(this, first_town_level);
+	Coord c=places.Get_Random();
 
 	loc[c.y][c.x].stairs_down(number);
 }
 
 void Genlevel::Create_Stairs_Up(int8u number)
 {
-	Coord c=find_random_location(this, 1);
+	Coord c=places.Get_Random();
 
 	loc[c.y][c.x].stairs_up(number);
 }

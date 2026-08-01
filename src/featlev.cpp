@@ -86,6 +86,9 @@ void Feature_Level::Generate_Easymaze()
 */
 void Feature_Level::Create(int dtype)
 {
+	//set level's rectangle for coordinate list searches
+	places.Change_Area(this);
+
 	//create level topology based on its type
 	switch (dtype)
 	{
@@ -126,7 +129,9 @@ void Feature_Level::Create(int dtype)
 	{
 		//create these manually
 		Shop_Init();
-		Create_Stairs(); //note: sometimes stairs are created in a shop...
+		Create_Stairs(); //note: sometimes stairs are created in a shop... well,
+		//this is because gameview is not updated to have room ids until the
+		//creation is done
 		return;
 	}
 

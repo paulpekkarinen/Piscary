@@ -256,7 +256,15 @@ bool level_type::Inside_Room(int roomnum, const Coord &c)
 
 bool level_type::Is_Shop(int roomnum)
 {
-	return rooms[roomnum].kauppa.Is_Open();
+	return rooms[roomnum].Is_Shop();
+}
+
+bool level_type::Is_Shop_Tile(const Coord &c)
+{
+	const int rid=gameview.Get_Room_Id(c);
+	if (rid==-1) return false;
+
+	return Is_Shop(rid);
 }
 
 //Routine for FOV to check if light can pass this tile.

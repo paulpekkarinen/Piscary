@@ -6,6 +6,7 @@
 #define GENLEVEL_H
 
 #include "caves.h"
+#include "spot.h"
 
 //Genlevel inherits from basic level and contains level creation routines.
 //If any creation routines are required later during gameplay they can be moved
@@ -14,10 +15,12 @@ class Genlevel : public level_type
 {
 private:
 	void Add_Room(roomdef &r);
-	void Create_Stairs_Down(int8u number, bool first_town_level);
+	void Create_Stairs_Down(int8u number);
 	void Create_Stairs_Up(int8u number);
 
 protected:
+	Places places; //tile locations for creating something on them
+
 	void Create_Stairs();
 
 public:

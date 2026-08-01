@@ -126,7 +126,7 @@ bool Gameview::Is_Outside_View(const Coord &c)
 	if (e.x>=view.x+view.width || e.y>=view.y+view.height)
 		return true;
 
-	return false;	
+	return false;
 }
 
 bool Gameview::Is_Visible(const Coord &c)
@@ -135,7 +135,7 @@ bool Gameview::Is_Visible(const Coord &c)
 	if (i==-1) return false;
 
 	if (data[i].vision==Viewtile::Visible)
-		return true;	
+		return true;
 
 	return false;
 }
@@ -158,7 +158,7 @@ bool Gameview::Cansee(const Coord &mc, const Coord &pc, int dist)
 		if (Is_Visible(pc) && Is_Visible(mc))
 			return true;
 	}
-	
+
 	return false;
 }
 
@@ -172,7 +172,7 @@ void Gameview::Clear_Item(const Coord &c)
 void Gameview::Enter_New_Level(level_type *kentta)
 {
 	level=kentta;
-	
+
 	//rebuild for the size of the current level
 	delete[] data;
 
@@ -311,7 +311,7 @@ void Gameview::Clamp_Camera_X()
 	{
 		const int w=level->sizex;
 		const int gw=view.width;
-		
+
 		if (camera.x+gw>w) camera.x=w-gw;
 	}
 }
@@ -354,7 +354,7 @@ void Gameview::Show()
 	{
 		//scroll view if near edges
 		const int dx=c.x-camera.x;
-		
+
 		if (dx<Horizontal_Limit)
 		{
 			camera.x-=Horizontal_Limit;
@@ -411,7 +411,7 @@ void Gameview::Show()
 	level->Show_Tile_Description(c);
 
 	Coord sc=Get_Screen_Location(c);
-	
+
 	for (int i=0; i<level->sizex*level->sizey; i++)
 		data[i].vision=Viewtile::Dark;
 
@@ -443,7 +443,7 @@ void Gameview::Show_Tile(int x, int y)
 	if (level->Is_Explored(y, x)==false)
 	{
 		put_char('`', CH_DGRAY);
-		return;		
+		return;
 	}
 
 	//show either object or terrain from level
@@ -467,13 +467,13 @@ void Gameview::Refresh_Item_Map(const Coord &c)
 	if (i==0)
 		Clear_Item(c);
 	else
-		Put_Item(i);	
+		Put_Item(i);
 }
 
 void Gameview::Show_Data()
 {
 	my_printf("Gameview size: %d, %d, camera location: %d, %d.\n",
-		view.width, view.height, camera.x, camera.y);	
+		view.width, view.height, camera.x, camera.y);
 }
 
 void Gameview::Show_Tile_Data(const Coord &c)
@@ -485,17 +485,24 @@ void Gameview::Show_Tile_Data(const Coord &c)
 		my_printf("Outside level.");
 		return;
 	}
-	
+
 	const char *vs;
 	if (vt->vision==Viewtile::Visible) vs="Visible";
 	else vs="Darkness";
 
-	my_printf("%s\nRoom id: %d\nTrap: %d\n",
+	const char *shop;
+	if (level->Is_Shop_Tile(c))
+		shop="(shop)";
+	else
+		shop="(room)";
+
+	my_printf("%s\nRoom id: %d %s\nTrap: %d\n",
 		vs,
 		vt->room_id,
+		shop,
 		vt->trap_type);
 
 	level->Show_Leveltile_Data(c);
 
-	my_printf("-press a key-");	
+	my_printf("-press a key-");
 }

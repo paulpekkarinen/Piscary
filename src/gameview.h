@@ -24,7 +24,7 @@ private:
 	//how close to the edge until gameview is scrolled
 	static const int Horizontal_Limit=9;
 	static const int Vertical_Limit=6;
-	
+
 	level_type *level; //points to current level
 	Viewtile *data; //level-sized array for gameview data
 	Bytegrid *dirgrid; //data for pathfinder

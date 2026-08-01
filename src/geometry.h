@@ -23,7 +23,7 @@ struct Coord
 		y=right.y;
 		return *this;
 	}
-	
+
 	bool operator==(const Coord &r) const
 	{
 		if (x==r.x && y==r.y) return true;
@@ -81,7 +81,9 @@ struct Rectangle : public Plane
 
 	Rectangle() : Plane(5, 5), x(0), y(0) { }
 	Rectangle(int sx, int sy, int sw, int sh)
-		: Plane(sw, sh), x(sx), y(sy) { }	
+		: Plane(sw, sh), x(sx), y(sy) { }
+
+	void Reset(int sx, int sy, int sw, int sh);
 };
 
 //Area has northwest and southeast points.
@@ -98,7 +100,7 @@ struct Area
 	void Shrink();
 
 	void Save(Tar_Ball &tb);
-	void Load(Tar_Ball &tb);		
+	void Load(Tar_Ball &tb);
 };
 
 #endif

@@ -69,13 +69,20 @@ void Plane::Resize(int sw, int sh)
 	height=sh;
 }
 
+void Rectangle::Reset(int sx, int sy, int sw, int sh)
+{
+	x=sx;
+	y=sy;
+	Resize(sw, sh);
+}
+
 //Returns true if coordinate c is inside this area.
 bool Area::Encloses(const Coord &c)
 {
 	if ((c.x >= nw.x && c.x <= se.x) && (c.y >= nw.y && c.y <= se.y))
 		return true;
 
-	return false;	
+	return false;
 }
 
 void Area::Shrink()

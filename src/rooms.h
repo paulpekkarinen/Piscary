@@ -59,6 +59,7 @@ struct roomdef : public Area
 
 	Area &Get_Area() { return *this; }
 	const char *Get_Name();
+	bool Is_Shop();
 	bool Is_Visited();
 
 	void Check_Visit();

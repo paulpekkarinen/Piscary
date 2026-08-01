@@ -7,6 +7,7 @@
 
 #include "crew.h"
 #include "rooms.h"
+#include "spot.h"
 #include "stash.h"
 #include "tile.h"
 #include "traps.h"
@@ -74,6 +75,7 @@ struct level_type
 	bool Is_Passable(int x, int y);
 	bool Is_Secretdoor(const Coord &c);
 	bool Is_Shop(int roomnum);
+	bool Is_Shop_Tile(const Coord &c);
 	bool Is_Wall(const Coord &c);
 	bool Is_Wall(int x, int y);
 	bool max_rooms_created();
