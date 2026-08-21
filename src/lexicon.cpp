@@ -94,6 +94,33 @@ string to_string(int n)
 	return s.str();
 }
 
+int truncate_string(std::string &s, const int max_size)
+{
+	int len=(int)s.size();
+	bool shortened=false;
+	int rv=0; //how many letters were truncated
+
+	while (len > max_size)
+	{
+		s.erase(s.end()-1);
+
+		shortened=true;
+		len--;
+		rv++;
+	}
+
+	if (shortened)
+	{
+		int index=len-1;
+		for (int i=0; i<3; i++)
+		{
+			s[index--]='.';
+		}
+	}
+
+	return rv;
+}
+
 char uppercase(char c)
 {
 	if (c>='a' && c<='z') return c-32;

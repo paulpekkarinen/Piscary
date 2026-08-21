@@ -20,6 +20,7 @@ bool is_alpha(char ch);
 bool is_same_string(const std::string &src, const char *dest);
 std::string number_of_something(const int n, const char *smthing);
 std::string to_string(int n);
+int truncate_string(std::string &s, const int max_size);
 char uppercase(char c);
 void uppercase_first_letter(std::string &s);
 

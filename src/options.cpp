@@ -18,9 +18,6 @@ using std::string;
 /* place where options are stored */
 gameconfig CONFIGVARS;
 
-//for text input, need 21 characters for item categories + trailing zero
-char opt_txt[22]={};
-
 int Option::Get_Input_Offset()
 {
 	//return location where new value is input
@@ -56,17 +53,17 @@ void Bool_Option::Show_Value()
 
 void Bool_Option::Load(Tar_Ball &tb)
 {
-	value=tb.Get_Next_Bool();	
+	value=tb.Get_Next_Bool();
 }
 
 void Bool_Option::Save(Tar_Ball &tb)
-{	
+{
 	tb.Put_Bool(value);
 }
-	
+
 void Integer_Option::Change()
 {
-	my_gets(opt_txt, sizeof(opt_txt)-1);
+	my_gets(opt_txt, opt_txt_size-1);
 	value=atoi(opt_txt);
 
 	if (value<min_value)
@@ -82,7 +79,7 @@ void Integer_Option::Show_Value()
 
 void Integer_Option::Load(Tar_Ball &tb)
 {
-	value=tb.Get_Next_Value();		
+	value=tb.Get_Next_Value();
 }
 
 void Integer_Option::Save(Tar_Ball &tb)
@@ -134,7 +131,7 @@ void gameconfig::Reset()
 	door_disturb=true;
 	droppiles=false;
 	foodwarn=true;
-	getallmoney=true;	
+	getallmoney=true;
 	health_alarm=50;
 	item_disturb=true;
 	monster_disturb=true;

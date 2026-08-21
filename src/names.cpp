@@ -211,7 +211,6 @@ string item_name(invnode *iptr)
 	return s;
 }
 
-/* sprintf for monster data */
 /* generates a monster name to the destination string... */
 /* "the female snake" or "Bill Gates", etc... */
 string monster_sprintf(Actor *mptr, bool upcase, bool nameonly)

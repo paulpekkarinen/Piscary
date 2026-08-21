@@ -31,7 +31,7 @@ void Tar_Ball::Separate()
 void Tar_Ball::Put(int v)
 {
 	//save number data as string
-	sprintf(numstr, "%d", v);
+	snprintf(numstr, str_size, "%d", v);
 
 	ts.append(numstr);
 	Separate();
@@ -40,7 +40,7 @@ void Tar_Ball::Put(int v)
 void Tar_Ball::Put(int16u v)
 {
 	//save unsigned number data as string
-	sprintf(numstr, "%u", v);
+	snprintf(numstr, str_size, "%u", v);
 
 	ts.append(numstr);
 	Separate();
@@ -49,7 +49,7 @@ void Tar_Ball::Put(int16u v)
 void Tar_Ball::Put(int32u v)
 {
 	//save long unsigned number data as string
-	sprintf(numstr, "%lu", v);
+	snprintf(numstr, str_size, "%lu", v);
 
 	ts.append(numstr);
 	Separate();

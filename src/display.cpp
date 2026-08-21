@@ -55,41 +55,42 @@ using std::string;
 
 const char *condition_txt[]=
 {
-     "is very near to death.",
-     "is in VERY bad condition.",
-     "is in very bad condition.",
-     "is in pretty bad condition.",
-     "has some serious looking wounds.",
-     "has has some wounds.",
-     "has got some bruises and scars.",
-     "is looking healthy.",
-     "is in good shape.",
-     "is in exellent condition",	/* full hp */
-     0,
+	"is very near to death.",
+	"is in VERY bad condition.",
+	"is in very bad condition.",
+	"is in pretty bad condition.",
+	"has some serious looking wounds.",
+	"has has some wounds.",
+	"has got some bruises and scars.",
+	"is looking healthy.",
+	"is in good shape.",
+	"is in exellent condition",	/* full hp */
+	0,
 };
 
-char itempstr[100];
+static const int itemp_size=100;
+char itempstr[itemp_size];
 
 const char *food_condition[]=
 {
-     "new",
-     "good",
-     "dubious"
-     "stinking"
-     "tainted"
-     "rotten",
-     0
+	"new",
+	"good",
+	"dubious"
+	"stinking"
+	"tainted"
+	"rotten",
+	0
 };
 
 const char *condition[]=
 {
-     "new",
-     "almost new",
-     "used",
-     "worn",
-     "almost broken",
-     "broken",
-     0
+	"new",
+	"almost new",
+	"used",
+	"worn",
+	"almost broken",
+	"broken",
+	0
 };
 
 const char txt_logo[]=
@@ -223,27 +224,27 @@ void Display::Item_Info(item_def *iptr, int weight, int count, const char *acttx
 		/* show modifiers */
 		if (iptr->melee_dt >0 || iptr->melee_ds || iptr->meldam_mod >0)
 		{
-			sprintf(itempstr, "[%dd%d,%+2d] ",
+			snprintf(itempstr, itemp_size, "[%dd%d,%+2d] ",
 				iptr->melee_dt, iptr->melee_ds, iptr->meldam_mod);
 			ident.append(itempstr);
 		}
 
 		if (iptr->missi_dt >0 || iptr->missi_ds || iptr->misdam_mod >0)
 		{
-			sprintf(itempstr, "{%dd%d,%+2d} ",
+			snprintf(itempstr, itemp_size, "{%dd%d,%+2d} ",
 				iptr->missi_dt, iptr->missi_ds, iptr->misdam_mod);
 			ident.append(itempstr);
 		}
 
 		if (iptr->ac>0)
 		{
-			sprintf(itempstr, "(AC%+2d)", iptr->ac);
+			snprintf(itempstr, itemp_size, "(AC%+2d)", iptr->ac);
 			ident.append(itempstr);
 		}
 
 		if (acttxt==0)
 		{
-			sprintf(itempstr, "%s %4.2fkg",
+			snprintf(itempstr, itemp_size, "%s %4.2fkg",
 				price.c_str(), (real)(count*weight)/WEIGHT_KILO);
 			ident.append(itempstr);
 		}
@@ -256,7 +257,7 @@ void Display::Item_Info(item_def *iptr, int weight, int count, const char *acttx
 	{
 		if (acttxt==0)
 		{
-			sprintf(itempstr,
+			snprintf(itempstr, itemp_size,
 				"%s %4.2fkg", price.c_str(), (real)(count*weight)/WEIGHT_KILO);
 			ident.append(itempstr);
 		}

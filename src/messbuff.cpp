@@ -64,12 +64,12 @@ void Message_Buffer::Add(const char *message, int color, int delay)
 			return; //no new messages added
 		}
 	}
-	
+
 	oldest=new Msginfo(message, color, delay);
 	messages.push_back(oldest);
 
 	Set_Origin(oldest);
-	
+
 	while (messages.size()>=Max_Messages)
 	{
 		Msginfo *m=messages.front();
@@ -116,7 +116,7 @@ void Message_Buffer::notice()
 
 				if (msg_count>1)
 				{
-					sprintf(countstr, " (x%d)", msg_count);
+					snprintf(countstr, countstr_size, " (x%d)", msg_count);
 					oneword.append(countstr);
 				}
 
@@ -158,7 +158,7 @@ void Message_Buffer::Set_Origin(Msginfo *here)
 	//new origin already set
 	if (origin!=messages.end())
 		return;
-		
+
 	for (mitr ii = messages.begin(); ii != messages.end(); ++ii)
 	{
 		if ((*ii)==here)
@@ -166,7 +166,7 @@ void Message_Buffer::Set_Origin(Msginfo *here)
 			origin=ii;
 			break;
 		}
-	}	
+	}
 }
 
 void Message_Buffer::Show_All(const char *header)

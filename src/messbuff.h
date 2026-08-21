@@ -19,7 +19,8 @@ private:
 	typedef std::deque<Msginfo*>::iterator mitr;
 
 	const size_t Max_Messages;
-	char countstr[20];
+	static const int countstr_size=20;
+	char countstr[countstr_size];
 	Coord last; //last location of a message output string
 	mitr origin; //current start of displayed message list
 
@@ -27,7 +28,7 @@ private:
 	static const char *Shortmsg;
 
 	void Set_Origin(Msginfo *here);
-	
+
 public:
 	explicit Message_Buffer(int maxmess);
 	~Message_Buffer();

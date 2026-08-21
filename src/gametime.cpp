@@ -193,10 +193,10 @@ int Gametime::compare_time(int rhour, int rmin)
 
 void Gametime::add_minute()
 {
-   tm.min++;
+	tm.min++;
 
-   if(tm.min>= TIME_MINUTES)
-      add_hour();
+	if(tm.min>= TIME_MINUTES)
+		add_hour();
 }
 
 void Gametime::sub_minute()
@@ -405,11 +405,12 @@ void Gametime::show_passed()
 
 void Gametime::show_worldtime()
 {
-	char timestr[100]={0};
 	string mtmp(get_ordinal_of_time(tm.day));
 
-	sprintf(timestr, "%02d:%02d, %02d%s of %s in the year of %04d (%s).\n",
-		tm.hour, tm.min, tm.day+1, mtmp.c_str(), time_months[tm.month], tm.year,
+	snprintf(timestr, timestr_size,
+		"%02d:%02d, %02d%s of %s in the year of %04d (%s).\n",
+		tm.hour, tm.min, tm.day+1, mtmp.c_str(),
+		time_months[tm.month], tm.year,
 		time_seasons[report_season()]);
 
 	my_printf(timestr);
@@ -417,10 +418,8 @@ void Gametime::show_worldtime()
 
 void Gametime::show_timer(char *msgtxt)
 {
-	static char timestr[80];
-
-	sprintf(timestr, "%d:%d of %d/%d/%d.", tm.hour, tm.min,
-		tm.day, tm.month, tm.year);
+	snprintf(timestr, timestr_size, "%d:%d of %d/%d/%d.",
+		tm.hour, tm.min, tm.day, tm.month, tm.year);
 
 	string s;
 

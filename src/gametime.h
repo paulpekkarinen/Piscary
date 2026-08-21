@@ -61,6 +61,9 @@ private:
 	Tgametime tm;
 	bool eventmessages;
 
+	static const int timestr_size=100;
+	char timestr[timestr_size];
+
 	void add_minute();
 	void add_hour();
 	void add_day();

@@ -415,7 +415,7 @@ void cmd_showkeys()
 		"the repeat count can be defined in options with variable "
 		"\003REPEATCOUNT\007.\n\n");
 
-	static char keystr[128]={0};
+	string keystr;
 	static char outstr[256]={0};
 	int cat=-1;
 
@@ -431,13 +431,14 @@ void cmd_showkeys()
 			s.append(" ~\n");
 		}
 
-		keystr[0]=0;
+		keystr.clear();
 		for (int i=0; i<CMD_MAXLEN; i++)
 		{
 			if (cmdtable[indx].keys[i]!=0)
-				strcat(keystr, get_keyname(cmdtable[indx].keys[i]));
+				keystr.append(get_keyname(cmdtable[indx].keys[i]));
 		}
-		sprintf(outstr, "\002%-9s \007%s\n", keystr, cmdtable[indx].name);
+		snprintf(outstr, 256, "\002%-9s \007%s\n",
+			keystr.c_str(), cmdtable[indx].name);
 
 		s.append(outstr);
 	}

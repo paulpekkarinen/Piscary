@@ -20,6 +20,7 @@
 
 #include <cctype>
 #include <cstring>
+#include <format>
 #include "avatar.h"
 #include "dice.h"
 #include "game.h"
@@ -32,7 +33,9 @@
 #include "program.h"
 #include "storage.h"
 
+using std::format;
 using std::list;
+using std::string;
 
 int SKILL_ADV[skillset::Max_Skill_Adv+1];
 
@@ -67,57 +70,57 @@ skilltype skills_weapon[]=
 	"Weaponless combat skill affects your fighting ability when you fight "
 	"without weapons, using your hands and feet only.",
 	SKILLAUTO},
-	
+
 	{"daggers",
 	"Daggers are small but deadly blades. Apart from their small size, "
 	"they can be lethal when used properly. This skill tells how good "
 	"you're in handling daggers.",
 	SKILLAUTO},
-	
+
 	{"swords",
 	"Swords are blades bigger and heavier than daggers. Swords are slower "
 	"to use but they issue superior damage to daggers. This skill is for "
 	"both one handed and two handed swords.",
 	SKILLAUTO},
-	
+
 	{"axes",
 	"Axes and battle axes.",
 	SKILLAUTO},
-	
+
 	{"blunt weapons",
 	"Blunt weapons are weapons of force. Hammers and clubs.",
 	SKILLAUTO},
-	
+
 	{"polearms",
 	"Polearms are long, sharp poles. Proper use requires good handling.",
 	SKILLAUTO},
-	
+
 	{"staffs",
 	"Staffs are often used by mages.",
 	SKILLAUTO},
-	
+
 	{"bows",
 	"Bows and crossbows. These weapons are not melee weapons, they are used "
 	"to attack targets from a distance.",
 	SKILLAUTO},
-	
+
 	{"crossbows", 0, SKILLAUTO},
-	
+
 	{"throwing",
 	"Not only bows can be used to attack distant foes, you can also throw "
 	"items with your bare hands.",
 	SKILLAUTO},
-	
+
 	{"two handed weapons",
 	"If you possess this skill, you gain bonuses when using two handed "
 	"weapons. These bonuses depend on the level of this skill.",
 	SKILLAUTO},
-	
+
 	{"one handed weapons",
 	"If you possess this skill, you gain bonuses when using one handed "
 	"weapons. These bonuses depend on the level of this skill.",
 	SKILLAUTO},
-	
+
 	{"two weapon combat",
 	"Fighting successfully with two weapons, one in both of your hands, "
 	"requires good handling of the weapon you're using and also a skill "
@@ -687,8 +690,6 @@ int skillset::listselect(int &group, const char *prompt)
 	box_bx=2;
 	box_by=2;
 
-	char skillname[30]={0};
-
 	int sel=group;
 
 	if (sel > SKILLGRP_MAGIC)
@@ -748,7 +749,7 @@ int skillset::listselect(int &group, const char *prompt)
 			else
 				topreach=false;
 
-			skillname[0]=0;
+			string skillname;
 
 			if (!topreach)
 			{
@@ -776,13 +777,12 @@ int skillset::listselect(int &group, const char *prompt)
 						stype=0;
 					}
 
-					skillname[0]=0;
 					for (j=0; j<NUM_QUICKSKILLS; j++)
 					{
 						if (player.qskills[j].group == sptr->group &&
 							player.qskills[j].type == sptr->type &&
 							player.qskills[j].select != 0)
-							sprintf(skillname, "(%d) ", j);
+							skillname=format("({}) ", j);
 					}
 
 					if (origlist[stype].flags & SKILLAUTO)
@@ -790,10 +790,10 @@ int skillset::listselect(int &group, const char *prompt)
 					else
 						listcolor=C_WHITE;
 
-					strcat(skillname, origlist[stype].name);
-					const int sklen=(int)strlen(skillname);
-					if (sklen > box_sx)
-						my_strcpy(skillname+(box_sx-3), "...", sizeof(skillname));
+					skillname.append(origlist[stype].name);
+
+					truncate_string(skillname, box_sx);
+
 					skillname[0]=toupper(skillname[0]);
 				}
 
@@ -804,8 +804,9 @@ int skillset::listselect(int &group, const char *prompt)
 			else
 				set_color(listcolor);
 
+			const int namelen=(int)skillname.size();
 			drawline_limit(box_by+i, box_bx, box_bx+box_sx-1, ' ');
-			gotoxy(box_bx+((box_sx/2)-strlen(skillname)/2), box_by+i);
+			gotoxy(box_bx+((box_sx/2)-namelen/2), box_by+i);
 			my_printf("%s", skillname);
 		}
 
