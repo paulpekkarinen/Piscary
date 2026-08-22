@@ -161,6 +161,14 @@ bool level_type::Find_Stairs(Coord &here, int stair_type, int8u number)
 	return false;
 }
 
+bool level_type::Free_To_Create(const Coord &c)
+{
+	if (Is_Outside(c)) return false;
+	if (loc[c.y][c.x].flags & CAVE_WATER) return false;
+
+	return Is_Passable(c);
+}
+
 bool level_type::Free_To_Walk(const Coord &c)
 {
 	if (Is_Passable(c)) return true;

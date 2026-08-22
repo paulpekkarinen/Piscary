@@ -15,6 +15,8 @@ struct Area;
 class Places
 {
 public:
+	static const int Panic_Limit=50000;
+
 	enum Spot_Types
 	{
 		Stairs_Sites,
@@ -44,12 +46,10 @@ public:
 	void Scan(int what);
 };
 
-Coord find_downstairs_place(level_type *level, bool first_town_level);
 Coord find_random_location(level_type *level, int border);
 Coord find_random_location(level_type *level, int border, bool skip_player);
-Coord get_random_good_location(level_type *level);
+Coord find_random_terrain_location(level_type *level);
 Coord get_random_location(const Plane &p, int border);
 Coord get_random_location(const Area &a);
-Coord get_random_coord(level_type *level);
 
 #endif

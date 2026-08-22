@@ -5,6 +5,7 @@
 #include "avatar.h"
 #include "caves.h"
 #include "dice.h"
+#include "gameview.h"
 #include "saldebug.h"
 #include "spot.h"
 #include "terrain.h"
@@ -125,33 +126,6 @@ void Places::Scan(int what)
 
 //===
 
-Coord find_downstairs_place(level_type *level, bool first_town_level)
-{
-	int panic_limit=0;
-	Coord c;
-	
-	while (panic_limit<50000)
-	{
-		c=find_random_location(level, 1);
-
-		if (first_town_level)
-		{
-			if (level->Get_Terrain(c)==TYPE_ROOMFLOOR)
-				return c;
-		}
-		else
-		{
-			if (level->Is_Passable(c))
-				return c;
-		}
-
-		panic_limit++;
-	}
-
-	//returns 0, 0 if place not found
-	return c;
-}
-
 //Search floor place until it's passable for creation.
 Coord find_random_location(level_type *level, int border)
 {
@@ -163,11 +137,11 @@ Coord find_random_location(level_type *level, int border, bool skip_player)
 	Coord c;
 
 	int panic_limit=0;
-	while (panic_limit<50000)
+	while (panic_limit<Places::Panic_Limit)
 	{
 		c.Set_Location(border+RANDU(level->sizex-border-1),
 			border+RANDU(level->sizey-border-1));
-		if (level->Is_Passable(c))
+		if (level->Free_To_Create(c))
 		{
 			if (skip_player)
 			{
@@ -186,14 +160,15 @@ Coord find_random_location(level_type *level, int border, bool skip_player)
 	return Coord(-1, -1);
 }
 
-Coord get_random_good_location(level_type *level)
+//Skip rooms, so it lands on some terrain.
+Coord find_random_terrain_location(level_type *level)
 {
 	Coord c;
 
-	for (int t=0; t<10000; t++)
+	for (int t=0; t<Places::Panic_Limit; t++)
 	{
 		c.Set_Location(RANDU(level->sizex), RANDU(level->sizey));
-		if (level->Is_Passable(c) && level->Get_Terrain(c)!=TYPE_ROOMFLOOR)
+		if (level->Free_To_Create(c) && gameview.Get_Room_Id(c)==-1)
 			return c;
 	}
 
@@ -212,21 +187,4 @@ Coord get_random_location(const Area &a)
 	const int y=random_number(a.nw.y, a.se.y);
 
 	return Coord(x, y);
-}
-
-//Find random location of passable tile type, this is the simplest one.
-Coord get_random_coord(level_type *level)
-{
-	Coord c;
-	
-	while (1)
-	{
-		c.x=RANDU(level->sizex);
-		c.y=RANDU(level->sizey);
-		if (level->Is_Passable(c))
-			return c;
-	}
-
-	//returns 0, 0 in case of error
-	return c;
 }

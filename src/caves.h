@@ -44,6 +44,7 @@ struct level_type
 
 	int Checkterraineffects(int x, int y);
 	bool Find_Stairs(Coord &here, int stair_type, int8u number);
+	bool Free_To_Create(const Coord &c);
 	bool Free_To_Walk(const Coord &c); //can walk to this tile
 
 	int get_amount_of_rooms();

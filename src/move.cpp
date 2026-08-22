@@ -64,20 +64,11 @@ const int move_dirpriority_flee[8][8]=
 	{ 3, 6, 2, 9, 1, 7, 8, 4 },
 	{ 9, 8, 6, 7, 3, 1, 4, 2 },
 	{ 1, 4, 2, 7, 3, 9, 8, 6 },
+
 	{ 1, 3, 2, 4, 6, 8, 7, 8 },
 	{ 7, 9, 8, 4, 6, 2, 1, 3 },
 	{ 9, 3, 6, 8, 2, 4, 7, 1 },
-	{ 7, 1, 4, 8, 2, 6, 9, 3 },
-/*
-	{ 7, 8, 4, 9, 1, 6, 2, 3 },
-   { 3, 6, 2, 9, 1, 8, 4, 7 },
-   { 9, 8, 6, 7, 3, 4, 2, 1 },
-   { 1, 4, 2, 7, 3, 8, 6, 9 },
-   { 1, 3, 2, 4, 6, 7, 8, 9 },
-   { 7, 9, 8, 4, 6, 1, 3, 2 },
-   { 9, 3, 6, 8, 2, 7, 1, 4 },
-   { 7, 1, 4, 8, 2, 9, 3, 6 },
-*/
+	{ 7, 1, 4, 8, 2, 6, 9, 3 }
 };
 
 const int move_dirpriority_attack[8][9]=
@@ -90,7 +81,7 @@ const int move_dirpriority_attack[8][9]=
 	{ 8, 7, 9, 4, 6, 1, 3, 2 },
 	{ 2, 1, 3, 4, 6, 7, 8, 9 },
 	{ 4, 1, 7, 8, 2, 9, 3, 6 },
-	{ 6, 3, 9, 8, 2, 7, 1, 4 },
+	{ 6, 3, 9, 8, 2, 7, 1, 4 }
 };
 
 const int move_dirpriority_circulate[8][9]=
@@ -103,18 +94,7 @@ const int move_dirpriority_circulate[8][9]=
 	{ 8, 7, 9, 4, 6, 1, 3, 2 },
 	{ 2, 1, 3, 4, 6, 7, 8, 9 },
 	{ 4, 1, 7, 8, 2, 9, 3, 6 },
-	{ 6, 3, 9, 8, 2, 7, 1, 4 },
-/*
-   { 2, 1, 3, 4, 6, 7, 8, 9 },
-   { 8, 7, 9, 4, 6, 1, 3, 2 },
-   { 4, 1, 7, 8, 2, 9, 3, 6 },
-   { 6, 3, 9, 8, 2, 7, 1, 4 },
-
-   { 9, 8, 6, 7, 3, 4, 2, 1 },
-   { 1, 4, 2, 7, 3, 8, 6, 9 },
-	{ 7, 8, 4, 9, 1, 6, 2, 3 },
-   { 3, 6, 2, 9, 1, 8, 4, 7 },
-*/
+	{ 6, 3, 9, 8, 2, 7, 1, 4 }
 };
 
 /* defines how far the shopkeeper will chase its targets
@@ -352,14 +332,15 @@ int move_item(level_type *level, invnode *item, int dir, bool checkmonster)
 	int res=0;
 
 	/* if the new location is passalbe, actually update the coords */
-	if (mptr==0 && level->Is_Passable(ic))
-	{
-		item->Set_Location(ic);
-	}
-	else if (mptr)
+	if (mptr!=0)
 		res=BLOCKED_MONSTER;
 	else
-		res=BLOCKED_WALL;
+	{
+		if (level->Is_Passable(ic))
+			item->Set_Location(ic);
+		else
+			res=BLOCKED_WALL;
+	}
 
 	/* if item is not walkable, mark the level location not walkable */
 	if (item->i.status & ITEM_NOTPASSABLE)
@@ -381,8 +362,6 @@ int move_item(level_type *level, invnode *item, int dir, bool checkmonster)
 */
 int move_monster(being *monster, level_type *level)
 {
-	being *mptr;
-
 	int ticks=0; //how much time is spent
 	int nx=monster->x;
 	int ny=monster->y;
@@ -536,11 +515,12 @@ int move_monster(being *monster, level_type *level)
 	}
 	else
 	{
+		being *mptr;
+
 		if ((nx!=monster->x) || (ny!=monster->y))
-		{
 			mptr=gameview.Get_Monster(nc);
-		}
-		else mptr=0;
+		else
+			mptr=0;
 
 		if (mptr)
 		{
@@ -1220,7 +1200,7 @@ int sur_countpass_dia(level_type *level, int x, int y)
 //Returns true if did teleport.
 bool teleport_item(level_type *level, invnode *iptr)
 {
-	Coord c=get_random_coord(level);
+	Coord c=find_random_location(level, 0, true);
 	Coord old=iptr->Get_Location();
 
 	//in rare cases if the location is the old one
@@ -1252,10 +1232,14 @@ bool teleport_item(level_type *level, invnode *iptr)
 //Returns true if did teleport.
 bool teleport_monster(level_type *level, being *mptr)
 {
-	Coord c=get_random_coord(level);
+	Coord c=find_random_location(level, 0, true);
 
 	//in rare cases if the location is the old one
 	if (c==mptr->Get_Location())
+		return false;
+
+	//prevents fusing to another monster, for now at least...
+	if (gameview.Get_Monster(c)!=0)
 		return false;
 
 	string moname=monster_sprintf(mptr, true, true);
@@ -1282,10 +1266,10 @@ void teleport_player(level_type *level, bool inform, bool not_in_room)
 	Coord old=player.Get_Location();
 
 	if (not_in_room) //skip room floors
-		c=get_random_good_location(level);
+		c=find_random_terrain_location(level);
 	else
-		c=get_random_coord(level);
-		
+		c=find_random_location(level, 0, true);
+
 	if (inform)
 	{
 		if (old==c)
@@ -1296,5 +1280,5 @@ void teleport_player(level_type *level, bool inform, bool not_in_room)
 
 	player.Jump_To(c);
 
-	Game.noticeevents(level);	
+	Game.noticeevents(level);
 }
