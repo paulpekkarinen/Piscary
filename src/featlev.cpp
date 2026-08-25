@@ -92,24 +92,17 @@ void Feature_Level::Create(int dtype)
 	//create level topology based on its type
 	switch (dtype)
 	{
-		case DTYPE_OUTWORLD:
+		case Theme::Outworld:
 		{
-			//rediscover dungeon locations for the overworld
-			Plane p(sizex, sizey);
-			world->Determine_Dungeon_Locations(p);
-
 			Outworld ow(this);
 			ow.Create(world);
-
-			//put entrance tiles to the level
-			world->Create_Dungeon_Entrances(this);
 		}
 		break;
-		case DTYPE_MAZE: recurse_maze(this, 1, 1); break;
-		case DTYPE_MAZE2: Generate_Easymaze(); break;
-		case DTYPE_ROOMY: Roomylevel(); break;
-		case DTYPE_ROOMY2: Roomylevel2(); break;
-		case DTYPE_TOWN: Generate_Town(); break;
+		case Theme::Maze: recurse_maze(this, 1, 1); break;
+		case Theme::Old_Maze: Generate_Easymaze(); break;
+		case Theme::Roomy: Roomylevel(); break;
+		case Theme::Roomy_Doors: Roomylevel2(); break;
+		case Theme::Town: Generate_Town(); break;
 		default:
 			// if all else fails, we create a ROOMY level
 			Roomylevel();
@@ -117,25 +110,27 @@ void Feature_Level::Create(int dtype)
 	}
 
 	//skip everything else if these types
-	if (dtype==DTYPE_WILDHUNT || dtype==DTYPE_OUTWORLD)
+	if (dtype==Theme::Wildhunt || dtype==Theme::Outworld)
+	{
+		//scan stair places now
+		places.Scan(Places::Stairs_Sites);
 		return;
+	}
 
 	factory.Add_Special_Monsters(this);
 
 	int i, num;
 	Spawner spw(this);
 
-	if (dtype==DTYPE_TOWN)
+	if (dtype==Theme::Town)
 	{
 		//create these manually
 		Shop_Init();
-		Create_Stairs(); //note: sometimes stairs are created in a shop... well,
-		//this is because gameview is not updated to have room ids until the
-		//creation is done
+
+		//scan stair places now
+		places.Scan(Places::First_Level_Downstairs);
 		return;
 	}
-
-	Create_Stairs();
 
 	num=3+RANDU(10);	// how many items to create
 	for (i=0; i<num; i++)
@@ -171,11 +166,13 @@ void Feature_Level::Create(int dtype)
 	}
 
 	/* generate lairs and dungeon shops */
-	//note: wouldn't a lair created now erase stairs randomly?
 	generatelair(this);
 
 	/* init shops if needed */
 	Shop_Init();
+
+	//scan stair places here for following stair creation
+	places.Scan(Places::Stairs_Sites);
 }
 
 void Feature_Level::Generate_Town()

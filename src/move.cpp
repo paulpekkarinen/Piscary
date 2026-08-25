@@ -625,19 +625,12 @@ int moveplayer(playerinfo *plr, int dir, level_type *level, bool autowalk)
 	ny+=move_dy[dir];
 	const bool is_outside=level->Is_Outside(nx, ny);
 
-	if (world->Get_Level_Type()==DTYPE_TOWN)
+	if (world->Get_Level_Type()==Theme::Town)
 	{
 		if (is_outside)
 		{
-			string s("Do you want to leave ");
-			s.append(world->Get_Level_Name());
-
-			if (confirm_yn(s.c_str(), false, true))
-			{
-				plr->lastdir=STAIROUT;
-				world->Player_Go_Up();
-			}
-			return 0;
+			if (world->Leave_Town())
+				return 0;
 		}
 	}
 
@@ -647,7 +640,8 @@ int moveplayer(playerinfo *plr, int dir, level_type *level, bool autowalk)
 		{
 			if (confirm_yn("Leave this encounter", false, true))
 			{
-				world->Player_Go_Outworld();
+				//note: return to outworld
+				//world->Player_Go_Outworld();
 			}
 			return 0;
 		}

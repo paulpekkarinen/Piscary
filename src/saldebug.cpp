@@ -40,6 +40,8 @@
 #include "window.h"
 #include "world.h"
 
+using std::string;
+
 Debug::Debug(bool m)
 	: debug_mode(m)
 {
@@ -53,7 +55,7 @@ Debug::~Debug()
 
 void Debug::Create_Level()
 {
-	world->currnode->Remake_Level();
+	world->Remake_Current_Level();
 	GAME_NOTIFYFLAGS|=GAME_DO_REDRAW;
 }
 
@@ -132,7 +134,7 @@ void Debug::Overview()
 {
 	clear_screen();
 
-	world->Display_Data();
+	world->Display_Overview();
 
 	wait_key();
 }
@@ -178,8 +180,9 @@ void Debug::View_Level()
 			nimi=terrains[et].desc;
 		}
 
+		string n=world->Get_Level_Name();
 		mvprintw(0, 0, "Viewing level '%s' at %d, %d (%s) (t=teleport, d=tile data, x=exit)",
-			world->Get_Level_Name(), e.x, e.y, nimi);
+			n.c_str(), e.x, e.y, nimi);
 		clrtoeol(); //clear possible trails
 
 		for (int y=1; y<=SCREEN_LINES; y++)

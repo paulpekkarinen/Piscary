@@ -153,8 +153,6 @@ void Outworld::Create(World *myworld)
 	//use average value to create corridors between dungeon locations
 	const float avg=(minval+maxval)/2.0f;
 
-	myworld->Connect_Dungeons(this, avg);
-
 	//height map to terrain map conversion
 	Dsq_2_Map();
 }

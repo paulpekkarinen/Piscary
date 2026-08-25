@@ -9,14 +9,11 @@
 #include "rooms.h"
 #include "spot.h"
 #include "stash.h"
+#include "theme.h"
 #include "tile.h"
 #include "traps.h"
 
 struct playerinfo;
-
-//maximum level sizes x and y
-#define MAXSIZEX	160
-#define MAXSIZEY	60
 
 //door creation chances
 #define CHANCE_DOORTRAP   20
@@ -43,7 +40,7 @@ struct level_type
 	~level_type();
 
 	int Checkterraineffects(int x, int y);
-	bool Find_Stairs(Coord &here, int stair_type, int8u number);
+	bool Find_Stairs(Coord &here, int8u number);
 	bool Free_To_Create(const Coord &c);
 	bool Free_To_Walk(const Coord &c); //can walk to this tile
 
@@ -52,6 +49,7 @@ struct level_type
 	roomdef& get_last_created_room();
 	const char *Get_Name(); //does just return a "level"
 	being *Get_Room_Owner(int roomnum);
+	Plane Get_Size();
 	int Get_Svalbard(const Coord &c);
 	int Get_Terrain(const Coord &c);
 	int Get_Terrain(int x, int y);

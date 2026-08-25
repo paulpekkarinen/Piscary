@@ -58,6 +58,7 @@ int check_cmdtable(const int *cmdline, int keynum);
 void cmd_help();
 void cmd_showkeys();
 int compare_cmd(const void* cmd1, const void* cmd2);
+void enter_stairs(level_type *level, char ch);
 void run_command(playerinfo *plr, const int command);
 
 #define CMD_NOCMD -1
@@ -293,14 +294,8 @@ void run_command(playerinfo *plr, const int command)
 	//check rest of the commands
 	switch (command)
 	{
-		case Enter_Downstairs:
-			if (world->Player_Go_Down(level)==false)
-				msg.newmsg("You start foolishly digging your way down...");
-		break;
-		case Enter_Upstairs:
-			if (world->Player_Go_Up()==false)
-				msg.newmsg("You jump very hard...");
-		break;
+		case Enter_Downstairs: enter_stairs(level, '>'); break;
+		case Enter_Upstairs: enter_stairs(level, '<'); break;
 
 		case Equip_Item: player.equips.player_equip(); break;
 		case Show_Inventory: player.Show_Inventory(); break;
@@ -447,4 +442,22 @@ void cmd_showkeys()
 
 	//finally view the text
 	viewtext(s.c_str());
+}
+
+void enter_stairs(level_type *level, char ch)
+{
+	Coord c=player.Get_Location();
+
+	const int8u num=level->Get_Door_Flag(c); //for stairs the number
+
+	if (num==0)
+	{
+		if (ch=='>')
+			msg.newmsg("You start foolishly digging your way down...");
+		else
+			msg.newmsg("You jump very hard...");
+		return;
+	}
+
+	world->Enter_Portal(num);
 }

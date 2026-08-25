@@ -21,6 +21,7 @@
 #include "dice.h"
 #include "gametime.h"
 #include "gameview.h"
+#include "input.h"
 #include "message.h"
 #include "move.h"
 #include "node.h"
@@ -34,258 +35,10 @@
 #include "uncover.h"
 
 using std::string;
-
-Level Testhole[]=
-{
-	{"Top", 1, 0, DTYPE_ROOMY, 2, 12, 0, Testhole+1, 0, 0},
-	{"Primitive 2", 2, 0, DTYPE_ROOMY2, 0, 0, Testhole, Testhole+2, 0, 0},
-	{"Primitive 3", 3, 0, DTYPE_ROOMY2, 0, 0, Testhole+1, Testhole+3, 0, 0},
-	{"Bottom", 4, 0, DTYPE_ROOMY, 19, 52, Testhole+2, 0, 0, 0},
-	{0}
-};
-
-Level Abyss[]=
-{
-	{"Entrance", 1, 0, DTYPE_ROOMY, 19, 54, 0, Abyss+1, 0, 0},
-	{"Abyss 1", 2, 0, DTYPE_ROOMY2, 0, 0, Abyss, Abyss+2, 0, 0},
-	{"Abyss 2", 3, 0, DTYPE_ROOMY, 0, 0, Abyss+1, Abyss+3, 0, 0},
-	{"Abyss 3", 4, 0, DTYPE_ROOMY2, 0, 0, Abyss+2, Abyss+4, 0, 0},
-	{"Abyss 4", 5, 0, DTYPE_RANDOM, 0, 0, Abyss+3, Abyss+5, 0, 0},
-	{"Abyss 5", 6, 0, DTYPE_RANDOM, 0, 0, Abyss+4, Abyss+6, 0, 0},
-	{"Abyss 6", 7, 0, DTYPE_RANDOM, 0, 0, Abyss+5, Abyss+7, 0, 0},
-	{"Abyss 7", 8, 0, DTYPE_RANDOM, 0, 0, Abyss+6, Abyss+8, 0, 0},
-	{"Abyss 8", 9, 0, DTYPE_RANDOM, 0, 0, Abyss+7, 0, 0, 0},
-	{0}
-};
-
-Level Bottoms[]=
-{
-	{"Level 1", 1, 0, DTYPE_MAZE2, 6, 2, 0, Bottoms+1, 0, 0},
-	{"Level 2", 2, 0, DTYPE_MAZE2, 0, 0, Bottoms, Bottoms+2, 0, 0},
-	{"Level 3", 3, 0, DTYPE_MAZE2, 0, 0, Bottoms+1, Bottoms+3, 0, 0},
-	{"Level 4", 4, 0, DTYPE_RANDOM, 0, 0, Bottoms+2, Bottoms+4, 0, 0},
-	{"Level 5", 5, 0, DTYPE_ROOMY2, 0, 0, Bottoms+3, Bottoms+5, 0, 0},
-	{"Level 6", 6, 0, DTYPE_ROOMY2, 0, 0, Bottoms+4, Bottoms+6, 0, 0},
-	{"Level 7", 7, 0, DTYPE_MAZE2, 0, 0, Bottoms+5, Bottoms+7, 0, 0},
-	{"Level 8", 8, 0, DTYPE_MAZE2, 0, 0, Bottoms+6, Bottoms+8, 0, 0},
-	{"Level 9", 9, 0, DTYPE_MAZE2, 0, 0, Bottoms+7, Bottoms+9, 0, 0},
-	{"Level 10", 10, 0, DTYPE_MAZE2, 0, 0, Bottoms+8, 0, 0, 0},
-	{0}
-};
-
-Level town_santhel[]=
-{
-	{"Town", 1, 0, DTYPE_TOWN, 8, 33, 0, town_santhel+1, 0, 0},
-	{"Dungeons of Santhel", 2, 0, DTYPE_ROOMY, 0, 0, town_santhel, town_santhel+2, 0, 0},
-	{"Deep Dungeon", 3, 0, DTYPE_ROOMY, 0, 0, town_santhel+1, 0, 0, 0},
-	{0}
-};
-
-Level outworld[]=
-{
-	{"Mountains", 1, 0, DTYPE_OUTWORLD, 0, 0, 0, 0, 0, 0},
-	{0}
-};
-
-//This is a list of dungeons in Saladir
-Dungeon dungeonlist[]=
-{
-	/* first is the wilderness (outworld map) */
-	{"Salmorrian mountains",
-	"Salmorrian mountains.",
-	PLACE_MOUNTAINS,
-	outworld, 0, 0, 0},
-
-	/* here are the dungeons */
-	{"Very primitive dungeon",
-	"This dungeon looks dull and boresome.",
-	PLACE_DPRIMITIVE,
-	Testhole, STAIRDOWN1, 1, TYPE_DUNGEON2},
-
-	{"Very primitive dungeon",
-	"You've entered the alternate entrance, but still it looks dull and boresome.",
-	PLACE_DPRIMITIVE,
-	Testhole+3, STAIRDOWN2, 1, TYPE_DUNGEON2},
-
-	{"Caverns of Tha'nthol",
-	"There are the famous cavers of Tha'nthol, the bored elf wizard.",
-	PLACE_DTHANTHOL,
-	Bottoms, STAIRDOWN1, 1, TYPE_DUNGEON1},
-
-	{"Abyss",
-	"Abyss, a soon to be a place of danger and hunger :-).",
-	PLACE_DABYSS,
-	Abyss, STAIRDOWN1, 1, TYPE_DUNGEON3},
-
-	{"Santhel",
-	"A small town with one castle and few houses. Oddly there're only few people here.",
-	PLACE_TSANTHEL,
-	town_santhel, STAIRDOWN1, 0, TYPE_TOWN1},
-
-	{0, 0, 0, 0, 0, 0, 0}
-};
-
-bool World::Player_Go_Down(level_type *level)
-{
-	Coord pc=player.Get_Location();
-
-	//is at stairs or in the outworld
-	if (level->Get_Terrain(pc) == TYPE_STAIRDOWN || (dungeon==0 && Get_Level_Index()==1))
-		player.Lastdir_To_Doorflag(level);
-	else
-		return false;
-
-	int sdir=0;
-	Level *lvldata=currnode->Get_Level_Data();
-
-	//if player is in wilderness, enter a new dungeon (or town)
-	if (dungeon==0)
-	{
-		//search the dungeon player is entering (with coords)
-		int i=1; //indexes start from 1, because overworld is 0
-		bool isdung=false;
-
-		for (locsitr ii = dunglocs.begin() ; ii != dunglocs.end() ; ++ii)
-		{
-			if (pc==(*ii))
-			{
-				Enter_New_Dungeon(i);
-				isdung=true;
-				break;
-			}
-			i++;
-		}
-
-		if (!isdung)
-		{
-			msg.newmsg("Want do start digging a new dungeon?", C_WHITE);
-			return false;
-		}
-	}
-	else
-	{
-		msg.newmsg("You entered down stairs...", C_YELLOW);
-
-		if (player.lastdir==STAIRDOWN1)
-		{
-			Set_Current_Node(lvldata->linkto1);
-			sdir=STAIRUP1;
-		}
-		if (player.lastdir==STAIRDOWN2)
-		{
-			sdir=STAIRUP2;
-			Set_Current_Node(lvldata->linkto2);
-		}
-
-		//check and set the visited flag for the level, this will also
-		//create the level if not yet visited
-		currnode->Visit();
-	}
-
-	player.delta=6;
-	level=currnode->Get_Level();
-	lvldata=currnode->Get_Level_Data(); //update level data also
-
-	if (lvldata->dtype==DTYPE_TOWN)
-	{
-		player.sight=15;
-		world->Display_Time_Events(true);
-		//use random location for now
-		teleport_player(level, false, true);
-	}
-	else
-	{
-		player.sight=10;
-		world->Display_Time_Events(false);
-		Jump_To_Stairs(level, TYPE_STAIRUP, sdir);
-	}
-
-	return true;
-}
-
-void World::Player_Go_Outworld()
-{
-	//save old dungeon location, because entering first time outworld its
-	//locations have to be created
-	const int olddung=dungeon;
-
-	Enter_New_Dungeon(0);
-
-	//find outworld entry point based on current dungeon
-	Coord arrival;
-	int index=1; //start from 1, skip overworld..
-	for (locsitr ii = dunglocs.begin() ; ii != dunglocs.end() ; ++ii)
-	{
-		if (index==olddung) //the dungeon we did exit from
-		{
-			arrival=(*ii); //store location of the dungeon
-			break;
-		}
-		index++;
-	}
-
-	player.sight=4;
-	player.delta=2;
-
-	if (player.huntmode)
-	{
-		player.huntmode=false;
-		//player.Reset_Location(player.wild.x, player.wild.y); //note: fix later
-	}
-
-	player.Jump_To(arrival);
-
-	/* enable weather notifications */
-	Display_Time_Events(true);
-}
-
-bool World::Player_Go_Up()
-{
-	Level *lvldata=currnode->Get_Level_Data();
-
-	if (player.lastdir==STAIROUT &&
-		lvldata->outx && lvldata->outy)
-	{
-		Player_Go_Outworld();
-		return true;
-	}
-
-	Coord pc=player.Get_Location();
-	level_type *level=Get_Current_Level();
-
-	if (level->Get_Terrain(pc) == TYPE_STAIRUP)
-		player.Lastdir_To_Doorflag(level);
-	else
-		return false;
-
-	int sdir=0;
-
-	world->Display_Time_Events(false);
-
-	msg.newmsg("You entered up stairs...", C_YELLOW);
-
-	if (player.lastdir==STAIRUP1)
-	{
-		Set_Current_Node(lvldata->linkfrom1);
-		sdir=STAIRDOWN1;
-	}
-	if (player.lastdir==STAIRUP2)
-	{
-		Set_Current_Node(lvldata->linkfrom2);
-		sdir=STAIRDOWN2;
-	}
-	
-	//check and set the visited flag for the level, this will also create
-	//the level if not yet visited
-	currnode->Visit();
-	level=Get_Current_Level();
-	Jump_To_Stairs(level, TYPE_STAIRDOWN, sdir);
-
-	return true;
-}
+using std::vector;
 
 World::World()
-	: currnode(0), dungeon(0)
+	: index(0)
 {
 	//initialize a random world time
 	const int cyear=1200+RANDU(100);
@@ -297,23 +50,286 @@ World::World()
 	worldtime.set(cyear, cmonth, cday, chour, cmin);
 	worldtime.set_events(false);
 
-	//construct dungeon node list
-	Dungeon *dptr=dungeonlist;
-	int index=0; //unique index of the dungeon
-	while (dptr->name)
+	for (int r=0; r<dng::Max_Dungeons; r++)
+		visited_dungs[r]=false;
+
+	//construct the game world, this is the enum list of
+	//dungeon types (main places in the game world) which
+	//each contain one or a set of levels.
+	for (int i=0; i<dng::Max_Dungeons; i++)
 	{
-		dungeons.push_back(new Dungnode(dptr, index));
-		dptr++;
-		index++;
+		const int a=dungeonlist[i].Get_Amount_Of_Levels();
+
+		for (int d=0; d<a; d++)
+		{
+			//determine the location in the list of levels
+			int wh;
+			if (d==0) wh=dng::Top;
+			else if (d==a-1) wh=dng::Bottom;
+			else wh=dng::Middle;
+
+			const int theme=Theme::Get_Random_Level_Type(i, d, a);
+
+			Level site(theme, i, d, wh);
+			levels.push_back(new Levelnode(site));
+		}
+	}
+
+	//after level nodes are created it's time to connect them by
+	//adding portals in the level node's list. These are the
+	//blueprint for actual terrain stairs or border exits created
+	//when the level is entered first time.
+	int portal_id=0;
+	for (int i=0; i<dng::Max_Dungeons; i++)
+	{
+		//main connections defined in dungeon data
+		int p=0;
+		while (dungeonlist[i].portals[p]!=-1)
+		{
+			const int dest_dung=dungeonlist[i].portals[p+2];
+			Levelnode *src=Find_Node_By_Location(
+				dungeonlist[i].portals[p+1],
+				dest_dung);
+
+			const int pterrain=dungeonlist[i].portals[p];
+
+			//create source portal that we enter
+			Portal port(portal_id, portal_id+1, pterrain);
+			src->Add_Portal(port);
+
+			Levelnode *dest=Find_Node_By_Location(dng::Top, dest_dung);
+
+			const int dest_terrain=dest->Get_Reverse_Portal(pterrain);
+
+			//each portal has a destination pair with reversed id numbers
+			Portal dest_port(portal_id+1, portal_id, dest_terrain);
+			dest->Add_Portal(dest_port);
+
+			portal_id+=2;
+			p+=3;
+		}
+
+		//connections between levels of the same dungeon, these have always
+		//stairs down paired with stairs up in the destination level
+		const int a=Number_Of_Levels(i);
+		if (a>1)
+		{
+			int levi=Find_First_Level_Index(i);
+			for (int t=0; t<a-1; t++)
+			{
+				Portal port(portal_id, portal_id+1, TYPE_STAIRDOWN);
+				levels[levi]->Add_Portal(port);
+
+				Portal dest_port(portal_id+1, portal_id, TYPE_STAIRUP);
+				levels[levi+1]->Add_Portal(dest_port);
+
+				levi++;
+				portal_id+=2;
+			}
+		}
 	}
 }
 
 World::~World()
 {
-	for (dngitr ii = dungeons.begin() ; ii != dungeons.end() ; ++ii)
+	for (levitr ii = levels.begin() ; ii != levels.end() ; ++ii)
 	{
 		delete (*ii);
 	}
+}
+
+int World::Find_First_Level_Index(int dung)
+{
+	int a=0;
+
+	for (levitr ii = levels.begin() ; ii != levels.end() ; ++ii)
+	{
+		if ((*ii)->site.dungeon==dung)
+			return a;
+		a++;
+	}
+
+	//if anything goes wrong points to outworld
+	return 0;
+}
+
+//Returns level index of this portal id, in other words where it is.
+int World::Find_Level_By_Portal(int id)
+{
+	int a=0;
+
+	for (levitr ii = levels.begin() ; ii != levels.end() ; ++ii)
+	{
+		if ((*ii)->Has_Portal(id))
+			return a;
+		a++;
+	}
+
+	//if anything goes wrong points to outworld
+	return 0;
+}
+
+Levelnode *World::Find_Node_By_Location(int loc, int dung)
+{
+	int a=0;
+	vector<int> ids;
+
+	//count number of levels in this dungeon
+	for (levitr ii = levels.begin() ; ii != levels.end() ; ++ii)
+	{
+		if ((*ii)->site.dungeon==dung)
+			ids.push_back(a);
+	}
+
+	int ni=0; //default: top index
+	if (loc==dng::Bottom) ni=a-1;
+	else if (loc==dng::Middle)
+	{
+		if (a<=2) ni=0;
+		else
+			ni=random_number(1, a-2);
+	}
+
+	const int lindex=ids[ni];
+	return levels[lindex];
+}
+
+string World::Get_Level_Name()
+{
+	return levels[index]->site.Get_Name();
+}
+
+//Count number of levels in a dungeon.
+int World::Number_Of_Levels(int dung)
+{
+	int a=0;
+	for (levitr ii = levels.begin() ; ii != levels.end() ; ++ii)
+	{
+		if ((*ii)->site.dungeon==dung) a++;
+	}
+	return a;
+}
+
+//When entering the game world at the start of game.
+void World::Arrival()
+{
+	index=Find_First_Level_Index(dng::Santhel);
+	player.sight=15;
+	player.delta=6;
+
+	Levelnode *n=Get_Current_Node();
+
+	n->Visit(); //creates new level if needed
+
+	//also checks dungeon visits
+	const int dung=n->site.dungeon;
+	visited_dungs[dung]=true;
+
+	//use random location for now
+	level_type *level=n->Get_Level();
+	teleport_player(level, false, true);
+}
+
+void World::Enter_Portal(int8u number)
+{
+	//stairs numbers start from 1... (0 is no portal)
+	const int portal_id=(int)number-1;
+
+	Portal &p=levels[index]->Get_Portal(portal_id);
+	const int src_dung=Get_Dungeon();
+
+	const int dest=Find_Level_By_Portal(p.dest_id);
+	const int dest_dung=levels[dest]->site.dungeon;
+
+	if (src_dung!=dest_dung)
+	{
+		const char *txt;
+		if (dest_dung==dng::Mountains)
+			txt="outside";
+		else
+			txt=dungeonlist[dest_dung].name;
+
+		msg.vnewmsg(C_GREEN, "Entering %s!", txt);
+		msg.newmsg(dungeonlist[dest_dung].desc, C_WHITE);
+	}
+	else
+	{
+		if (p.terrain_type==TYPE_STAIRDOWN)
+			msg.newmsg("You entered down stairs...", C_YELLOW);
+		else if (p.terrain_type==TYPE_STAIRUP)
+			msg.newmsg("You entered up stairs...", C_YELLOW);
+		else
+			msg.newmsg(C_YELLOW, "You leave %s.", dungeonlist[src_dung].name);
+	}
+
+	index=dest; //change to new level
+	Levelnode *n=Get_Current_Node();
+
+	n->Visit(); //creates new level if needed
+
+	//also checks dungeon visits
+	visited_dungs[dest_dung]=true;
+
+	player.delta=6;
+	level_type *level=n->Get_Level();
+	const int th=n->Get_Theme();
+	bool to_stairs=true;
+
+	if (th==Theme::Town)
+	{
+		player.sight=15;
+		//use random location for now
+		teleport_player(level, false, true);
+		to_stairs=false;
+	}
+	else if (th==Theme::Outworld)
+	{
+		player.sight=4;
+		player.delta=2;
+
+		if (player.huntmode)
+		{
+			player.huntmode=false;
+			//player.Reset_Location(player.wild.x, player.wild.y); //note: fix later
+		}
+	}
+	else
+	{
+		player.sight=10;
+	}
+
+	if (to_stairs)
+	{
+		int8u sn=n->Get_Stairs_Number(p.dest_id);
+		Coord pos;
+
+		//in case stairs are not found, which is a bug, shows this message
+		if (sn==0 || level->Find_Stairs(pos, sn)==false)
+		{
+			msg.newmsg("Huh, what, where am I?!");
+			pos=find_random_location(level, 1);
+		}
+
+		player.Jump_To(pos);
+	}
+
+	/* enable or disable weather notifications */
+	Display_Time_Events(Has_Weather());
+}
+
+bool World::Leave_Town()
+{
+	string s("Do you want to leave ");
+	s.append(Get_Level_Name());
+
+	if (confirm_yn(s.c_str(), false, true))
+	{
+		player.lastdir=0;
+		Enter_Portal(1);
+		return true;
+	}
+
+	return false;
 }
 
 void World::Advance_Time(int ticks)
@@ -322,45 +338,15 @@ void World::Advance_Time(int ticks)
 	weather.passtime(ticks, worldtime);
 }
 
-//Create entrance terrains to the places they were determined earlier.
-void World::Create_Dungeon_Entrances(level_type *level)
-{
-	Dungeon *dptr=dungeonlist;
-	dptr++; //skip overworld, it's not a location in the overworld itself
-	
-	for (locsitr ii = dunglocs.begin() ; ii != dunglocs.end() ; ++ii)
-	{
-		level->Set_Terrain(*ii, dptr->out);
-		dptr++;
-	}
-}
-
-//Find random places for each dungeon location in the overworld when the level is created.
-void World::Determine_Dungeon_Locations(const Plane &lvl)
-{
-	const int amt_of_dungeons=(int)dungeons.size()-1; //-1 = don't count the overworld itself
-
-	dunglocs.clear(); //clean up in case of re-creating the level
-
-	for (int t=0; t<amt_of_dungeons; t++)
-		New_Dungeon_Location(lvl);
-}
-
-
 void World::Display_Return_Message(const char *plrname)
 {
+	string s=Get_Level_Name();
+	const int dung=Get_Dungeon();
+
 	my_printf("%s, Welcome back.\nYou left while you were in %s (%s).\n",
 		plrname,
-		Get_Dungeon_Name(),
-		Get_Level_Name());
-}
-
-void World::Connect_Dungeons(Outworld *owo, float v)
-{
-	for (int t=0; t<(int)dunglocs.size()-1; t++)
-	{
-		owo->Create_Passage(dunglocs[t], dunglocs[t+1], v);
-	}
+		dungeonlist[dung].name,
+		s.c_str());
 }
 
 void World::Display_Time_Events(bool v)
@@ -368,93 +354,51 @@ void World::Display_Time_Events(bool v)
 	worldtime.set_events(v);
 }
 
-void World::Enter_New_Dungeon(int d)
-{
-	dungeon=d;
-	Dungnode *dnode=dungeons[dungeon];
-	currnode=dnode->Get_Node(0);
-	
-	Dungeon *dptr=dnode->Get_Dungeon();
-
-	player.lastdir=dptr->staircase;
-	dnode->Visit(dungeon);
-
-	const char *txt;
-	if (d==0)
-		txt="outside";
-	else
-		txt=dptr->name;
-
-	msg.vnewmsg(C_GREEN, "Entering %s!", txt);
-	if (dptr->desc)
-		msg.newmsg(dptr->desc, C_WHITE);
-
-	//visit/create also the new level if not yet created
-	currnode->Visit();
-}
-
 level_type *World::Get_Current_Level()
 {
-	return currnode->Get_Level();
+	return levels[index]->Get_Level();
 }
 
-Dungeon *World::Get_Dungeon(int dng)
+Levelnode *World::Get_Current_Node()
 {
-	Dungnode *n=dungeons[dng];
-	return n->Get_Dungeon();
+	return levels[index];
 }
 
-const char *World::Get_Dungeon_Name()
+int World::Get_Dungeon()
 {
-	Dungeon *d=Get_Dungeon(dungeon);
-	return d->name;
-}
-
-const char *World::Get_Level_Name()
-{
-	Level *curlev=Get_Level_Data();
-	return curlev->name;
-}
-
-Level *World::Get_Level_Data()
-{
-	return currnode->Get_Level_Data();
-}
-
-int World::Get_Level_Index()
-{
-	Level *curlev=Get_Level_Data();
-	return curlev->index;
+	return levels[index]->site.dungeon;
 }
 
 int World::Get_Level_Type()
 {
-	Level *curlev=Get_Level_Data();
-	return curlev->dtype;
+	return levels[index]->Get_Theme();
 }
 
-bool World::Is_First_Level_Of_Town()
+bool World::Has_Weather()
 {
-	if (Get_Level_Type()==DTYPE_TOWN && Get_Level_Index()==1)
+	if (Get_Dungeon()==dng::Mountains || Get_Level_Type()==Theme::Town)
 		return true;
+
 	return false;
 }
 
-bool World::Is_Matching_Place(int ptype, int index)
+bool World::Is_Matching_Place(int dung, int depth)
 {
-	Dungeon *d=Get_Dungeon(dungeon);
+	Levelnode *n=Get_Current_Node();
 
-	if (d->placetype==ptype &&
-		Get_Level_Index()==index) return true;
+	if (Get_Dungeon()==dung && n->site.depth==depth)
+		return true;
+
 	return false;
 }
 
 bool World::Is_Night()
 {
 	const int lvltype=Get_Level_Type();
+	const int dung=Get_Dungeon();
 
 	/* night is always present in the dungeons */
-	if (dungeon!=0 && lvltype!=DTYPE_TOWN)
+	if (dung!=dng::Mountains && lvltype!=Theme::Town)
 		return true;
 
 	return worldtime.is_night();
@@ -462,62 +406,36 @@ bool World::Is_Night()
 
 bool World::Is_Outside() const
 {
-	if (dungeon==0) return true;
+	if (levels[index]->site.dungeon==dng::Mountains) return true;
 	return false;
 }
 
-void World::Jump_To_Stairs(level_type *level, int stairs_type, int8u number)
+//Return number of levels visited.
+int World::Num_Levels()
 {
-	Coord dest;
-
-	if (level->Find_Stairs(dest, stairs_type, number)==false)
+	int a=0;
+	for (levitr ii = levels.begin() ; ii != levels.end() ; ++ii)
 	{
-		msg.newmsg("Huh, what, where am I?!");
-		dest=find_random_location(level, 1);
+		if ((*ii)->Is_Visited())
+			a++;
 	}
-	
-	player.Jump_To(dest);
+	return a;
 }
 
-void World::New_Dungeon_Location(const Plane &lvl)
+//Return number of places (dungeons) visited.
+int World::Num_Places()
 {
-	bool banana=false;
-	Coord c;
-
-	for (int t=0; t<5000; t++)
+	int n=0;
+	for (int t=0; t<dng::Max_Dungeons; t++)
 	{
-		//skip 5 tiles around the borders of the level
-		c=get_random_location(lvl, 5);
-		banana=true; //assume we found a valid location
-
-		//check existing coordinates, if they are closer than 10 tiles, find a new location
-		for (locsitr ii = dunglocs.begin() ; ii != dunglocs.end() ; ++ii)
-		{
-			if (get_distance(*ii, c)<10)
-			{
-				banana=false;
-				break;
-			}
-		}
-
-		if (banana) break;
+		if (visited_dungs[t]) n++;
 	}
-
-	//in case of failure, put the stairs to a special location
-	if (banana==false)
-	{
-		const int x=(int)dunglocs.size(); //each stairs has a unique x location
-		c.Set_Location(x, 3);
-	}
-
-	dunglocs.push_back(c);
+	return n;
 }
 
-void World::Set_Current_Node(Level *dest)
+void World::Remake_Current_Level()
 {
-	Levelnode *n=dungeons[dungeon]->Get_Node_By_Level(dest);
-	if (n!=0)
-		currnode=n;
+	levels[index]->Remake_Level();
 }
 
 void World::Show_Birth_Time()
@@ -531,102 +449,90 @@ void World::Show_Time()
 	worldtime.show_worldtime();
 }
 
-void World::Visit_Dungeon(int index)
-{
-	for (dngitr ii = dungeons.begin() ; ii != dungeons.end() ; ++ii)
-	{
-		(*ii)->Visit(index);
-	}
-}
-
 void World::Weather_Report()
 {
 	weather.report();
 }
 
-void World::Display_Data()
+void World::Display_Overview()
 {
-	const int amt_of_dungeons=(int)dungeons.size();
-	int nlevels=0;
+	const int nlevels=(int)levels.size();
+	string s=Get_Level_Name();
 
-	for (int t=0; t<amt_of_dungeons; t++)
-	{
-		bool cd;
-		if (t==dungeon) cd=true;
-		else cd=false;
+	my_printf("Current level: %s (%d)\n", s.c_str(), index);
 
-		dungeons[t]->Display_Data(cd);
-		nlevels+=dungeons[t]->Get_Amount_Of_Levels();
-	}
 	my_printf("Dungeons in the world: %d, dungeons player has visited: %d\n",
-		amt_of_dungeons, player.num_places);
+		dng::Max_Dungeons, Num_Places());
 	my_printf("Levels in the world: %d, levels player has visited: %d\n",
-		nlevels, player.num_levels);
+		nlevels, Num_Levels());
 
 	if (Is_Night())
 		print_text("It's night or dark.\n");
 	else
 		print_text("It's daytime.\n");
-		
+
 	worldtime.print_worldtime();
-		
-	//show dungeon locations if at overworld
-	if (dungeon==0)
-	{
-		Dungeon *dptr=dungeonlist;
-		dptr++; //skip overworld, it's not a location in the overworld itself
-	
-		for (locsitr ii = dunglocs.begin(); ii != dunglocs.end(); ++ii)
-		{
-			my_printf("Entrance to %s at %d, %d.\n", dptr->name, (*ii).x, (*ii).y);
-			dptr++;
-		}
-	}
 }
 
 void World::Display_Level_Data()
 {
-	my_printf("Player's location: %d, %d. Dungeon: %d, level index: %d\n",
-		player.x, player.y, dungeon, Get_Level_Index());
-
 	//show current level's basic information
-	currnode->Display_Data(dungeon);	
+	levels[index]->Display_Data(index);
+}
+
+void World::Display_Location()
+{
+	string s;
+
+	if (player.huntmode)
+		s="Wilderness";
+	else
+	{
+		const int dung=Get_Dungeon();
+
+		s.append(dungeonlist[dung].name);
+		s.append(" Lvl:");
+		s.append(Get_Level_Name());
+	}
+
+	const int sz=(int)s.size();
+
+	print_text_to(SCREEN_COLS-sz, STATUSROW, s.c_str());
 }
 
 void World::Save(Tar_Ball &tb)
 {
-	//note: how to save and load current node
-	tb.Put(dungeon);
+	tb.Put(index);
+	tb.Put((int)levels.size());
 
-	for (dngitr ii = dungeons.begin() ; ii != dungeons.end() ; ++ii)
+	for (levitr ii=levels.begin(); ii!=levels.end(); ++ii)
 		(*ii)->Save(tb);
-
-	const int v=dunglocs.size();
-	tb.Put(v);
-
-	for (locsitr ii = dunglocs.begin(); ii != dunglocs.end(); ++ii)
-		(*ii).Save(tb);
 
 	weather.save(tb);
 	worldtime.save(tb);
+
+	for (int t=0; t<dng::Max_Dungeons; t++)
+		tb.Put_Bool(visited_dungs[t]);
 }
 
 void World::Load(Tar_Ball &tb)
 {
-	dungeon=tb.Get_Next_Value();
+	index=tb.Get_Next_Value();
+	const int a=tb.Get_Next_Value();
 
-	for (dngitr ii = dungeons.begin() ; ii != dungeons.end() ; ++ii)
-		(*ii)->Load(tb);
-
-	dunglocs.clear(); //clear just in case
-	const int v=tb.Get_Next_Value();
-	for (int t=0; t<v; t++)
+	for (int i=0; i<a; i++)
 	{
-		Coord c;
-		c.Load(tb);
-		dunglocs.push_back(c);
+		Levelnode *n=new Levelnode;
+		n->Load(tb);
+		levels.push_back(n);
 	}
 
 	weather.load(tb);
 	worldtime.load(tb);
+
+	const int v=tb.Get_Next_Value();
+	for (int t=0; t<v; t++)
+	{
+		visited_dungs[t]=tb.Get_Next_Bool();
+	}
 }

@@ -16,61 +16,240 @@
 
 //Refactored 20.8.2022 - 19.10.2025 Paul K. Pekkarinen
 
+#include <format>
 #include "avatar.h"
 #include "dice.h"
+#include "dungeon.h"
 #include "featlev.h"
 #include "gameview.h"
+#include "lexicon.h"
 #include "node.h"
 #include "output.h"
+#include "salamath.h"
 #include "storage.h"
 #include "terrain.h"
+#include "theme.h"
 #include "world.h"
 
+using std::format;
 using std::string;
+using std::vector;
+
+string Level::Get_Name()
+{
+	bool basename=false;
+	string s;
+
+	switch (dungeon)
+	{
+		case dng::Mountains:
+			s=dungeonlist[dungeon].level_name;
+		break;
+		case dng::Thanthol: basename=true; break;
+		case dng::Primitive:
+			if (where==dng::Top) s="Top";
+			else if (where==dng::Bottom) s="Bottom";
+			else basename=true;
+		break;
+		case dng::Abyss:
+			if (where==dng::Top) s="Entrance";
+			else basename=true;
+		break;
+		case dng::Santhel:
+			if (where==dng::Top) s="Town";
+			else if (where==dng::Middle) s="Dungeons of Santhel";
+			else s="Deep dungeon";
+		break;
+		default: s="Strange place"; break;
+	}
+
+	if (basename)
+	{
+		s=dungeonlist[dungeon].level_name;
+		s.append(" ");
+		s.append(to_string(depth+1));
+	}
+
+	return s;
+}
+
+string Level::Get_Data()
+{
+	string s=format("'{}' at depth {}",
+		Get_Name(), depth);
+
+	return s;
+}
+
+//===
 
 Levelnode::~Levelnode()
 {
 	delete level;
 }
 
-void Levelnode::Display_Data(int dung)
+Portal &Levelnode::Get_Portal(int index)
+{
+	return portals[index];
+}
+
+int Levelnode::Get_Reverse_Portal(int terratype)
+{
+	if (terratype==TYPE_TOWN1 || terratype==TYPE_TOWN2)
+		return TYPE_DARK; //this is border exit
+
+	if (terratype==TYPE_STAIRUP)
+		return TYPE_STAIRDOWN;
+
+	//assumes that we have only pair for stairs down left
+	return TYPE_STAIRUP;
+}
+
+//Returns the stairs number stored in Tile::doorfl, this is needed to
+//find the physical stairs location based on its id. Each stairs get
+//a number based on its creation order.
+int8u Levelnode::Get_Stairs_Number(int id)
+{
+	int8u si=1; //starts from 1
+
+	for (pitr ii = portals.begin() ; ii != portals.end() ; ++ii)
+	{
+		if ((*ii).id==id)
+			return si;
+		si++;
+	}
+
+	return 0;
+}
+
+bool Levelnode::Has_Portal(int id)
+{
+	for (pitr ii = portals.begin() ; ii != portals.end() ; ++ii)
+	{
+		if ((*ii).id==id)
+			return true;
+	}
+	return false;
+}
+
+bool Levelnode::Is_First_Level_Of_Town()
+{
+	if (site.theme==Theme::Town && site.depth==0)
+		return true;
+	return false;
+}
+
+bool Levelnode::Is_Visited()
+{
+	return (flags & LEVEL_VISITED);
+}
+
+void Levelnode::Add_Portal(Portal &p)
+{
+	portals.push_back(p);
+}
+
+//Create physical stairs to level based on portal list.
+void Levelnode::Create_Portals(Feature_Level *f)
+{
+	vector<Coord> prev; //entrances that were created
+	int8u num=1;
+
+	for (pitr ii = portals.begin() ; ii != portals.end() ; ++ii)
+	{
+		Portal &p=(*ii);
+		const int tt=p.terrain_type;
+		if (tt!=TYPE_DARK)
+		{
+			Coord c;
+
+			//when creating outworld entrances, distance them away
+			//from each other
+			if (site.dungeon==dng::Mountains)
+				c=New_Dungeon_Location(f, prev);
+			else
+				c=f->places.Get_Random();
+
+			f->Create_Stairs(c, tt, num);
+
+			prev.push_back(c);
+		}
+		//stairs id is also given to border exit, but it's
+		//just not physically created as stairs
+		num++;
+	}
+}
+
+void Levelnode::Display_Data(int i)
 {
 	string vis;
 
-	if (!(flags & LEVEL_VISITED))
-		vis="not visited.";
-	else
+	if (Is_Visited())
 		vis="visited.";
+	else
+		vis="not visited.";
 
-	const char *dname=dungeonlist[dung].name;
-	const int i=leveldata->index;
+	string levname=site.Get_Data();
 
 	if (level==0)
-		my_printf("Level %d: '%s' of '%s' not yet created.\n", i, leveldata->name, dname);
+		my_printf("Level %d: %s not yet created.\n", i, levname.c_str());
 	else
 	{
-		my_printf("Level %d: '%s' of '%s' is %s\n", i, leveldata->name, dname, vis.c_str());
+		my_printf("Level %d: %s is %s\n", i, levname.c_str(), vis.c_str());
 		level->Display_Data();
 	}
 
 	//show portals defined in the data
-	Display_Portal_Pair(leveldata->linkfrom1, leveldata->linkto1);
-	Display_Portal_Pair(leveldata->linkfrom2, leveldata->linkto2);
+	for (pitr ii = portals.begin() ; ii != portals.end() ; ++ii)
+	{
+		Portal &p=(*ii);
+		const int tt=p.terrain_type;
+
+		my_printf("Portal '%s': From %d to %d.\n",
+			terrains[tt].desc, p.id, p.dest_id);
+	}
 }
 
-void Levelnode::Display_Portal_Pair(Level *from, Level *to)
+Coord Levelnode::New_Dungeon_Location(Feature_Level *f, vector<Coord> &vc)
 {
-	if (from!=0)
-		my_printf("Exits to %s.\n", from->name);
-	if (to!=0)
-		my_printf("Leads to %s.\n", to->name);
+	bool banana=false;
+	Coord c;
+	Plane area=f->Get_Size();
+
+	for (int t=0; t<5000; t++)
+	{
+		//skip 5 tiles around the borders of the level
+		c=get_random_location(area, 5);
+		banana=true; //assume we found a valid location
+
+		//check existing coordinates, if they are closer than 10 tiles,
+		//find a new location
+		for (vector<Coord>::iterator ii = vc.begin(); ii != vc.end(); ++ii)
+		{
+			if (get_distance(*ii, c)<10)
+			{
+				banana=false;
+				break;
+			}
+		}
+
+		if (banana) break;
+	}
+
+	//in case of failure, put the stairs to a special location
+	if (banana==false)
+	{
+		const int x=(int)vc.size(); //each stairs has a unique x location
+		c.Set_Location(x, 3);
+	}
+
+	return c;
 }
 
 bool Levelnode::Remake_Level()
 {
 	flags &= (0xffffffff ^ LEVEL_VISITED); //set level not visited again
 	delete level;
-	player.num_levels--; //hack to prevent overflow in number of levels
 	return Visit();
 }
 
@@ -79,25 +258,20 @@ bool Levelnode::Visit()
 {
 	bool rv;
 
-	if (!(flags & LEVEL_VISITED))
+	if (Is_Visited()==false)
 	{
 		flags |= LEVEL_VISITED;
-		int dtype=leveldata->dtype;
-
-		//if random, select from randomly selectable level types
-		if (dtype==DTYPE_RANDOM)
-		{
-			dtype=RANDU(NUM_DUNGEONTYPES);
-		}
+		Theme dtype(site.theme);
 
 		//determine random size and basetile
-		Plane p(Get_Random_Level_Size(dtype));
-		const int basetile=Get_Basetile(dtype);
+		Plane p(dtype.Get_Random_Level_Size());
+		const int basetile=dtype.Get_Basetile();
 
-		//if not visited yet, create the level, note that a level is agnostic
-		//of type etc. data which is in the leveldata struct
+		const int dang=dungeonlist[site.dungeon].danger;
+
+		//if not visited yet, create the level
 		Feature_Level *flevel=new Feature_Level(
-			p.width, p.height, basetile, leveldata->danger);
+			p.width, p.height, basetile, dang);
 
 		//downgrade the class for the node list, because creation routines
 		//are not needed during the gameplay
@@ -106,9 +280,8 @@ bool Levelnode::Visit()
 		//set gameview stats before creating level, otherwise we init order fiasco
 		gameview.Enter_New_Level(level);
 
-		flevel->Create(dtype);
-
-		player.num_levels++;
+		flevel->Create(site.theme);
+		Create_Portals(flevel);
 
 		rv=true;
 	}
@@ -125,54 +298,6 @@ bool Levelnode::Visit()
 	level->Refresh_Gameview();
 
 	return rv;
-}
-
-int Levelnode::Get_Basetile(int type)
-{
-	int rv;
-
-	switch (type)
-	{
-		case DTYPE_OUTWORLD:
-		case DTYPE_TOWN:
-			rv=TYPE_GRASS;
-		break;
-		default:
-			rv=TYPE_WALLIP;
-		break;
-	}
-
-	return rv;
-}
-
-Plane Levelnode::Get_Random_Level_Size(int type)
-{
-	// set level size first to the minimum sizes
-	int sx=MINSIZEX + RANDU(MAXSIZEX-MINSIZEX);
-	int sy=MINSIZEY + RANDU(MAXSIZEY-MINSIZEY);
-
-	//check special cases and adjust the size
-	switch (type)
-	{
-		case DTYPE_OUTWORLD:
-			sx=MAXSIZEX;
-			sy=MAXSIZEY;
-		break;
-		case DTYPE_TOWN:
-			sx=MINSIZEX+RANDU(20);
-			sy=40;
-			if (sy<MINSIZEY) sy=MINSIZEY;
-		break;
-		case DTYPE_MAZE:
-		case DTYPE_MAZE2:
-			// ensure that level x and y are not even (for maze type levels)
-			if (!(sx % 2)) sx++;
-			if (!(sy % 2)) sy++;
-		break;
-		default: break;
-	}
-
-	return Plane(sx, sy);
 }
 
 void Levelnode::Save(Tar_Ball &tb)
@@ -195,92 +320,4 @@ void Levelnode::Load(Tar_Ball &tb)
 		level=new level_type(tb); //construct and load the level
 
 	flags=tb.Get_Next_Unsigned();
-}
-
-Dungnode::Dungnode(Dungeon *d, int i)
-	: dung(d), flags(0), dungindex(i)
-{
-	//construct level node list
-	Level *ptr=dung->levels;
-	while (ptr->name)
-	{
-		levels.push_back(new Levelnode(ptr));
-		ptr++;
-	}
-}
-
-Dungnode::~Dungnode()
-{
-	for (levitr ii = levels.begin() ; ii != levels.end() ; ++ii)
-	{
-		delete (*ii);
-	}
-}
-
-int Dungnode::Get_Amount_Of_Levels()
-{
-	return (int)levels.size();
-}
-
-Levelnode *Dungnode::Get_Node(int index)
-{
-	return levels[index];
-}
-
-Levelnode *Dungnode::Get_Node_By_Level(const Level *dest)
-{
-	for (levitr ii = levels.begin() ; ii != levels.end() ; ++ii)
-	{
-		if ((*ii)->Get_Level_Data()==dest)
-			return (*ii);
-	}
-
-	return 0;
-}
-
-bool Dungnode::Visit(int index)
-{
-	if (dungindex == index && !(flags & DUNGEON_VISITED))
-	{
-		flags|=DUNGEON_VISITED;
-		player.num_places++;
-		return true;
-	}
-
-	return false;
-}
-
-void Dungnode::Display_Data(bool currdung)
-{
-	const int amt_of_levels=(int)levels.size();
-
-	my_printf("%s (%d levels) ", dung->name, amt_of_levels);
-
-	if ((flags & DUNGEON_VISITED))
-		my_printf("visited ");
-	else
-		my_printf("unknown ");
-
-	if (currdung)
-		my_printf("<-");
-
-	my_printf("\n");
-}
-
-void Dungnode::Save(Tar_Ball &tb)
-{
-	//save only data which is needed, the dungeon and index are always static
-	//so they don't need to be saved
-	tb.Put(flags);
-
-	for (levitr ii = levels.begin() ; ii != levels.end() ; ++ii)
-		(*ii)->Save(tb);
-}
-
-void Dungnode::Load(Tar_Ball &tb)
-{
-	flags=tb.Get_Int16u();
-
-	for (levitr ii = levels.begin() ; ii != levels.end() ; ++ii)
-		(*ii)->Load(tb);
 }

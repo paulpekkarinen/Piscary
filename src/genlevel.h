@@ -14,14 +14,13 @@
 class Genlevel : public level_type
 {
 private:
+	friend class Levelnode; //for stairs creation
+
 	void Add_Room(roomdef &r);
-	void Create_Stairs_Down(int8u number);
-	void Create_Stairs_Up(int8u number);
+	void Create_Stairs(const Coord &c, int tt, int8u number);
 
 protected:
 	Places places; //tile locations for creating something on them
-
-	void Create_Stairs();
 
 public:
 	Genlevel(int width, int height, int bt, int danger);

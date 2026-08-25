@@ -87,11 +87,9 @@ void Weather::passtime(int tickspassed, Gametime & mt)
  */
 void Weather::change_weather(Gametime & mt)
 {
-	bool doreport;
-
 	modify();
 
-	if(current.duration)
+	if (current.duration)
 	{
 		current.duration--;
 		return;
@@ -100,10 +98,7 @@ void Weather::change_weather(Gametime & mt)
 	/* get new weather duration */
 	current.duration = WEATHER_MINDURA + RANDU(WEATHER_MAXDURA);
 
-	if(world->Get_Dungeon_Index()==0 || world->Get_Level_Type()==DTYPE_TOWN)
-		doreport=true;
-	else
-		doreport=false;
+	const bool doreport=world->Has_Weather();
 
 	change_wind(mt, doreport);
 	change_temperature(mt, doreport);

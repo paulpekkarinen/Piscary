@@ -23,6 +23,7 @@
 #include "classes.h"
 #include "codex.h"
 #include "dice.h"
+#include "dungeon.h"
 #include "factory.h"
 #include "gameview.h"
 #include "invnode.h"
@@ -56,11 +57,11 @@ struct Appearlist
 
 Appearlist appearlist[] =
 {
-	{ PLACE_DPRIMITIVE,	1, 0, 0 },
-	{ PLACE_TSANTHEL, 	1, 0, 0 },
-	{ PLACE_DPRIMITIVE, 4, 0, 0 },
-	{ PLACE_TSANTHEL, 	1, 0, 0 },
-	{ 0, 0, 0, 0 }, /* end of the list */
+	{ dng::Primitive, 0, 0, 0 },
+	{ dng::Santhel, 0, 0, 0 },
+	{ dng::Primitive, 3, 0, 0 },
+	{ dng::Santhel, 0, 0, 0 },
+	{ -1, -1, -1, -1 }, /* end of the list */
 };
 
 /* Create a monster */
@@ -141,7 +142,7 @@ void Factory::Add_Special_Monsters(level_type *level)
 	monsterdef *monptr=npc_list;
 	Appearlist *aptr=appearlist;
 
-	while ((aptr->dungeon_type!=0) && (aptr->LEVEL!=0))
+	while (aptr->dungeon_type!=-1)
 	{
 		if (world->Is_Matching_Place(aptr->dungeon_type, aptr->LEVEL))
 		{

@@ -359,14 +359,12 @@ void playerinfo::Initialize()
 	Reset();
 	m.playerize();
 	buffoon.Mutate(Species::Human);
-	lastdir=STAIROUT; //reset to stairout
+	lastdir=0;
 	color=CH_RED;
 	nutr=FOOD_SATIATED;
 
 	sight=8;
 	delta=4;
-	num_places=0;
-	num_levels=0;
 	num_kills=0;
 
 	huntmode=false;
@@ -424,12 +422,6 @@ void playerinfo::Killedmonster(being *mptr)
 	quests.check_kill(mptr);
 
 	GAME_NOTIFYFLAGS|=GAME_EXPERCHG;
-}
-
-void playerinfo::Lastdir_To_Doorflag(level_type *level)
-{
-	const Coord pc=Get_Location();
-	lastdir=level->Get_Door_Flag(pc);
 }
 
 void playerinfo::Noticestuff(level_type *level)
@@ -540,8 +532,6 @@ void playerinfo::Save(Tar_Ball &tb)
 	tb.Put(nutr);
 	tb.Put(sight);
 
-	tb.Put(num_places);
-	tb.Put(num_levels);
 	tb.Put(num_kills);
 
 	tb.Put_Bool(huntmode);
@@ -563,8 +553,6 @@ void playerinfo::Load(Tar_Ball &tb, level_type *level)
 	nutr=tb.Get_Next_Value();
 	sight=tb.Get_Next_Value();
 
-	num_places=tb.Get_Next_Value();
-	num_levels=tb.Get_Next_Value();
 	num_kills=tb.Get_Next_Value();
 
 	huntmode=tb.Get_Next_Bool();

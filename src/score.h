@@ -22,7 +22,7 @@ struct Score
 {
 	monsterdef monsu;
 	std::string deathreason;
-	
+
 	int copper; /* how much copper player had */
 	int quests; /* number of quests completed */
 	int dindex;  /* dungeon index (where died) */

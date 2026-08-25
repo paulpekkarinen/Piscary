@@ -57,7 +57,7 @@ int Venture::add(being *monster, int quest)
 		return qstat;
 
 	/* create a node */
-	Quest *nq=new Quest(quest, monster->id, world->Get_Dungeon_Index(),
+	Quest *nq=new Quest(quest, monster->id, world->Get_Dungeon(),
 		world->Get_Level_Index());
 
 	if (!nq)

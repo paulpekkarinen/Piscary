@@ -43,15 +43,14 @@ struct cave_type
 	int type;		//TYPE_... terrain types in terrain.h
 	int sval;		/* secret door level etc...*/
 
-	//for staircases, doorfl is the staircase number (or some kind of direction)
+	//for staircases, doorfl is the staircase number
 	int8u doorfl;	/* door flags, see DOOR_... -values */
 
 	int8u object;	//object type this tile has, using OBJECT_... defines
 
 	void initialize(int tt);
 	void jam_door();
-	void stairs_down(int8u number);
-	void stairs_up(int8u number);
+	void set_stairs(int tt, int8u number);
 
 	void save(Tar_Ball &tb);
 	void load(Tar_Ball &tb);

@@ -43,7 +43,8 @@ Score::Score(const monsterdef &m, int a)
 Score::Score(const playerinfo &plr)
 	: deathreason(get_player_killer()),
 	copper(plr.inv.Get_Wealth()), quests(0),
-	dindex(world->Get_Dungeon_Index()), places(plr.num_places), levels(plr.num_levels),
+	dindex(world->Get_Dungeon()),
+	places(world->Num_Places()), levels(world->Num_Levels()),
 	moves(plr.movecount), kills(plr.num_kills)
 {
 	monsu=plr.m; //monsterdef doesn't have copy constructor, has to assign

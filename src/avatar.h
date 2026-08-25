@@ -19,8 +19,6 @@ struct playerinfo : public being
 	int sight;      // distance of sight
 
 	int delta; //note: unused line of sight distance
-	int num_places; // number of places visited
-	int num_levels; // number of levels visited
 	int num_kills;
 
 	bool huntmode;
@@ -55,7 +53,6 @@ struct playerinfo : public being
 	void Initialize();
 	void Jump_To(const Coord &c);
 	void Killedmonster(being *mptr);
-	void Lastdir_To_Doorflag(level_type *level);
 	void Noticestuff(level_type *level);
 	void Shouldflee(level_type *level) override;
 	void Show_Inventory();

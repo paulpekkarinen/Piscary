@@ -20,7 +20,6 @@ private:
 	static const int NUM_LOGOLIN=8;
 
 	void Stat_Value(int wy, const char *txt, statpack *pstat);
-	void World_Location(World *myworld); //show location in the game world
 
 public:
 	void Attribute_As(const char *what, Attribute &a);

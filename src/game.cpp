@@ -290,7 +290,7 @@ void gamedata::run(bool fast)
 
 	attrset(A_NORMAL);
 
-	world->Enter_New_Dungeon(5); //starting dungeon is 5
+	world->Arrival();
 	level_type *level=world->Get_Current_Level();
 	teleport_player(level, false, true);
 	display->Redraw(level);

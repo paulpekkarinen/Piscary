@@ -748,7 +748,7 @@ void Display::Stats(bool showmove)
 		my_printf("%s %s (lvl %d)",
 			player.Get_Name(), player.Get_Title(), player.m.level);
 
-		this->World_Location(world);
+		world->Display_Location();
 	}
 
 	if (GAME_NOTIFYFLAGS & GAME_ALIGNCHG)
@@ -903,23 +903,4 @@ void Display::Title()
 	print_centered(cy-1, "(C)1997-1999 by Erno Tuomainen");
 	set_color(CH_BLUE);
 	print_centered(cy, "Piscary 2021-2026 by Paul Pekkarinen");
-}
-
-void Display::World_Location(World *myworld)
-{
-	string s;
-	if (player.huntmode)
-		s="Wilderness";
-	else
-	{
-		s.append(myworld->Get_Dungeon_Name());
-		s.append(" Lvl:");
-		s+=to_string(myworld->Get_Level_Index());
-		s.append(" ");
-		s.append(myworld->Get_Level_Name());
-	}
-
-	const int sz=(int)s.size();
-
-	print_text_to(SCREEN_COLS-sz, STATUSROW, s.c_str());
 }

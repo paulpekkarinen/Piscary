@@ -36,17 +36,11 @@ void cave_type::jam_door()
 	sval=50+RANDU(100);
 }
 
-void cave_type::stairs_down(int8u number)
+void cave_type::set_stairs(int tt, int8u number)
 {
-	type = TYPE_STAIRDOWN;
-	flags |= terrains[TYPE_STAIRDOWN].flags;
-	doorfl = number;
-}
-
-void cave_type::stairs_up(int8u number)
-{
-	type = TYPE_STAIRUP;
-	flags |= terrains[TYPE_STAIRUP].flags;
+	type = tt;
+	//note: remove later
+	//flags |= terrains[TYPE_STAIRDOWN].flags;
 	doorfl = number;
 }
 

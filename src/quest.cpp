@@ -17,6 +17,7 @@
 //Refactored 25.9.2021 - 1.8.2023 Paul K. Pekkarinen
 
 #include "being.h"
+#include "dungeon.h"
 #include "message.h"
 #include "output.h"
 #include "quest.h"

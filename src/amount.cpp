@@ -5,6 +5,7 @@
 #include "amount.h"
 #include "classes.h"
 #include "creature.h"
+#include "dungeon.h"
 #include "itemdata.h"
 #include "items.h"
 #include "material.h"
@@ -33,13 +34,7 @@ void Amount::Initialize()
 		ptr++;
 	}
 
-	num_dungeons=0;
-	Dungeon *dungptr=dungeonlist;
-	while (dungptr->name)
-	{
-		num_dungeons++;
-		dungptr++;
-	}
+	num_dungeons=dng::Max_Dungeons;
 
 	num_lairs=0;
 	Roomtemplate *lairptr=lairtemplates;

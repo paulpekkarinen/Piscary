@@ -49,6 +49,11 @@ level_type::~level_type()
 	}
 }
 
+Plane level_type::Get_Size()
+{
+	return Plane(sizex, sizey);
+}
+
 void level_type::allocate_terrain_map()
 {
 	//allocate memory for new level and clear the maze
@@ -139,7 +144,7 @@ int level_type::Checkterraineffects(int x, int y)
 	return timeadd;
 }
 
-bool level_type::Find_Stairs(Coord &here, int stair_type, int8u number)
+bool level_type::Find_Stairs(Coord &here, int8u number)
 {
 	Coord c;
 
@@ -147,13 +152,10 @@ bool level_type::Find_Stairs(Coord &here, int stair_type, int8u number)
 	{
 		for (c.x=0; c.x<sizex; c.x++)
 		{
-			if (loc[c.y][c.x].type==stair_type)
+			if (loc[c.y][c.x].doorfl==number)
 			{
-				if (loc[c.y][c.x].doorfl==number)
-				{
-					here=c;
-					return true;
-				}
+				here=c;
+				return true;
 			}
 		}
 	}

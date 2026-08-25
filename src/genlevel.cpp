@@ -82,66 +82,9 @@ void Genlevel::Create_Floor(const Coord &c, int floor, int16u flags)
 	loc[c.y][c.x].flags=flags;
 }
 
-/*
-** This creates up and down stairs in the level
-*/
-void Genlevel::Create_Stairs()
+void Genlevel::Create_Stairs(const Coord &c, int tt, int8u number)
 {
-	bool doup1=false;
-	bool doup2=false;
-	bool dodown2=false;
-	bool dodown1=false;
-	bool doout=false;
-
-	Level *levptr=world->Get_Level_Data();
-
-	if (levptr->linkfrom1) doup1=true;
-	if (levptr->linkto1) dodown1=true;
-	if (levptr->linkfrom2) doup2=true;
-	if (levptr->linkto2) dodown2=true;
-
-	if (levptr->outx && levptr->outy) doout=true;
-
-	if (world->Is_First_Level_Of_Town())
-	{
-		doup1=false;
-		doup2=false;
-		doout=false;
-		places.Scan(Places::First_Level_Downstairs);
-	}
-	else
-	{
-		places.Scan(Places::Stairs_Sites);
-	}
-
-	if (doup1)
-		Create_Stairs_Up(STAIRUP1);
-
-	if (dodown1)
-		Create_Stairs_Down(STAIRDOWN1);
-
-	if (doup2)
-		Create_Stairs_Up(STAIRUP2);
-
-	if (dodown2)
-		Create_Stairs_Down(STAIRDOWN2);
-
-	if (doout)
-		Create_Stairs_Up(STAIROUT);
-}
-
-void Genlevel::Create_Stairs_Down(int8u number)
-{
-	Coord c=places.Get_Random();
-
-	loc[c.y][c.x].stairs_down(number);
-}
-
-void Genlevel::Create_Stairs_Up(int8u number)
-{
-	Coord c=places.Get_Random();
-
-	loc[c.y][c.x].stairs_up(number);
+	loc[c.y][c.x].set_stairs(tt, number);
 }
 
 void Genlevel::Create_Wall(const Coord &c, int wall, bool nocarve, bool dark)
