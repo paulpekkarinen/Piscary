@@ -152,7 +152,9 @@ bool level_type::Find_Stairs(Coord &here, int8u number)
 	{
 		for (c.x=0; c.x<sizex; c.x++)
 		{
-			if (loc[c.y][c.x].doorfl==number)
+			Terratype tt(Get_Terrain(c));
+
+			if (tt.Is_Portal() && loc[c.y][c.x].doorfl==number)
 			{
 				here=c;
 				return true;

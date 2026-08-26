@@ -210,6 +210,29 @@ void Levelnode::Display_Data(int i)
 	}
 }
 
+void Levelnode::Display_Compact_Data(int i)
+{
+	string s=format("{}/{}: {} th{}",
+		i, site.dungeon, site.Get_Name(), site.theme);
+
+	const char *p;
+	if (site.where==dng::Top) p="(Top)";
+	else if (site.where==dng::Bottom) p="(Bot)";
+	else p="(Mid)";
+
+	string ps;
+	for (pitr ii = portals.begin() ; ii != portals.end() ; ++ii)
+	{
+		Portal &po=(*ii);
+		const int tt=po.terrain_type;
+
+		ps+=format(" ({}: {}->{})",
+			terrains[tt].desc, po.id, po.dest_id);
+	}
+
+	my_printf("%s %s %s\n", s.c_str(), p, ps.c_str());
+}
+
 Coord Levelnode::New_Dungeon_Location(Feature_Level *f, vector<Coord> &vc)
 {
 	bool banana=false;

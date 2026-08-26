@@ -65,6 +65,7 @@ public:
 
 	void Display_Overview();
 	void Display_Level_Data(); //of current level
+	void Display_Levels();
 	void Display_Location();
 	void Display_Return_Message(const char *plrname);
 

@@ -76,6 +76,12 @@ int Theme::Get_Random()
 	return random_number(0, Old_Maze);
 }
 
+int Theme::Get_Roomy()
+{
+	if (sometimes()) return Roomy_Doors;
+	return Roomy;
+}
+
 int Theme::Get_Random_Level_Type(int dung, int depth, int max_depth)
 {
 	int rv;
@@ -103,7 +109,10 @@ int Theme::Get_Random_Level_Type(int dung, int depth, int max_depth)
 			else
 				rv=Get_Random();
 		break;
-		case dng::Santhel: rv=Town; break;
+		case dng::Santhel:
+			if (depth==0) rv=Town;
+			else rv=Get_Roomy();
+		break;
 		default: rv=Roomy; break;
 	}
 

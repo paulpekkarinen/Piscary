@@ -88,8 +88,7 @@ World::World()
 		{
 			const int dest_dung=dungeonlist[i].portals[p+2];
 			Levelnode *src=Find_Node_By_Location(
-				dungeonlist[i].portals[p+1],
-				dest_dung);
+				dungeonlist[i].portals[p+1], i);
 
 			const int pterrain=dungeonlist[i].portals[p];
 
@@ -179,6 +178,7 @@ Levelnode *World::Find_Node_By_Location(int loc, int dung)
 	{
 		if ((*ii)->site.dungeon==dung)
 			ids.push_back(a);
+		a++;
 	}
 
 	int ni=0; //default: top index
@@ -250,7 +250,9 @@ void World::Enter_Portal(int8u number)
 			txt=dungeonlist[dest_dung].name;
 
 		msg.vnewmsg(C_GREEN, "Entering %s!", txt);
-		msg.newmsg(dungeonlist[dest_dung].desc, C_WHITE);
+
+		if (visited_dungs[dest_dung]==false)
+			msg.newmsg(dungeonlist[dest_dung].desc, C_WHITE);
 	}
 	else
 	{
@@ -274,13 +276,17 @@ void World::Enter_Portal(int8u number)
 	level_type *level=n->Get_Level();
 	const int th=n->Get_Theme();
 	bool to_stairs=true;
+	const int8u sn=n->Get_Stairs_Number(p.dest_id);
 
 	if (th==Theme::Town)
 	{
 		player.sight=15;
-		//use random location for now
-		teleport_player(level, false, true);
-		to_stairs=false;
+		//use random location for now, if entering from outworld
+		if (sn==1)
+		{
+			teleport_player(level, false, true);
+			to_stairs=false;
+		}
 	}
 	else if (th==Theme::Outworld)
 	{
@@ -300,7 +306,6 @@ void World::Enter_Portal(int8u number)
 
 	if (to_stairs)
 	{
-		int8u sn=n->Get_Stairs_Number(p.dest_id);
 		Coord pos;
 
 		//in case stairs are not found, which is a bug, shows this message
@@ -478,6 +483,31 @@ void World::Display_Level_Data()
 {
 	//show current level's basic information
 	levels[index]->Display_Data(index);
+}
+
+void World::Display_Levels()
+{
+	clear_screen();
+	int a=0, i=0;
+	bool more;
+
+	for (levitr ii=levels.begin(); ii!=levels.end(); ++ii)
+	{
+		int c;
+		if (a==index) c=CH_YELLOW; //show current level yellow
+		else c=CH_GREEN;
+		set_color(c);
+
+		(*ii)->Display_Compact_Data(i);
+
+		i++;
+		more=list_more(a);
+
+		if (more==false) break;
+	}
+
+	if (more)
+		wait_key();
 }
 
 void World::Display_Location()

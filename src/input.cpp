@@ -398,7 +398,7 @@ void wait_key()
 bool wait_more()
 {
 	my_printf("--more--");
-	if (my_getch()==KEY_ESC) return false;
+	if (my_getch()=='x') return false;
 	return true;
 }
 

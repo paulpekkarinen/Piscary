@@ -29,6 +29,7 @@ private:
 	int theme;
 
 	static int Get_Random();
+	static int Get_Roomy();
 
 public:
 	Theme(int t) : theme(t) { }

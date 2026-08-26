@@ -84,6 +84,7 @@ public:
 	bool Visit();
 
 	void Display_Data(int i);
+	void Display_Compact_Data(int i);
 
 	void Save(Tar_Ball &tb);
 	void Load(Tar_Ball &tb);

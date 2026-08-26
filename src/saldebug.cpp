@@ -78,12 +78,13 @@ void Debug::Toggle_Light()
 
 void Debug::Menu()
 {
-	Window menuwin("Debug command", 30, 7, 27, 11, CH_GREEN, CH_WHITE);
+	Window menuwin("Debug command", 30, 7, 35, 12, CH_GREEN, CH_WHITE);
 
 	menuwin.Draw(
 		"c - Test colors\n"
 		"d - Current level data\n"
 		"l - List objects\n"
+		"n - List levels in the world\n"
 		"o - Overview of world\n"
 		"p - Program report\n"
 		"r - Re-create level\n"
@@ -97,6 +98,7 @@ void Debug::Menu()
 		case 'c': debug_test_colors(); break;
 		case 'd': View_Level_Data(); break;
 		case 'l': List_Objects(); break;
+		case 'n': world->Display_Levels(); break;
 		case 'o': Overview(); break;
 		case 'p': uncover.Program_Data(); break;
 		case 'r': Create_Level(); break;
