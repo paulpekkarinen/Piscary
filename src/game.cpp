@@ -155,7 +155,7 @@ void gamedata::initialize(bool fast)
 	{
 		msg.newmsg(CH_WHITE,
 			"%d years later, you suddenly find yourself "
-			"in a small cave...", cyearadd);
+			"in a small town...", cyearadd);
 	}
 }
 
@@ -187,7 +187,7 @@ void gamedata::Menu()
 bool gamedata::noticeevents(level_type *level)
 {
 	bool rv=false;
-	
+
 	if ((GAME_NOTIFYFLAGS & GAME_DO_REDRAW))
 	{
 		display->Redraw(level);
@@ -307,8 +307,8 @@ void gamedata::run(bool fast)
 		Passturn(true, true);
 
 		/*using namespace std::chrono;
-        steady_clock::time_point EndTime = steady_clock::now();
-        auto Duration = duration_cast<microseconds>(EndTime-StartTime);
+		steady_clock::time_point EndTime = steady_clock::now();
+		auto Duration = duration_cast<microseconds>(EndTime-StartTime);
 		debug->Message("Time: %lu ms", Duration.count());*/
 	}
 

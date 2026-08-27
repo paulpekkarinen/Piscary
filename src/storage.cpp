@@ -59,7 +59,7 @@ int Tar_Ball::Copy_To_Numstr()
 {
 	int p=0;
 
-	//restore number value from string, copy it to null terminated raw array
+	//get number value from string, copy it to null terminated raw array
 	for (int t=0; t<str_size; t++)
 	{
 		const char c=ts.at(str_pos++);
@@ -96,8 +96,6 @@ int16u Tar_Ball::Get_Int16u()
 
 int32u Tar_Ball::Get_Next_Unsigned()
 {
-	return (int32u)Get_Next_Value();
-	
 	const int p=Copy_To_Numstr();
 
 	//change text to unsigned long

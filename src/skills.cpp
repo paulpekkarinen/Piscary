@@ -626,9 +626,7 @@ bool skillset::modify_raise(int group, int type, int amount, int addval)
 	return modify_raise(group, type, amount, addval, true); //shortcut for player
 }
 
-/*
- * returns the needed skillmarks for specific skill group
- */
+//returns the needed skillmarks for specific skill group
 int skillset::Needmarks(int group, int value)
 {
 	if (value>Max_Skill_Adv-1)
@@ -807,7 +805,7 @@ int skillset::listselect(int &group, const char *prompt)
 			const int namelen=(int)skillname.size();
 			drawline_limit(box_by+i, box_bx, box_bx+box_sx-1, ' ');
 			gotoxy(box_bx+((box_sx/2)-namelen/2), box_by+i);
-			my_printf("%s", skillname);
+			my_printf("%s", skillname.c_str());
 		}
 
 		/* show some info */

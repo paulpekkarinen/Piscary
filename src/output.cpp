@@ -12,12 +12,13 @@
 
 using std::string;
 
-constexpr int Message_Buffer_Size=100;
-char msg_buffer[Message_Buffer_Size];
-char zmsg_buffer[Message_Buffer_Size];
+constexpr int Msg_Buffer_Size=100;
+char msg_buffer[Msg_Buffer_Size];
+char zmsg_buffer[Msg_Buffer_Size];
 
 /* a buffer for variable argument functions */
-char vargbuffer[1024];
+constexpr int Varg_Buf_Size=1024;
+char vargbuffer[Varg_Buf_Size];
 
 void clearline(int y)
 {
@@ -106,7 +107,7 @@ void draw_rectangle(int x, int y, int w, int h, char ch)
 		{
 			addch(ch);
 		}
-	}	
+	}
 }
 
 //Return current cursor position.
@@ -153,7 +154,7 @@ bool is_over_border(int word_length)
 	if (c.x>=SCREEN_COLS-word_length)
 		return true;
 
-	return false;	
+	return false;
 }
 
 void makeborder(int x1, int y1, int wd, int hg)
@@ -182,11 +183,7 @@ void my_center_puts(int y, const char *fmt, ...)
 	va_list ap;
 
 	va_start(ap, fmt);
-#ifdef _HAS_VSNPRINTF_
-	vsnprintf(vargbuffer, sizeof(mbuffer)-1, format, ap);
-#else
-	vsprintf(vargbuffer, fmt, ap);
-#endif
+	vsnprintf(vargbuffer, Varg_Buf_Size, fmt, ap);
 	va_end(ap);
 
 	print_centered(y, vargbuffer);
@@ -226,7 +223,7 @@ void my_printf(const char *fmt, ...)
 {
 	va_list argptr;
 	va_start(argptr, fmt);
-	vsprintf(msg_buffer, fmt, argptr);
+	vsnprintf(msg_buffer, Msg_Buffer_Size, fmt, argptr);
 	va_end(argptr);
 
 	int index=0;
@@ -417,15 +414,10 @@ void ww_print(const char *txt)
 void zprintf(const char *format, ...)
 {
 	va_list ap;
-	static char zbuffer[1024];
 
 	va_start(ap, format);
-#ifdef _HAS_VSNPRINTF_
-	vsnprintf(zbuffer, sizeof(zbuffer)-1, format, ap);
-#else
-	vsprintf(zbuffer, format, ap);
-#endif
+	vsnprintf(zmsg_buffer, Msg_Buffer_Size, format, ap);
 	va_end(ap);
 
-	ww_print(zbuffer);
+	ww_print(zmsg_buffer);
 }

@@ -32,6 +32,7 @@ struct hpslot
 	void Additembonus(invnode *item);
 	void Clear();
 	void Clear_Bonuses();
+	void Maximize();
 	void Set_Points(int v);
 	void Set_Race_Values(int race);
 

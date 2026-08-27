@@ -43,6 +43,11 @@ void hpslot::Clear_Bonuses()
 	res.Clear();
 }
 
+void hpslot::Maximize()
+{
+	Set_Points(max);
+}
+
 void hpslot::Set_Points(int v)
 {
 	ini=v;

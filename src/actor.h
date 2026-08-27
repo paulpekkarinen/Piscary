@@ -88,6 +88,8 @@ public:
 	virtual void Handle_Confusion(Condition *cond) = 0;
 	bool Regenerate_Health(int slots, int ctime);
 	void Reset(); //resets all data to default values
+	virtual void Renew(); //restore health, ailments etc.
+	void Restore_Health();
 	void Set_Location(int dx, int dy);
 	virtual void Shouldflee(level_type *level) = 0;
 	bool Skill_Testsuccess(int group, int type);

@@ -167,7 +167,7 @@ void Display::Header(const char *txt, int color)
 void Display::Hiscore_Header()
 {
 	Header("All time best scores", C_GREEN);
-	Footer("Arrow up = Next | arrow down = Previous | Esc = exit", C_GREEN);
+	Footer("Arrow up = Next | arrow down = Previous | x = exit", C_GREEN);
 }
 
 //prints out some info about the item based on the identified status...

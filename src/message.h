@@ -12,7 +12,8 @@
 
 class Message : public Message_Buffer
 {
-private:	
+private:
+	static const int Buf_Size=80*2;
 	int msgdelay;
 
 	char *mbuffer; //message buffer for one message
@@ -36,9 +37,9 @@ public:
 	void vadd(int,const char *,...);
 	void vaddwait(int,const char *,...);
 	void vnewdist(level_type *level,int x,int y,
-		  int color2, int color1,
-		  const char *message2,
-		  const char *format,...);
+		int color2, int color1,
+		const char *message2,
+		const char *format,...);
 	void vnewmsg(int,const char *,...);
 };
 

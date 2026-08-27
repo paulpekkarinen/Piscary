@@ -1,4 +1,4 @@
-//Legend of Saladir - message.cpp
+//Legend of Saladir - messbuff.cpp
 
 //Refactored 5.12.2022 - 30.9.2024 by Paul K. Pekkarinen
 
@@ -68,14 +68,14 @@ void Message_Buffer::Add(const char *message, int color, int delay)
 	oldest=new Msginfo(message, color, delay);
 	messages.push_back(oldest);
 
-	Set_Origin(oldest);
-
 	while (messages.size()>=Max_Messages)
 	{
 		Msginfo *m=messages.front();
 		delete m;
 		messages.pop_front();
 	}
+
+	Set_Origin(oldest);
 }
 
 void Message_Buffer::Clear()
@@ -90,6 +90,8 @@ void Message_Buffer::Clear()
 
 void Message_Buffer::notice()
 {
+	if (messages.empty()) return;
+	
 	//show messages that were collected in one turn
 	while (origin!=messages.end())
 	{
@@ -156,8 +158,8 @@ void Message_Buffer::notice()
 void Message_Buffer::Set_Origin(Msginfo *here)
 {
 	//new origin already set
-	if (origin!=messages.end())
-		return;
+	//if (origin!=messages.end())
+	//	return;
 
 	for (mitr ii = messages.begin(); ii != messages.end(); ++ii)
 	{

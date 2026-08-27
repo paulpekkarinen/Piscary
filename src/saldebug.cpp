@@ -118,15 +118,11 @@ void Debug::Menu()
 
 void Debug::Message(const char *format, ...)
 {
-	static char buffer[80];
+	static char buffer[Buf_Size];
 	va_list ap;
 
 	va_start(ap, format);
-#ifdef _HAS_VSNPRINTF_
-	vsnprintf(buffer, sizeof(mbuffer)-1, format, ap);
-#else
-	vsprintf(buffer, format, ap);
-#endif
+	vsnprintf(buffer, Buf_Size, format, ap);
 	va_end(ap);
 
 	debug_messages->Add(buffer, C_BLUE, 0);

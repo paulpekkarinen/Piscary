@@ -45,8 +45,8 @@ public:
 
 	void Change() override;
 	void Show_Value() override;
-	void Load(Tar_Ball &tb);
-	void Save(Tar_Ball &tb);
+	void Load(Tar_Ball &tb) override;
+	void Save(Tar_Ball &tb) override;
 };
 
 class Integer_Option : public Option
@@ -56,7 +56,7 @@ private:
 	int min_value;
 	int max_value;
 
-	//for text input, need 21 characters for item categories + trailing zero
+	//for text input, need 21 characters for item categories + zero
 	static const int opt_txt_size=22;
 	char opt_txt[opt_txt_size];
 
@@ -68,8 +68,8 @@ public:
 
 	void Change() override;
 	void Show_Value() override;
-	void Load(Tar_Ball &tb);
-	void Save(Tar_Ball &tb);
+	void Load(Tar_Ball &tb) override;
+	void Save(Tar_Ball &tb) override;
 };
 
 class Array_Option : public Option
@@ -85,8 +85,8 @@ public:
 
 	void Change() override;
 	void Show_Value() override;
-	void Load(Tar_Ball &tb);
-	void Save(Tar_Ball &tb);
+	void Load(Tar_Ball &tb) override;
+	void Save(Tar_Ball &tb) override;
 };
 
 struct gameconfig

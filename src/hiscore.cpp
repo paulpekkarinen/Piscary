@@ -219,7 +219,7 @@ void Scoreboard::Showbest(Score *latest)
 		{
 			case KEY_DOWN: i++; break;
 			case KEY_UP: i--; break;
-			case KEY_ESC: loop=false; break;
+			case 'x': loop=false; break;
 			default: break;
 		}
 

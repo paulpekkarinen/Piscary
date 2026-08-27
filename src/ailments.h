@@ -7,7 +7,7 @@
 
 #include <list>
 
-struct Actor;
+class Actor;
 class Condition;
 class Tar_Ball;
 
@@ -23,9 +23,11 @@ public:
 	~Ailments();
 
 	Condition* add(int cond, int value);
+	void Clear_All();
 	void delete_group(int group);
 	Condition* find(int cond);
 	int get_value(int cond);
+
 	void handle(Actor *actor, int slots);
 	void init();
 	void remove(int cond);

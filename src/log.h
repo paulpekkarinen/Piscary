@@ -10,6 +10,7 @@ class Message_Buffer;
 class Log
 {
 private:
+	static const int Buf_Size=80;
 	Message_Buffer *log_messages;
 
 public:

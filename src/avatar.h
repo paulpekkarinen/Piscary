@@ -54,6 +54,7 @@ struct playerinfo : public being
 	void Jump_To(const Coord &c);
 	void Killedmonster(being *mptr);
 	void Noticestuff(level_type *level);
+	void Renew() override;
 	void Shouldflee(level_type *level) override;
 	void Show_Inventory();
 	void Switch_Searchmode();

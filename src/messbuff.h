@@ -1,6 +1,6 @@
-//Legend of Saladir - message.h
+//Legend of Saladir - messbuff.h
 
-//Unit message: Gameplay message list.
+//Unit messbuff: Gameplay message list.
 
 #ifndef MESSBUFF_H
 #define MESSBUFF_H

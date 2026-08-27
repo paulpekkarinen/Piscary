@@ -15,7 +15,7 @@
 #define GAME_ATTRIBCHG     0x00000004
 #define GAME_MONEYCHG      0x00000008
 #define GAME_HPSPCHG       0x00000010
-#define GAME_ALIGNCHG      0x00000020 
+#define GAME_ALIGNCHG      0x00000020
 #define GAME_LEVELCHG      0x00000040
 #define GAME_EDITORCHG     0x00000080
 #define GAME_CONDCHG       0x00000100
@@ -56,7 +56,7 @@ public:
 	void run(bool fast); //run one game
 	void Set_State(int st) { state=st; }
 	void show_time();
-		
+
 	int Load(const char *plrname);
 };
 

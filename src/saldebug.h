@@ -5,15 +5,13 @@
 #ifndef SALDEBUG_H
 #define SALDEBUG_H
 
-//if this is defined then debug routines can be used
-#define saladir_debug
-
 class Message_Buffer;
 
 //Debug routines.
 class Debug
 {
 private:
+	static const int Buf_Size=80;
 	Message_Buffer *debug_messages;
 	bool debug_mode; //shows extra information etc.
 
@@ -28,7 +26,7 @@ public:
 	~Debug();
 
 	bool Cheat() const { return debug_mode; }
-	
+
 	void Identify(); //identify item in backpack
 	void Menu(); //use debug commands that don't have a direct keybind
 	void Message(const char *format, ...); //write a debug message

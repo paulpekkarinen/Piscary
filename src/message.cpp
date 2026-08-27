@@ -33,7 +33,7 @@ Message msg;
 Message::Message()
 	: Message_Buffer(60), msgdelay(0)
 {
-	mbuffer=new char[1024];
+	mbuffer=new char[Buf_Size];
 }
 
 Message::~Message()
@@ -47,11 +47,7 @@ void Message::vnewmsg(int color, const char *format, ...)
 	va_list ap;
 
 	va_start(ap, format);
-#ifdef _HAS_VSNPRINTF_
-	vsnprintf(mbuffer, sizeof(mbuffer)-1, format, ap);
-#else
-	vsprintf(mbuffer, format, ap);
-#endif
+	vsnprintf(mbuffer, Buf_Size, format, ap);
 	va_end(ap);
 
 	newmsg(mbuffer, color);
@@ -63,11 +59,7 @@ void Message::vadd(int color, const char *format, ...)
 	va_list ap;
 
 	va_start(ap, format);
-#ifdef _HAS_VSNPRINTF_
-	vsnprintf(mbuffer, sizeof(mbuffer)-1, format, ap);
-#else
-	vsprintf(mbuffer, format, ap);
-#endif
+	vsnprintf(mbuffer, Buf_Size, format, ap);
 	va_end(ap);
 
 	newmsg(mbuffer, color);
@@ -79,11 +71,7 @@ void Message::vaddwait(int color, const char *format, ...)
 	va_list ap;
 
 	va_start(ap, format);
-#ifdef _HAS_VSNPRINTF_
-	vsnprintf(mbuffer, sizeof(mbuffer)-1, format, ap);
-#else
-	vsprintf(mbuffer, format, ap);
-#endif
+	vsnprintf(mbuffer, Buf_Size, format, ap);
 	va_end(ap);
 
 	newmsg(mbuffer, color);
@@ -98,12 +86,9 @@ void Message::vnewdist(level_type *level, int x, int y,
 	const char *format, ...)
 {
 	va_list ap;
+
 	va_start(ap, format);
-#ifdef _HAS_VSNPRINTF_
-	vsnprintf(mbuffer, sizeof(mbuffer)-1, format, ap);
-#else
-	vsprintf(mbuffer, format, ap);
-#endif
+	vsnprintf(mbuffer, Buf_Size, format, ap);
 	va_end(ap);
 
 	if (gameview.Is_Visible(x, y))
@@ -147,9 +132,9 @@ void Message::Add_Dist(int x, int y, const char *mess1, int color1,
 	}
 	else
 		if (mess2)
-			newmsg(mess2, color2);	
+			newmsg(mess2, color2);
 }
-		
+
 /* add a new message, notice immendiately */
 void Message::add(const char *message, int color)
 {
@@ -171,11 +156,7 @@ void Message::newmsg(int color, const char *format, ...)
 	va_list ap;
 
 	va_start(ap, format);
-#ifdef _HAS_VSNPRINTF_
-	vsnprintf(mbuffer, sizeof(mbuffer)-1, format, ap);
-#else
-	vsprintf(mbuffer, format, ap);
-#endif
+	vsnprintf(mbuffer, Buf_Size, format, ap);
 	va_end(ap);
 
 	newmsg(mbuffer, color);

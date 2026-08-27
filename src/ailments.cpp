@@ -58,6 +58,11 @@ Condition* Ailments::add(int cond, int value)
 	return c;
 }
 
+void Ailments::Clear_All()
+{
+	init();
+}
+
 void Ailments::delete_group(int group)
 {
 	if (this==&player.conditions)

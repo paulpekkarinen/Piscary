@@ -31,6 +31,7 @@
 #include "game.h"
 #include "gametime.h"
 #include "gameview.h"
+#include "input.h"
 #include "inventor.h"
 #include "invnode.h"
 #include "itemdata.h"
@@ -156,9 +157,6 @@ void playerinfo::Checkstat(level_type *level, bool lower, bool showmsg)
 			msg.vnewmsg(C_GREEN, "Your %s looks better!", part.Get_Name());
 		}
 	}
-
-	if (debug->Cheat()) //if debug mode on, don't take damage
-		return;
 
 	/* check for the hpslot damage */
 	damage_checkbodyparts(level, this);
@@ -485,6 +483,13 @@ void playerinfo::Noticestuff(level_type *level)
 	/* activate traps */
 	if (handletrap(level, pc, this))
 		repeatwalk=false;
+}
+
+void playerinfo::Renew()
+{
+	Actor::Renew();
+
+	player.nutr=FOOD_SATIATED;
 }
 
 void playerinfo::Shouldflee(level_type *level)

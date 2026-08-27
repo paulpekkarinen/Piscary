@@ -16,11 +16,13 @@
 
 //Refactored 12.7.2022 - 24.5.2024 Paul K. Pekkarinen
 
+#include "build.h"
+
 #include "actor.h"
 #include "creature.h"
 #include "damage.h"
 #include "dice.h"
-#include "gametime.h"
+#include "game.h"
 #include "gameview.h"
 #include "invnode.h"
 #include "material.h"
@@ -28,6 +30,10 @@
 #include "roleplay.h"
 #include "storage.h"
 #include "tactics.h"
+
+#ifdef saladir_debug
+#include "input.h"
+#endif
 
 Actor::Actor(int sp)
 	: buffoon(sp)
@@ -70,8 +76,8 @@ void Actor::Calculate_Totalhp()
 int Actor::Calculate_Meleehit(item_def *iptr, Actor *target, int bodypart)
 {
 	/* note: JOS KÄDESSÄ OLEVA ESINE ON JOTAIN MUUTA KUIN ASE
-	   NIIN EI SKILLEJÄ PIDÄ KASVATTAA!!!
-	   Nyt kasvaa handskilli aina silloin */
+	NIIN EI SKILLEJÄ PIDÄ KASVATTAA!!!
+	Nyt kasvaa handskilli aina silloin */
 
 	const int aluck=stat[STAT_LUC].Get();
 
@@ -102,9 +108,8 @@ int Actor::Calculate_Meleehit(item_def *iptr, Actor *target, int bodypart)
 		else skill_type=-1;
 	}
 
-	/* determine defender weapon skill */
-	/* if no weapon in hand, then it must be determined
-	   from "dodging" etc? */
+	//determine defender weapon skill
+	//if no weapon in hand, then must be determined from "dodging" etc?
 	item_def *defwpn1;
 	if (useright)
 	{
@@ -209,6 +214,20 @@ void Actor::Damage_Issue(Damage &dmg)
 
 void Actor::Death()
 {
+	if (Is_Player())
+	{
+#ifdef saladir_debug
+		if (confirm_yn("Die?", true, true)==false)
+		{
+			//restore health
+			Renew();
+			msg.newmsg("But you feel all right now.");
+			return;
+		}
+#endif
+		Game.Set_State(gamedata::End_Of_Game);
+	}
+
 	health.value=0;
 }
 
@@ -419,6 +438,13 @@ bool Actor::Regenerate_Health(int slots, int ctime)
 	return hpregen;
 }
 
+void Actor::Renew()
+{
+	conditions.Clear_All();
+	Restore_Health();
+	health.Maximize();
+}
+
 void Actor::Reset()
 {
 	attackbonus=0;
@@ -438,6 +464,12 @@ void Actor::Reset()
 
 	for (int t=0; t<STAT_ARRAYSIZE; t++)
 		stat[t].Reset(0);
+}
+
+void Actor::Restore_Health()
+{
+	for (int t=0; t<HPSLOT_MAX; t++)
+		hpp[t].Maximize();
 }
 
 void Actor::Set_Location(int dx, int dy)
