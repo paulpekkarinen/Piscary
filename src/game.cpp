@@ -164,11 +164,11 @@ void gamedata::Menu()
 	Window menuwin("Game", 30, 10, 27, 9, CH_GREEN, CH_WHITE);
 
 	menuwin.Draw(
-		"o - Options\0"
-		"s - Save and exit\0"
-		"v - Show version\0"
-		"---\0"
-		"q - Quit without saving\0$");
+		"o - Options\n"
+		"s - Save and exit\n"
+		"v - Show version\n"
+		"---\n"
+		"q - Quit without saving");
 
 	const int ch=my_getch();
 	display->Redraw(world->Get_Current_Level());

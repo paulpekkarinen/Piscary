@@ -5,6 +5,7 @@
 #ifndef CMD_H
 #define CMD_H
 
+#include "build.h"
 #include "types.h"
 
 #define CMD_MAXLEN 4
@@ -84,12 +85,14 @@ namespace cmd
 		Show_Keys,
 		Show_Error_Log,
 
+#ifdef saladir_debug
 		Cheat_Light,
 		Cheat_Identify_Item,
 		Debug_Quit, //quit fast without endgame stuff, but still cleaning up
 		Debug_Test,
 		Debug_Messages,
 		Debug_Menu,
+#endif
 
 		Amt_Of_Commands
 	};
@@ -104,9 +107,7 @@ namespace cmd
 		Actions,
 		Interact,
 		View,
-		Debugging,
-
-		Edit
+		Debugging
 	};
 };
 

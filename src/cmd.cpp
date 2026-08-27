@@ -174,18 +174,6 @@ Command_Data cmdtable[Amt_Of_Commands]=
 	{"Debug: Messages", {'M', 0, 0, 0, 0}, Debugging, true},
 	{"Debug: Command menu", {MYKEY_CTRLD, 0, 0, 0, 0}, Debugging, true},
 #endif
-
-	//editor commands (editor was removed)
-/*	{"Editor: ON/OFF", {MYKEY_F10, 0, 0, 0, 0}, editor_onoff, Edit},
-	{"Editor: Next terrain", {MYKEY_F1, 0, 0, 0, 0}, editor_nextterr, Edit},
-	{"Editor: Prev terrain", {MYKEY_F2, 0, 0, 0, 0}, editor_prevterr, Edit},
-	{"Editor: Dramode", {MYKEY_F3, 0, 0, 0, 0}, editor_drawmode, Edit},
-	{"Editor: Set terrain", {' ', 0, 0, 0, 0}, editor_set, Edit},
-	{"Editor: Set map visible", {MYKEY_F7, 0, 0, 0, 0}, editor_visible, Edit},
-	{"Editor: Hide map", {MYKEY_F8, 0, 0, 0, 0}, editor_visibleoff, Edit},
-	{"Editor: Clear map with current terrain", {MYKEY_F9, 0, 0, 0, 0}, editor_clear, Edit},
-	{"Editor: Save map", {MYKEY_F5, 0, 0, 0, 0}, editor_save, Edit},
-	{"Editor: Load map", {MYKEY_F6, 0, 0, 0, 0}, editor_load, Edit}*/
 };
 
 int compare_cmd(const void* cmd1, const void* cmd2)
@@ -358,12 +346,15 @@ void run_command(playerinfo *plr, const int command)
 		case Show_Keys: cmd_showkeys(); break;
 		case Show_Error_Log: diary.Read(); break;
 
+		//debug commands, if built with them
+#ifdef saladir_debug
 		case Cheat_Light: debug->Toggle_Light(); break;
 		case Cheat_Identify_Item: debug->Identify(); break;
 		case Debug_Quit: Game.Set_State(gamedata::Debug_Quit); break;
 		case Debug_Test: run_current_test(); break;
 		case Debug_Messages: debug->View_Messages(); break;
 		case Debug_Menu: debug->Menu(); break;
+#endif
 
 		default:
 			msg.newmsg(C_RED, "Unknown command id %d.", command);

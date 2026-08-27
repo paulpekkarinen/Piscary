@@ -19,6 +19,8 @@
 //Refactored 25.9.2021 - 21.9.2025 Paul K. Pekkarinen
 
 #include <cmath>
+#include "build.h"
+
 #include "caves.h"
 #include "dice.h"
 #include "log.h"
@@ -207,7 +209,7 @@ void Outworld::Dsq_2_Map()
 
 #ifdef saladir_debug
 	diary.Write("Max = %3.4f\nMin = %3.4f\nAvg = %3.4f\n",
-	   max, min, avg);
+		max, min, avg);
 
 	diary.Write("   Water level: %4.2f - %4.2f\n", min, level_ground);
 	diary.Write("  Ground level: %4.2f - %4.2f\n", level_ground, level_hill);
