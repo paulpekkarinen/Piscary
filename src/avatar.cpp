@@ -45,6 +45,7 @@
 #include "saldebug.h"
 #include "script.h"
 #include "selpack.h"
+#include "skills.h"
 #include "storage.h"
 #include "tactics.h"
 #include "terrain.h"

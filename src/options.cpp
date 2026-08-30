@@ -135,7 +135,7 @@ void gameconfig::Reset()
 	health_alarm=50;
 	item_disturb=true;
 	monster_disturb=true;
-	my_strcpy(pickuptypes, "$%?", sizeof(pickuptypes)-1);
+	strcpy(pickuptypes, "$%?");
 	repeatcount=50;
 	repeatupdate=true;
 	stair_disturb=true;

@@ -20,6 +20,7 @@
 #include "dice.h"
 #include "factory.h"
 #include "featlev.h"
+#include "items.h"
 #include "outworld.h"
 #include "randgen.h"
 #include "roomgen.h"

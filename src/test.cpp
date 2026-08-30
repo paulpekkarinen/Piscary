@@ -21,6 +21,7 @@
 #include "dice.h"
 #include "game.h"
 #include "input.h"
+#include "items.h"
 #include "message.h"
 #include "names.h"
 #include "options.h"

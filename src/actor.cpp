@@ -28,6 +28,7 @@
 #include "material.h"
 #include "message.h"
 #include "roleplay.h"
+#include "skills.h"
 #include "storage.h"
 #include "tactics.h"
 

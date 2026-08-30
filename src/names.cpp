@@ -38,30 +38,30 @@ string player_killer_str;
 
 const char *name_syllables[]=
 {
- "jas", "min", "on", "bal", "ta", "zar",
- "men", "thol", "su", "vi", "er", "no",
- "spar", "hawk", "ke", "mi", "ber", "he",
- "dos", "sal", "adir", "na", "tash", "ha",
- "inka", "cae", "sar", "sha", "tho",
- "bel", "gar", "ion", "ath", "pol", "gara",
- "sau", "ron", "gand", "alf", "bil", "bo",
- 0
+	"jas", "min", "on", "bal", "ta", "zar",
+	"men", "thol", "su", "vi", "er", "no",
+	"spar", "hawk", "ke", "mi", "ber", "he",
+	"dos", "sal", "adir", "na", "tash", "ha",
+	"inka", "cae", "sar", "sha", "tho",
+	"bel", "gar", "ion", "ath", "pol", "gara",
+	"sau", "ron", "gand", "alf", "bil", "bo",
+	0
 };
 
 const char *syllables[]=
 {
-   "a", "am", "ain", "aro", "anx", "ax", "ayx",
-   "boo", "blah", "benz", "in", "gaz", "olr", "ne",
-   "cha", "too", "min", "olth", "rez", "read", "me", "elp",
-   "ix", "moron", "utns", "alm", "elm", "ilm", "dona", "dina",
-   "six", "in", "nid", "nim", "hop", "melz", "janz", "as",
-   "yrn", "asm", "min", "tho", "mas", "moon", "lite", "ern", "otu",
-   "omain", "en", "sal", "adir", "leg", "end", "dom", "ains",
-   "cux", "bet", "ter", "ton", "not", "to", "tak", "mut",
-   "de", "dip", "wat", "rand", "xo", "mel", "pid",
-   "eiz", "ex", "epat", "ena", "ble", "fuc", "byt", "me",
-   "ux", "ex", "pox", "xep", "soc", "ra", "tes", "uni", "hop",
-   0
+	"a", "am", "ain", "aro", "anx", "ax", "ayx",
+	"boo", "blah", "benz", "in", "gaz", "olr", "ne",
+	"cha", "too", "min", "olth", "rez", "read", "me", "elp",
+	"ix", "moron", "utns", "alm", "elm", "ilm", "dona", "dina",
+	"six", "in", "nid", "nim", "hop", "melz", "janz", "as",
+	"yrn", "asm", "min", "tho", "mas", "moon", "lite", "ern", "otu",
+	"omain", "en", "sal", "adir", "leg", "end", "dom", "ains",
+	"cux", "bet", "ter", "ton", "not", "to", "tak", "mut",
+	"de", "dip", "wat", "rand", "xo", "mel", "pid",
+	"eiz", "ex", "epat", "ena", "ble", "fuc", "byt", "me",
+	"ux", "ex", "pox", "xep", "soc", "ra", "tes", "uni", "hop",
+	0
 };
 
 const char *keyname_func[]=
@@ -380,7 +380,6 @@ bool random_name(std::string &str, int maxlen)
 
 	if (!numsyll)
 		return false;
-	str[0]=0;
 
 	int num=2+RANDU(3);
 
@@ -399,23 +398,9 @@ bool random_name(std::string &str, int maxlen)
 	return true;
 }
 
-bool random_name(char *buffer, int maxlen)
-{
-	string s;
-	if (random_name(s, maxlen)==false) return false;
-	
-	my_strcpy(buffer, s.c_str(), maxlen);
-	return true;
-}
-
 bool random_scrollname(char *str, int maxlen)
 {
-	if (!str)
-		return false;
-
 	maxlen--;
-	if (maxlen<=0)
-		return false;
 
 	int numsyll=0;
 	while (syllables[numsyll])
@@ -423,8 +408,8 @@ bool random_scrollname(char *str, int maxlen)
 
 	if (!numsyll)
 	{
-		my_strcpy(str,"error",maxlen);
-		return 0;
+		strcpy(str, "error");
+		return false;
 	}
 
 	str[0]=0;
@@ -445,7 +430,7 @@ bool random_scrollname(char *str, int maxlen)
 			strcat(str," ");
 		}
 
-		strcat(str,syllables[cur]);
+		strcat(str, syllables[cur]);
 		num--;
 	}
 

@@ -30,6 +30,7 @@
 #include "magic.h"
 #include "message.h"
 #include "output.h"
+#include "skills.h"
 #include "use.h"
 
 using std::string;
@@ -37,7 +38,7 @@ using std::string;
 void init_skills()
 {
 	//init skill table
-	for (int z=0; z<skillset::Max_Skill_Adv; z++)
+	for (int z=0; z<skill::Max_Adv; z++)
 	{
 		real k=(8.0/100 * z)+1.8;
 

@@ -34,6 +34,7 @@
 #include "roleplay.h"
 #include "school.h"
 #include "score.h"
+#include "skills.h"
 #include "world.h"
 
 using std::string;

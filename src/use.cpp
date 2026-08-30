@@ -28,6 +28,7 @@
 #include "names.h"
 #include "output.h"
 #include "script.h"
+#include "skills.h"
 #include "trapdash.h"
 #include "use.h"
 

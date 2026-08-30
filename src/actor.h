@@ -13,7 +13,7 @@
 #include "pathfind.h"
 #include "purse.h"
 #include "rig.h"
-#include "skills.h"
+#include "skillset.h"
 #include "species.h"
 #include "stats.h"
 

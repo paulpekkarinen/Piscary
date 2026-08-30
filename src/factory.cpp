@@ -34,6 +34,7 @@
 #include "names.h"
 #include "roleplay.h"
 #include "scrolls.h"
+#include "skills.h"
 #include "spot.h"
 #include "world.h"
 

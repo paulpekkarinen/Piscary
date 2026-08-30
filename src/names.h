@@ -16,7 +16,6 @@ std::string monster_sprintf(Actor *mptr, bool upcase, bool nameonly);
 void player_killer(const char *txt); //what killed the player
 bool random_language(std::string &str, int maxlen);
 bool random_name(std::string &str, int maxlen);
-bool random_name(char *buffer, int maxlen); //for char arrays
 bool random_scrollname(char *str, int maxlen);
 
 #endif

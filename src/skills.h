@@ -1,11 +1,10 @@
 //Legend of Saladir - skills.h
 
-//Unit skills: Skills data and list of current skills.
+//Unit skills: Skills data.
 
 #ifndef SKILLS_H
 #define SKILLS_H
 
-#include <list>
 #include "items.h"
 #include "types.h"
 
@@ -55,8 +54,17 @@
 #define SKILLAUTO       0x00000010 /* automatic skill */
 #define SKILLAPPLY      0x00000020 /* manual use skill */
 
+struct skilltype
+{
+	const char *name;
+	const char *desc;
+	int32u flags;
+};
+
 struct skill
 {
+	static const int Max_Adv=101;
+
 	int group;	// skill group
 	int type;	// skill type inside that group
 
@@ -70,51 +78,12 @@ struct skill
 	int dice_s;
 	int level;	// skill level
 
+	skilltype *Get_Data();
+	const char *Get_Name();
+
 	void reset(int g, int t, int v);
 	void learn(int v);
 	void clamp(int &v);
-
-	void save(Tar_Ball &tb);
-	void load(Tar_Ball &tb);
-};
-
-struct skilltype
-{
-	const char *name;
-	const char *desc;
-	int32u flags;
-};
-
-//List of skills the character has.
-class skillset
-{
-private:
-	std::list<skill*> skills;
-
-	skill *find_skill(int group, int type);
-	int Needmarks(int group, int value);
-
-	typedef std::list<skill*>::iterator sitr;
-
-public:
-	static const int Max_Skill_Adv=101;
-
-	~skillset();
-
-	int check(int group, int type); //check current value of a skill
-	skill *get_skill_handle(int index); //get skill of index from the list
-
-	skill *add_new_skill(int group, int type, int value);
-	void add_skill(skill *s);
-	bool apply();
-	int build_skillarray(int group, skillset &mylist);
-	bool list_skills(int group);
-	void melee_learnskills(item_def *iptr, int amount);
-	bool modify(int group, int type, int value, bool addit);
-	bool modify_raise(int group, int type, int amount, int addval, bool plr);
-	bool modify_raise(int group, int type, int amount, int addval);
-	int listselect(int &group, const char *prompt);
-	void raiselevel();
 
 	void save(Tar_Ball &tb);
 	void load(Tar_Ball &tb);

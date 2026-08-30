@@ -25,6 +25,7 @@
 #include "material.h"
 #include "purse.h"
 #include "skills.h"
+#include "skillset.h"
 
 const Itempack Cornucopia::starting_items[]=
 {

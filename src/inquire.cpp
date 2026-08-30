@@ -16,6 +16,7 @@
 
 //Refactored 14.7.2022 - 19.10.2025 by Paul K. Pekkarinen
 
+#include <cstring>
 #include "avatar.h"
 #include "caves.h"
 #include "dice.h"
@@ -32,6 +33,7 @@
 #include "move.h"
 #include "selpack.h"
 #include "scrolls.h"
+#include "skills.h"
 #include "terrain.h"
 
 using std::string;
@@ -132,8 +134,7 @@ void read_scroll(playerinfo *plr, level_type *level)
 							"to \"%s\"",
 							list_scroll[sc_group].uname, newname.c_str());
 
-						my_strcpy(list_scroll[sc_group].cname, newname.c_str(),
-							ITEM_NAMEMAX);
+						strcpy(list_scroll[sc_group].cname, newname.c_str());
 					}
 				}
 				else

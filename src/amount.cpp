@@ -84,7 +84,7 @@ void Amount::Initialize()
 		num_scrolls++;
 
 		//initialize scrollnames
-		random_scrollname(scptr->uname, sizeof(scptr->uname));
+		random_scrollname(scptr->uname, ITEM_NAMEMAX);
 		scptr++;
 	}
 

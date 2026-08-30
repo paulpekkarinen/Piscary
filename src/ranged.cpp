@@ -29,6 +29,7 @@
 #include "gameview.h"
 #include "input.h"
 #include "itemdata.h"
+#include "items.h"
 #include "material.h"
 #include "message.h"
 #include "names.h"

@@ -37,6 +37,7 @@
 #include "output.h"
 #include "program.h"
 #include "script.h"
+#include "skills.h"
 #include "storage.h"
 #include "window.h"
 #include "world.h"

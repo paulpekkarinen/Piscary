@@ -27,10 +27,10 @@
 #include "gameview.h"
 #include "input.h"
 #include "invnode.h"
-#include "items.h"
 #include "melee.h"
 #include "message.h"
 #include "names.h"
+#include "skills.h"
 #include "tactics.h"
 
 using std::format;
