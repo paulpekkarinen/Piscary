@@ -30,6 +30,7 @@ private:
 	void Ask_Stats(bool automatic);
 	void Randomeffect(int age);
 	void Random_Stats(statpack *stats);
+	int Skill_Listselect(int group, const char *prompt);
 
 public:
 	Birth() noexcept;

@@ -78,22 +78,26 @@ struct skill
 	int dice_s;
 	int level;	// skill level
 
-	skilltype *Get_Data();
-	const char *Get_Name();
+	skill() : group(0), type(0) { }
+	skill(int g, int t) : group(g), type(t) { }
 
-	void reset(int g, int t, int v);
-	void learn(int v);
+	skilltype *Get_Data();
+	const char *Get_Description();
+	const char *Get_Name();
+	bool Is_Automatic();
+
 	void clamp(int &v);
+	void learn(int v);
+	void reset(int g, int t, int v);
+	void Show_Selected();
 
 	void save(Tar_Ball &tb);
 	void load(Tar_Ball &tb);
 };
 
+void init_skills();
+
 extern int SKILL_ADV[];
-extern skilltype skills_general[];
-extern skilltype skills_illegal[];
-extern skilltype skills_magic[];
-extern skilltype skills_weapon[];
 extern const char *skillgroupnames[];
 extern const char *txt_listinstru;
 

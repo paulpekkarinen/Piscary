@@ -16,9 +16,9 @@
 
 //Refactored 12.6.2022 - 8.5.2023 Paul K. Pekkarinen
 
-#define _CRT_SECURE_NO_DEPRECATE 1
-
+#include <cmath>
 #include "magic.h"
+#include "output.h"
 #include "skills.h"
 #include "storage.h"
 
@@ -281,11 +281,27 @@ skilltype *skill::Get_Data()
 	return ptr;
 }
 
+const char *skill::Get_Description()
+{
+	skilltype *ptr=Get_Data();
+
+	return ptr->desc;
+}
+
 const char *skill::Get_Name()
 {
 	skilltype *ptr=Get_Data();
 
 	return ptr->name;
+}
+
+bool skill::Is_Automatic()
+{
+	skilltype *ptr=Get_Data();
+
+	if (ptr->flags & SKILLAUTO) return true;
+
+	return false;
 }
 
 void skill::clamp(int &v)
@@ -312,6 +328,30 @@ void skill::reset(int g, int t, int v)
 
 	clamp(cur);
 	clamp(ini);
+}
+
+void skill::Show_Selected()
+{
+	set_color(CH_GREEN);
+	my_printf("%s skill ", skillgroupnames[group]);
+
+	skilltype *s=Get_Data();
+
+	if (s->flags & SPF_ALTERATION)
+		my_printf("of alteration");
+	if (s->flags & SPF_DESTRUCTION)
+		my_printf("of destruction");
+	if (s->flags & SPF_MYSTICISM)
+		my_printf("of mysticism");
+	if (s->flags & SPF_OBSERVATION)
+		my_printf("of observation");
+
+	if (s->flags & SKILLAUTO)
+	{
+		my_setcolor(CH_RED);
+		my_printf("*Automatic*");
+	}
+	clrtoeol();
 }
 
 void skill::learn(int v)
@@ -350,4 +390,24 @@ void skill::load(Tar_Ball &tb)
 	dice_t=tb.Get_Next_Value();
 	dice_s=tb.Get_Next_Value();
 	level=tb.Get_Next_Value();
+}
+
+void init_skills()
+{
+	//init skill table
+	for (int z=0; z<skill::Max_Adv; z++)
+	{
+		real k=(8.0/100 * z)+1.8;
+
+		SKILL_ADV[z]=(int)(10+exp(k));
+	}
+
+	//copy flags to magic skills
+	int i=0;
+
+	while (skills_magic[i].name != 0)
+	{
+		skills_magic[i].flags = list_spells[i].flags;
+		i++;
+	}
 }

@@ -58,7 +58,7 @@ const char *txt_listinstru=
 const char *txt_listinstru2=
 "\007Tag/untag quick skills with keys\001 0\007 -\001 9\007. Pressing "
 "\001C\007 clears all quick skills. "
-"\002ESC \007or \002Q \007exits without selection.\n";
+"\002x \007or \002Q \007exits without selection.\n";
 
 const char *txt_skillauto=
 "\007This is an \003automatic \007skill. It is used automatically in correct "
@@ -191,13 +191,9 @@ int skillset::listselect(int &group, const char *prompt)
 {
 	bool endreach=false;
 	bool topreach=false;
-	bool endoflist=false;
 	bool eraseneeded=false;
 
 	int soffs, loffs=0, i, j;
-	int ch, stype=0;
-
-	int listcolor;
 
 	int box_sy=14;  /* size y */
 	int box_sx=24;  /* size x */
@@ -243,10 +239,8 @@ int skillset::listselect(int &group, const char *prompt)
 		SCREEN_COLS);
 
 	loffs=soffs=0-(box_sy/2);
-	int eoffs=box_sy;
 
-	listcolor=CH_DGRAY;
-	skilltype *origlist=0;
+	int listcolor=CH_DGRAY;
 	skill *curr=0; //currently selected
 
 	while (1)
@@ -271,46 +265,29 @@ int skillset::listselect(int &group, const char *prompt)
 				if (sptr->group==SKILLGRP_ENDLIST || sptr->type==SKILL_ENDLIST)
 				{
 					endreach=true;
-					if (!endoflist)
-						eoffs=loffs+box_sy/2 - 1;
-					endoflist=true;
 				}
 
 				if (!endreach)
 				{
-					stype=sptr->type;
-					if (sptr->group==SKILLGRP_WEAPON)
-						origlist=skills_weapon;
-					else if (sptr->group==SKILLGRP_MAGIC)
-						origlist=skills_magic;
-					else if (sptr->group==SKILLGRP_GENERIC)
-						origlist=skills_general;
-					else
-					{
-						origlist=skills_illegal;
-						stype=0;
-					}
-
 					for (j=0; j<NUM_QUICKSKILLS; j++)
 					{
-						if (player.qskills[j].group == sptr->group &&
-							player.qskills[j].type == sptr->type &&
-							player.qskills[j].select != 0)
+						if (player.qskills[j].Is_Selected(sptr))
+						{
 							skillname=format("({}) ", j);
+							break;
+						}
 					}
 
-					if (origlist[stype].flags & SKILLAUTO)
+					if (sptr->Is_Automatic())
 						listcolor=CH_DGRAY;
 					else
 						listcolor=C_WHITE;
 
-					skillname.append(origlist[stype].name);
+					skillname.append(sptr->Get_Name());
 
 					truncate_string(skillname, box_sx);
-
 					skillname[0]=toupper(skillname[0]);
 				}
-
 			}
 
 			if (i==box_sy/2)
@@ -327,39 +304,9 @@ int skillset::listselect(int &group, const char *prompt)
 		/* show some info */
 		curr=ptrlist.get_skill_handle(sel);
 
-		stype=curr->type;
-		if (curr->group==SKILLGRP_WEAPON)
-			origlist=skills_weapon;
-		else if (curr->group==SKILLGRP_MAGIC)
-			origlist=skills_magic;
-		else if (curr->group==SKILLGRP_GENERIC)
-			origlist=skills_general;
-		else
-		{
-			origlist=skills_illegal;
-			stype=0;
-		}
-
 		gotoxy(box_bx+box_sx+2, box_by+box_sy-3);
 
-		set_color(CH_GREEN);
-		my_printf("%s skill ", skillgroupnames[curr->group]);
-
-		if (origlist[stype].flags & SPF_ALTERATION)
-			my_printf("of alteration");
-		if (origlist[stype].flags & SPF_DESTRUCTION)
-			my_printf("of destruction");
-		if (origlist[stype].flags & SPF_MYSTICISM)
-			my_printf("of mysticism");
-		if (origlist[stype].flags & SPF_OBSERVATION)
-			my_printf("of observation");
-
-		if (origlist[stype].flags & SKILLAUTO)
-		{
-			my_setcolor(CH_RED);
-			my_printf("*Automatic*");
-		}
-		clrtoeol();
+		curr->Show_Selected();
 
 		gotoxy(box_bx+box_sx+2, box_by+box_sy-2);
 		set_color(C_WHITE);
@@ -373,7 +320,7 @@ int skillset::listselect(int &group, const char *prompt)
 				curr->raise));
 		clrtoeol();
 
-		ch=my_getch();
+		const int ch=my_getch();
 
 		/* erase description area first */
 		if (eraseneeded)
@@ -396,7 +343,7 @@ int skillset::listselect(int &group, const char *prompt)
 
 		if (ch>='0' && ch<='9')
 		{
-			if (origlist[stype].flags & SKILLAUTO)
+			if (curr->Is_Automatic())
 			{
 				eraseneeded=true;
 				my_wordwraptext(txt_skillauto,
@@ -411,24 +358,13 @@ int skillset::listselect(int &group, const char *prompt)
 						player.qskills[j].type == curr->type &&
 						(ch-'0' != j))
 					{
-						player.qskills[j].select=0;
+						player.qskills[j].select=false;
 					}
 				}
 				j=ch-'0';
 				if (j < NUM_QUICKSKILLS)
 				{
-					if (player.qskills[j].group == curr->group &&
-						player.qskills[j].type == curr->type &&
-						player.qskills[j].select != 0)
-					{
-						player.qskills[j].select = 0;
-					}
-					else
-					{
-						player.qskills[j].select = 1;
-						player.qskills[j].group = curr->group;
-						player.qskills[j].type = curr->type;
-					}
+					player.qskills[j].Toggle(curr);
 				}
 			}
 		}
@@ -440,9 +376,10 @@ int skillset::listselect(int &group, const char *prompt)
 				player.qskills[j].Reset();
 			}
 		}
+
 		if (is_confirm_key(ch))
 		{
-			if (origlist[stype].flags & SKILLAUTO)
+			if (curr->Is_Automatic())
 			{
 				eraseneeded=true;
 				my_wordwraptext(txt_skillauto,
@@ -453,7 +390,7 @@ int skillset::listselect(int &group, const char *prompt)
 				break;
 		}
 
-		if (ch==KEY_ESC || ch=='q' || ch=='Q')
+		if (ch=='x')
 		{
 			sel=-1;
 			break;
@@ -465,10 +402,11 @@ int skillset::listselect(int &group, const char *prompt)
 
 			set_color(C_WHITE);
 			gotoxy(box_bx+box_sx+2, box_by);
+			const char *skill_desc=curr->Get_Description();
 
-			if (origlist[stype].desc)
+			if (skill_desc)
 			{
-				my_wordwraptext(origlist[stype].desc,
+				my_wordwraptext(skill_desc,
 					box_by, SCREEN_LINES, (box_bx+box_sx+2),
 					SCREEN_COLS);
 			}

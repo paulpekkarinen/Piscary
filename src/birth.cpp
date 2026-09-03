@@ -42,23 +42,23 @@ using std::string;
 #define NUM_AGEPREFIX 4
 const char *txt_ageprefix[]=
 {
-   "At the age of %d",
-   "When you were %d years old",
-   "During your studies at the age of %d",
-   "You were %d years old when",
-   NULL
+	"At the age of %d",
+	"When you were %d years old",
+	"During your studies at the age of %d",
+	"You were %d years old when",
+	NULL
 };
 
 const char *txt_events[]=
 {
-   "your distant uncle died and as his only relative\nyou received his "
-     "fortune of %d gold!",
-   "a black plague stroke the town you were studying\nat, evetually you "
-     "got sick and were sick for %d months and lost %d %s.",
-   "a group of bandits raided your town. While\nhelping your fellow "
-     "citizens to defend against the bandits\nyou were wounded but "
-     "gained %d %s!",
-   NULL
+	"your distant uncle died and as his only relative\nyou received his "
+		"fortune of %d gold!",
+	"a black plague stroke the town you were studying\nat, evetually you "
+		"got sick and were sick for %d months and lost %d %s.",
+	"a group of bandits raided your town. While\nhelping your fellow "
+		"citizens to defend against the bandits\nyou were wounded but "
+		"gained %d %s!",
+	NULL
 };
 
 const char welcometext[]=
@@ -122,15 +122,15 @@ void Birth::Ask_Skills() //note: commented out
    /* first two weapon skills */
 /*
    skill_modify(&player.skills, SKILLGRP_WEAPON,
-		skill_listselect(SKILLGRP_WEAPON, txt_primaryweapon),
+		Skill_Listselect(SKILLGRP_WEAPON, txt_primaryweapon),
 		25, true);
 
    skill_modify(&player.skills, SKILLGRP_WEAPON,
-		skill_listselect(SKILLGRP_WEAPON, txt_secondaryweapon),
+		Skill_Listselect(SKILLGRP_WEAPON, txt_secondaryweapon),
 		10, true);
 
    skill_modify(&player.skills, SKILLGRP_MAGIC,
-		skill_listselect(SKILLGRP_MAGIC, "SPELL"),
+		Skill_Listselect(SKILLGRP_MAGIC, "SPELL"),
 		10, true);
 */
 
@@ -205,6 +205,127 @@ void Birth::Randomeffect(int age)
 		Stat stype(st);
 		my_printf(s.c_str(), age, 1+RANDU(5), amount, stype.Get_Short_Name());
 	}
+}
+
+int Birth::Skill_Listselect(int group, const char *prompt)
+{
+	bool endreach=false;
+	bool topreach=false;
+	bool endoflist=false;
+
+	clear_screen();
+	hidecursor();
+	my_setcolor(C_GREEN);
+
+	int box_sy=11;  /* size y */
+	int box_sx=20;  /* size x */
+	int box_bx=2;
+	int box_by=2;
+	makeborder(box_bx-1, box_by-1, box_sx+2, box_sy+2);
+
+	if (prompt)
+	{
+		my_wordwraptext(prompt, box_by, SCREEN_LINES, (box_bx+box_sx+2),
+			SCREEN_COLS);
+	}
+
+	my_wordwraptext(txt_listinstru, box_by+box_sy+2, SCREEN_LINES, box_bx,
+		SCREEN_COLS);
+
+	int loffs=0-(box_sy/2);
+	int soffs=loffs;
+	int eoffs=box_sy;
+	int sel=0;
+
+	skill sktype(group, 0);
+
+	while (1)
+	{
+		skilltype *sptr=sktype.Get_Data();
+		sptr+=loffs;
+
+		endreach=false;
+
+		for (int i=0; i<box_sy; i++, sptr++)
+		{
+
+			if ((loffs+i)<0)
+				topreach=true;
+			else
+				topreach=false;
+
+			string skillname;
+
+			if (!topreach)
+			{
+				if (!sptr->name)
+				{
+					endreach=true;
+					if (!endoflist)
+						eoffs=loffs+box_sy/2 - 1;
+					endoflist=true;
+				}
+
+				if (!endreach)
+				{
+					skillname.append(sptr->name);
+					truncate_string(skillname, box_sx);
+					skillname[0]=toupper(skillname[0]);
+				}
+			}
+			if (i==box_sy/2)
+				my_setcolor(CH_YELLOW);
+			else
+				my_setcolor(CH_DGRAY);
+
+			gotoxy(box_bx, box_by+i);
+			my_printf("%20s", "");
+			const int skill_len=(int)skillname.size();
+			gotoxy(box_bx+((box_sx/2)-skill_len/2), box_by+i);
+			my_printf("%s", skillname.c_str());
+		}
+
+		gotoxy(box_bx+box_sx+2, box_bx+box_sy-1);
+
+		skill sk(group, sel);
+		sk.Show_Selected();
+
+		const int ch=my_getch();
+
+		if ((ch=='z' || ch==KEY_DOWN || ch=='2') && loffs<eoffs)
+		{
+			loffs++;
+			sel++;
+		}
+		if ((ch=='a' || ch==KEY_UP || ch=='8') && loffs>soffs)
+		{
+			loffs--;
+			sel--;
+		}
+		if (is_confirm_key(ch))
+			break;
+		if (ch=='?')
+		{
+			/* erase description area first */
+			for (int i=0; i<box_sy; i++)
+				drawline_limit(box_by+i, box_bx+box_sx+2, SCREEN_COLS, ' ');
+
+			set_color(C_WHITE);
+			gotoxy(box_bx+box_sx+2, box_by);
+			const char *desc=sptr->desc;
+			if (desc)
+			{
+				my_wordwraptext(desc,
+					box_by, SCREEN_LINES, (box_bx+box_sx+2),
+					SCREEN_COLS);
+			}
+			else
+				my_printf("No description for the skill.");
+		}
+	}
+
+	showcursor();
+	return sel;
 }
 
 void Birth::Ask_Stats(bool automatic)

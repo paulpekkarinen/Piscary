@@ -19,13 +19,13 @@
 #include "amount.h"
 #include "dice.h"
 #include "display.h"
-#include "drill.h"
 #include "filework.h"
 #include "hiscore.h"
 #include "optcont.h"
 #include "options.h"
 #include "program.h"
 #include "saldebug.h"
+#include "skills.h"
 
 bool global_initmode;
 Amount mucho; //how many of something there are
