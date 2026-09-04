@@ -71,12 +71,12 @@ bool Shoppe::Accept_Item(invnode *item)
 	{
 		case Armour:
 		{
-			rv=item->i.Is_Armor();
+			rv=item->Is_Armor();
 		}
 		break;
 		case Weapon:
 		{
-			rv=item->i.Is_Weapon();
+			rv=item->Is_Weapon();
 		}
 		break;
 		case Food:

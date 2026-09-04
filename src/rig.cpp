@@ -272,20 +272,21 @@ int equipment::equipitem(int slot, playerinfo &plr)
 		//	    invnode->i.status |= ITEM_EQUIPPED;
 
 				/* identify item when equipped */
-				if (equipit->i.Is_Weapon() || equipit->i.Is_Armor())
+				if (equipit->Is_Weapon() || equipit->Is_Armor())
 					equipit->i.status |= ITEM_IDENTIFIED;
 
 				put_on(equipit, slot);
 
 				/* if equipping light, make it visible */
-				if (equipit->i.type==IS_LIGHT)
+				if (equipit->Is_Lightsource())
 				{
 					if (equipit->i.group>=LIGHT_MAXNUM)
 						equipit->i.group=LIGHT_MAXNUM-1;
 					plr.light=equipit->i.pmod1;
 				}
 
-				display->Item_Info(&equipit->i, equipit->i.weight, 1, "Equipped");
+				display->Item_Info(&equipit->i, equipit->Get_Weight(),
+					1, "Equipped");
 
 				return Equipped;
 			}

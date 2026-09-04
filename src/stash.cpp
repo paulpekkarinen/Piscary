@@ -58,7 +58,8 @@ invnode *Stash::Find_Largest_Item(const Coord &c)
 				heaviest=ptr;
 			else
 			{
-				if (ptr->i.Get_Weight() > heaviest->i.Get_Weight())
+				//compare only single weights, not stacks
+				if (ptr->Get_Weight_Of_One() > heaviest->Get_Weight_Of_One())
 					heaviest=ptr;
 			}
 		}

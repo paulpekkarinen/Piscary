@@ -219,11 +219,7 @@ struct item_def
 
 	~item_def();
 
-	int Get_Weight();
 	bool Decrease_Turns(int luck);
-	bool Is_Armor();
-	bool Is_Weapon();
-	int Rate(); //try to give a rating for some item, bigger result is better
 
 	void Age_Food(int luck);
 	int Age_Weapon(int luck, bool player);

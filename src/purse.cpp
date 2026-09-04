@@ -339,7 +339,7 @@ invnode *inventory::Find_Best_Item(int type, int group)
 					better=true;
 				else
 				{
-					if (invptr->i.Rate() > best->i.Rate())
+					if (invptr->Rate() > best->Rate())
 						better=true;
 				}
 				if (better)

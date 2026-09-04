@@ -15,7 +15,7 @@ item_def::~item_def()
 {
 	if (inv != 0)
 	{
-	    delete inv;
+		delete inv;
 		inv=0;
 	}
 }
@@ -128,12 +128,12 @@ void item_def::Clear()
 	missi_dt=missi_ds=0;
 	meldam_mod=misdam_mod=0;
 
-    turnsleft=-1;
+	turnsleft=-1;
 	pmod1=pmod2=pmod3=pmod4=0;
 	ac=0;
 	dv=0;
-    inv=0;
-    material=-1;
+	inv=0;
+	material=-1;
 
 	ench.Clear();
 
@@ -144,40 +144,40 @@ void item_def::Clone(item_def *c)
 {
 	name=c->name;
 	rname=c->rname;
-    sname=c->sname;
-    icond=c->icond;
-    type=c->type;
-    group=c->group;
+	sname=c->sname;
+	icond=c->icond;
+	type=c->type;
+	group=c->group;
 
-    price=c->price;
-    status=c->status;
-    resist=c->resist;
-    special=c->special;
-    weight=c->weight;
-    align=c->align;
+	price=c->price;
+	status=c->status;
+	resist=c->resist;
+	special=c->special;
+	weight=c->weight;
+	align=c->align;
 
-    melee_dt=c->melee_dt;
-    melee_ds=c->melee_ds;
-    missi_dt=c->missi_dt;
-    missi_ds=c->missi_ds;
-    meldam_mod=c->meldam_mod;
-    misdam_mod=c->misdam_mod;
+	melee_dt=c->melee_dt;
+	melee_ds=c->melee_ds;
+	missi_dt=c->missi_dt;
+	missi_ds=c->missi_ds;
+	meldam_mod=c->meldam_mod;
+	misdam_mod=c->misdam_mod;
 
-    turnsleft=c->turnsleft;
-    pmod1=c->pmod1;
-    ac=c->ac;
-    dv=c->dv;
-    material=c->material;
+	turnsleft=c->turnsleft;
+	pmod1=c->pmod1;
+	ac=c->ac;
+	dv=c->dv;
+	material=c->material;
 
-    pmod2=c->pmod2;
-    pmod3=c->pmod3;
-    pmod4=c->pmod4;
+	pmod2=c->pmod2;
+	pmod3=c->pmod3;
+	pmod4=c->pmod4;
 
 	ench=c->ench;
 
-    //note: inventory is not cloned, it's set to zero. if the item is inventory this
-    //should be checked and created for inventory
-    inv=0;
+	//note: inventory is not cloned, it's set to zero. if the item is
+	//inventory this should be checked and created for inventory
+	inv=0;
 }
 
 bool item_def::Decrease_Turns(int luck)
@@ -199,49 +199,6 @@ bool item_def::Decrease_Turns(int luck)
 	}
 
 	return false;
-}
-
-/*
- * Return the weight of a item, will also take care of container items!
- *
- * result: weight (1000 is 1kg)
- *
- */
-int item_def::Get_Weight()
-{
-   int total=0;
-
-   if(inv!=0)
-      total += inv->Get_Weight();
-
-   total += weight;
-
-   return total;
-}
-
-bool item_def::Is_Armor()
-{
-	if (type == IS_ARMOR || type == IS_SHIELD)
-		return true;
-
-	return false;
-}
-
-bool item_def::Is_Weapon()
-{
-	if (type == IS_WEAPON1H || type == IS_WEAPON2H || type == IS_MISWEAPON || type == IS_MISSILE)
-		return true;
-
-	return false;
-}
-
-int item_def::Rate()
-{
-	/* money is good to keep :) */
-	if (type==IS_MONEY)
-		return 1000;
-
-	return materials[material].Get_Value();
 }
 
 void item_def::Save(Tar_Ball &tb)

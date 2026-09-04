@@ -21,10 +21,18 @@ struct invnode
 	invnode();
 
 	Coord Get_Location();
-	int Get_Weight(); //includes amount of items (count)
+	const char *Get_Material_Name();
 	real Get_Material_Mod(); //in shop pricing
 	const char *Get_Name();
-	const char *Get_Material_Name();
+	int Get_Type();
+	int Get_Weight(); //includes amount of items (count)
+	int Get_Weight_Of_One(); //return weight of only one unit
+
+	bool Is_Armor();
+	bool Is_Lightsource();
+	bool Is_Weapon();
+
+	int Rate(); //give a rating for item, bigger result is better
 
 	void Set_Location(const Coord &c);
 

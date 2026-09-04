@@ -139,7 +139,7 @@ bool meleeinner(
 		/* check if the item broke completely */
 		if (eqptr->Age_Weapon(plr->stat[STAT_LUC].Get(), true)==COND_SMASHED)
 		{
-			if (eqptr->type==IS_LIGHT)
+			if (invptr->Is_Lightsource())
 				plr->light=1;
 
 			plr->inv.Destroy_Item(plr->equips, invptr, -1);

@@ -57,7 +57,7 @@ bool player_autopickup(level_type *level, const Coord &c)
 		return false;
 
 	/* check capasity first */
-	if (player.Can_Carry(lptr->count * lptr->i.Get_Weight())==false)
+	if (player.Can_Carry(lptr->Get_Weight())==false)
 	{
 		msg.newmsg("You tried to take an item, but it weights too much.",
 			C_WHITE);
@@ -217,7 +217,7 @@ int getitem_inner(playerinfo *plr, level_type *level, invnode *lptr)
 		count=lptr->count;
 	}
 
-	if (plr->Can_Carry(count * lptr->i.Get_Weight())==false)
+	if (plr->Can_Carry(count * lptr->Get_Weight_Of_One())==false)
 	{
 		if (count==1)
 		{

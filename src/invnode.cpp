@@ -19,6 +19,7 @@
 #include "geometry.h"
 #include "invnode.h"
 #include "material.h"
+#include "purse.h"
 #include "storage.h"
 
 invnode::invnode()
@@ -36,7 +37,7 @@ real invnode::Get_Material_Mod()
 {
 	real matmod;
 
-	if (i.type!=IS_FOOD)
+	if (Get_Type()!=IS_FOOD)
 		matmod=materials[i.material].vmod;
 	else
 		matmod=1.0;
@@ -54,9 +55,65 @@ const char *invnode::Get_Material_Name()
 	return materials[i.material].name;
 }
 
+int invnode::Get_Type()
+{
+	return i.type;
+}
+
+//Returns weight of item (1000 is 1kg)
 int invnode::Get_Weight()
 {
-	return i.Get_Weight() * count;
+	//return item times amount in stack
+	return Get_Weight_Of_One() * count;
+}
+
+int invnode::Get_Weight_Of_One()
+{
+	int unit=i.weight;
+
+	//if container, return itself plus container weight
+	if (i.inv!=0)
+		return unit + i.inv->Get_Weight();
+
+	return unit;
+}
+
+bool invnode::Is_Armor()
+{
+	const int t=Get_Type();
+
+	if (t == IS_ARMOR || t == IS_SHIELD)
+		return true;
+
+	return false;
+}
+
+bool invnode::Is_Lightsource()
+{
+	if (Get_Type()==IS_LIGHT)
+		return true;
+
+	return false;
+}
+
+bool invnode::Is_Weapon()
+{
+	const int t=Get_Type();
+
+	if (t == IS_WEAPON1H || t == IS_WEAPON2H ||
+		t == IS_MISWEAPON || t == IS_MISSILE)
+			return true;
+
+	return false;
+}
+
+int invnode::Rate()
+{
+	/* money is good to keep :) */
+	if (Get_Type()==IS_MONEY)
+		return 1000;
+
+	return materials[i.material].Get_Value();
 }
 
 void invnode::Set_Location(const Coord &c)
