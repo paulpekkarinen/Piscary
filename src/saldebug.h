@@ -27,7 +27,7 @@ public:
 
 	bool Cheat() const { return debug_mode; }
 
-	void Identify(); //identify item in backpack
+	void Identify_Item(); //identify item in backpack
 	void Menu(); //use debug commands that don't have a direct keybind
 	void Message(const char *format, ...); //write a debug message
 	void Set() { debug_mode=true; }

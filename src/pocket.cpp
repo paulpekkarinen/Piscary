@@ -34,16 +34,16 @@ inventory *Pocket::Get_Container(int index)
 
 	if (item!=0)
 	{
-		return item->i.inv;
+		return item->inv;
 	}
-	
+
 	return 0;
 }
 
 invnode *Pocket::Get_Item_Handle(int index)
 {
 	int ci=0;
-	
+
 	for (pitr ii = items.begin() ; ii != items.end() ; ++ii)
 	{
 		if (ci==index)
@@ -137,7 +137,7 @@ void Pocket::Show(int starting_index, int &lasttype, bool darklevel)
 			if (darklevel)
 				my_printf("something");
 			else
-				display->Item_Info(&dispitem->i, dispitem->i.weight, dispitem->count, 0);
+				display->Item_Info(dispitem, 0);
 
 			my_printf("\n");
 			itemcount++;

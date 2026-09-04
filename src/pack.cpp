@@ -87,7 +87,7 @@ bool player_autopickup(level_type *level, const Coord &c)
 	lptr = level->inv.remove_n_items(lptr, lptr->count);
 	if (lptr)
 	{
-		display->Item_Info(&lptr->i, lptr->i.weight, lptr->count, "You took");
+		display->Item_Info(lptr, "You took");
 
 		player.inv.Add_Item(lptr);
 
@@ -237,7 +237,7 @@ int getitem_inner(playerinfo *plr, level_type *level, invnode *lptr)
 		if (lptr->i.status & ITEM_UNPAID)
 			plr->bill += count * lptr->i.price;
 
-		display->Item_Info(&lptr->i, lptr->i.weight, count, "You took");
+		display->Item_Info(lptr, count, "You took");
 
 		//this should work after previous checks
 		plr->inv.Add_Item(lptr);
@@ -322,7 +322,7 @@ bool player_did_drop(invnode *dropit)
 	else
 		stxt="You drop";
 
-	display->Item_Info(&dropit->i, dropit->i.weight, count, stxt);
+	display->Item_Info(dropit, count, stxt);
 
 	return true;
 }
@@ -336,7 +336,7 @@ void drop_selected(playerinfo *plr)
 
 	Pocket &tasku=plr->backpack->Get_Pocket();
 	const Coord c=plr->Get_Location();
-	
+
 	int amt=0;
 	for (;;)
 	{

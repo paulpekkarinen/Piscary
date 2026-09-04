@@ -33,6 +33,7 @@
 #include "gametime.h"
 #include "gameview.h"
 #include "input.h"
+#include "invnode.h"
 #include "itemdata.h"
 #include "lexicon.h"
 #include "message.h"
@@ -170,23 +171,27 @@ void Display::Hiscore_Header()
 	Footer("Arrow up = Next | arrow down = Previous | x = exit", C_GREEN);
 }
 
-//prints out some info about the item based on the identified status...
-void Display::Item_Info(item_def *iptr, int weight, int count, const char *acttxt)
+void Display::Item_Info(invnode *iptr, const char *acttxt)
 {
-	string status;
+	Item_Info(iptr, iptr->Get_Amount(), acttxt);
+}
+
+//prints out some info about the item based on the identified status...
+void Display::Item_Info(invnode *iptr, int count, const char *acttxt)
+{
+	string status_str;
 	string ident;
 	string item; //combined name
 	string many;
 	string pile;
 	string price;
 
-	/* if it's a container, modify the weight */
-	if (iptr->inv != 0)
-		weight += iptr->inv->Get_Weight();
+	item_def &i=iptr->i;
+	const int weight=iptr->Get_Weight_Of_One()*count;
 
-	if (iptr->status & ITEM_UNPAID)
+	if (iptr->Is_Set(ITEM_UNPAID))
 	{
-		Currency rupees(iptr->price);
+		Currency rupees(iptr->Get_Price());
 
 		price="(";
 
@@ -209,43 +214,47 @@ void Display::Item_Info(item_def *iptr, int weight, int count, const char *acttx
 		price.append(")");
 	}
 
-	if ((iptr->status & ITEM_IDENTIFIED))
+	bool idfied=iptr->Is_Set(ITEM_IDENTIFIED);
+
+	if (idfied)
 	{
-		if ((iptr->status & ITEM_BLESSED))
+		if (iptr->Is_Set(ITEM_BLESSED))
 		{
-			status="blessed ";
+			status_str="blessed ";
 			my_setcolor(CH_GREEN);
 		}
-		if ((iptr->status & ITEM_CURSED))
+
+		if (iptr->Is_Set(ITEM_CURSED))
 		{
-			status="cursed ";
+			status_str="cursed ";
 			my_setcolor(CH_RED);
 		}
+
 		/* show modifiers */
-		if (iptr->melee_dt >0 || iptr->melee_ds || iptr->meldam_mod >0)
+		if (i.melee_dt >0 || i.melee_ds || i.meldam_mod >0)
 		{
 			snprintf(itempstr, itemp_size, "[%dd%d,%+2d] ",
-				iptr->melee_dt, iptr->melee_ds, iptr->meldam_mod);
+				i.melee_dt, i.melee_ds, i.meldam_mod);
 			ident.append(itempstr);
 		}
 
-		if (iptr->missi_dt >0 || iptr->missi_ds || iptr->misdam_mod >0)
+		if (i.missi_dt >0 || i.missi_ds || i.misdam_mod >0)
 		{
 			snprintf(itempstr, itemp_size, "{%dd%d,%+2d} ",
-				iptr->missi_dt, iptr->missi_ds, iptr->misdam_mod);
+				i.missi_dt, i.missi_ds, i.misdam_mod);
 			ident.append(itempstr);
 		}
 
-		if (iptr->ac>0)
+		if (i.ac>0)
 		{
-			snprintf(itempstr, itemp_size, "(AC%+2d)", iptr->ac);
+			snprintf(itempstr, itemp_size, "(AC%+2d)", i.ac);
 			ident.append(itempstr);
 		}
 
 		if (acttxt==0)
 		{
 			snprintf(itempstr, itemp_size, "%s %4.2fkg",
-				price.c_str(), (real)(count*weight)/WEIGHT_KILO);
+				price.c_str(), (real)weight/WEIGHT_KILO);
 			ident.append(itempstr);
 		}
 		else
@@ -258,7 +267,7 @@ void Display::Item_Info(item_def *iptr, int weight, int count, const char *acttx
 		if (acttxt==0)
 		{
 			snprintf(itempstr, itemp_size,
-				"%s %4.2fkg", price.c_str(), (real)(count*weight)/WEIGHT_KILO);
+				"%s %4.2fkg", price.c_str(), (real)weight/WEIGHT_KILO);
 			ident.append(itempstr);
 		}
 		else
@@ -273,61 +282,62 @@ void Display::Item_Info(item_def *iptr, int weight, int count, const char *acttx
 	else
 		pile="a ";
 
-	const char *itemname=iptr->name.c_str();
-	const char *matname=materials[iptr->material].name;
+	const char *itemname=i.name.c_str();
+	const char *matname=materials[i.material].name;
+	const int type=iptr->Get_Type();
 
-	if (iptr->type==IS_FOOD)
+	if (type==IS_FOOD)
 	{
-		item=format("{}{}{}{}", pile, status, itemname, many);
+		item=format("{}{}{}{}", pile, status_str, itemname, many);
 
-		if ((iptr->status & ITEM_IDENTIFIED))
-			item+=format(" ({})", food_condition[iptr->icond]);
+		if (idfied)
+			item+=format(" ({})", food_condition[i.icond]);
 	}
-	else if (iptr->type==IS_SCROLL)
+	else if (type==IS_SCROLL)
 	{
-		if (list_scroll[iptr->group].flags & SCFLAG_IDENTIFIED)
-			iptr->status|= ITEM_IDENTIFIED;
+		if (list_scroll[i.group].flags & SCFLAG_IDENTIFIED)
+			iptr->Identify();
 
-		if (iptr->status & ITEM_IDENTIFIED)
+		if (iptr->Is_Set(ITEM_IDENTIFIED)) //check again
 		{
 			item=format("{}{}{}{} of {} (\"{}\")",
-				pile, status, itemname, many,
-				iptr->rname, iptr->sname);
+				pile, status_str, itemname, many,
+				i.rname, i.sname);
 		}
 		else
 		{
 			item=format("{}{} {}{} labeled \"{}\"",
-				pile, matname, itemname, many, iptr->sname);
+				pile, matname, itemname, many, i.sname);
 
-			if (list_scroll[iptr->group].flags & SCFLAG_NAMED)
+			if (list_scroll[i.group].flags & SCFLAG_NAMED)
 			{
 				item+=format(" (\"{}\")",
-					list_scroll[iptr->group].cname);
+					list_scroll[i.group].cname);
 			}
-			else if (list_scroll[iptr->group].flags & SCFLAG_TRIED)
+			else if (list_scroll[i.group].flags & SCFLAG_TRIED)
 				item.append(" {tried}");
 		}
 	}
-	else if (iptr->type==IS_MONEY)
+	else if (type==IS_MONEY)
 	{
-		item=format("{}{}{}{}", pile, status, itemname, many);
+		item=format("{}{}{}{}", pile, status_str, itemname, many);
 	}
-	else if (iptr->type==IS_SPECIAL)
+	else if (type==IS_SPECIAL)
 	{
-		item=format("{} {}{}{}", pile, status, itemname, many);
+		item=format("{} {}{}{}", pile, status_str, itemname, many);
 	}
 	else
 	{
-		if (iptr->material>=0)
+		if (i.material>=0)
 		{
 			item=format("{}{} {}{} {}{}",
-				pile, condition[iptr->icond], status,
+				pile, condition[i.icond], status_str,
 				matname, itemname, many);
 		}
 		else
 		{
 			item=format("{}{} {}{}{}",
-				pile, condition[iptr->icond], status,
+				pile, condition[i.icond], status_str,
 				itemname, many);
 		}
 	}

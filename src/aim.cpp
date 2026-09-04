@@ -245,8 +245,7 @@ void Aim::Show_Spot_Info()
 				if (items==1)
 				{
 					display->Item_Info(
-						&iptr->i, iptr->i.weight, iptr->count,
-							aimdata[mode].item_prefix);
+						iptr, aimdata[mode].item_prefix);
 				}
 				else
 				{

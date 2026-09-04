@@ -30,7 +30,8 @@ public:
 	void Footer(const char *txt, int color);
 	void Header(const char *txt, int color);
 	void Hiscore_Header();
-	void Item_Info(item_def *iptr, int weight, int count, const char *acttxt);
+	void Item_Info(invnode *iptr, const char *acttxt);
+	void Item_Info(invnode *iptr, int count, const char *acttxt);
 	void Journey_Log();
 	void Monster_Description(being *mptr);
 	void More_Inventory(const int y);

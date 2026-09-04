@@ -62,11 +62,11 @@ void inventory::Calc_Recursive()
 		invnode *iptr=(*ii);
 
 		//if item is a container, recurse and calculate it
-		if (iptr->i.inv!=0)
+		if (iptr->inv!=0)
 		{
-			iptr->i.inv->Calc_Recursive();
-			weight += iptr->i.inv->weight;
-			copper += iptr->i.inv->copper;
+			iptr->inv->Calc_Recursive();
+			weight += iptr->inv->weight;
+			copper += iptr->inv->copper;
 		}
 		else weight += iptr->i.weight * iptr->count;
 
@@ -178,8 +178,8 @@ void inventory::age_food_items()
 		invnode *n=(*ii);
 
 		n->i.Age_Food(player.stat[STAT_LUC].Get());
-		if (n->i.inv!=0)
-			n->i.inv->age_food_items();
+		if (n->inv!=0)
+			n->inv->age_food_items();
 	}
 }
 
@@ -206,9 +206,9 @@ void inventory::collectmoneypointers_recurse(Pocket *ptrlist)
 		{
 			ptrlist->Push_Item(iptr);
 		}
-		else if (iptr->i.inv!=0)
+		else if (iptr->inv!=0)
 		{
-			iptr->i.inv->collectmoneypointers_recurse(ptrlist);
+			iptr->inv->collectmoneypointers_recurse(ptrlist);
 		}
 	}
 }
@@ -238,8 +238,8 @@ int inventory::Count_Items(int type, int x, int y, bool recursive)
 		total++;
 
 		/* do we want the count from all inventory levels ?*/
-		if (invptr->i.inv!=0 && recursive)
-			total += invptr->i.inv->Count_Items(type, -1, -1, true);
+		if (invptr->inv!=0 && recursive)
+			total += invptr->inv->Count_Items(type, -1, -1, true);
 	}
 
 	return total;
@@ -278,9 +278,9 @@ void inventory::destroy_item(equipment &gear, invnode *src)
 		}
 
 		//go to sub-inventory recursively
-		if (n->i.inv!=0)
+		if (n->inv!=0)
 		{
-			n->i.inv->destroy_item(gear, src);
+			n->inv->destroy_item(gear, src);
 		}
 	}
 }
@@ -304,9 +304,9 @@ invnode *inventory::detach(invnode *src)
 			return n;
 		}
 		//go to sub-inventory recursively
-		if (n->i.inv!=0)
+		if (n->inv!=0)
 		{
-			invnode *sub=n->i.inv->detach(src);
+			invnode *sub=n->inv->detach(src);
 			if (sub!=0)
 				return sub;
 		}
@@ -360,9 +360,9 @@ invnode *inventory::Find_By_Slot_Id(int id)
 		if (iptr->slot==id) return iptr; //found it!
 
 		//if item is a container, recursive jump to it
-		if (iptr->i.inv!=0)
+		if (iptr->inv!=0)
 		{
-			iptr->i.inv->Find_By_Slot_Id(id);
+			iptr->inv->Find_By_Slot_Id(id);
 		}
 	}
 
@@ -379,9 +379,9 @@ invnode *inventory::Find_Item(invnode *src)
 			return n;
 
 		//if item is a container, recursive jump to it
-		if (n->i.inv!=0)
+		if (n->inv!=0)
 		{
-			invnode *sub=n->i.inv->Find_Item(src);
+			invnode *sub=n->inv->Find_Item(src);
 			if (sub!=0)
 				return sub;
 		}
@@ -443,8 +443,8 @@ void inventory::recursive_task(int op)
 	{
 		invnode *iptr=(*ii);
 
-		if (iptr->i.inv!=0)
-			iptr->i.inv->recursive_task(op);
+		if (iptr->inv!=0)
+			iptr->inv->recursive_task(op);
 
 		switch (op)
 		{
@@ -526,11 +526,11 @@ void inventory::List_Items()
 			break;
 
 		//if item is a container, recursively list items in it
-		if (iptr->i.inv!=0)
+		if (iptr->inv!=0)
 		{
 			rec++;
 			xpos+=5;
-			iptr->i.inv->List_Items();
+			iptr->inv->List_Items();
 			xpos-=5;
 		}
 	}
@@ -548,8 +548,8 @@ void inventory::save(Tar_Ball &tb)
 		iptr->Save(tb);
 
 		/* if item is a container, recursively save it */
-		if (iptr->i.inv!=0)
-			iptr->i.inv->save(tb);
+		if (iptr->inv!=0)
+			iptr->inv->save(tb);
 	}
 }
 
@@ -564,8 +564,8 @@ void inventory::load(Tar_Ball &tb)
 		items.push_back(iptr);
 
 		/* if item is a container, recursively load it */
-		if (iptr->i.inv!=0)
-			iptr->i.inv->load(tb);
+		if (iptr->inv!=0)
+			iptr->inv->load(tb);
 	}
 
 	recalculate();

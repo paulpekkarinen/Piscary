@@ -18,20 +18,26 @@ struct invnode
 	int slot; // if item is equipped, slot number
 	item_def i;	// item definition structure
 
-	invnode();
+	inventory *inv; //inventory for containers
 
+	invnode();
+	~invnode();
+
+	int Get_Amount() const { return count; }; //how many stacked
 	Coord Get_Location();
 	const char *Get_Material_Name();
 	real Get_Material_Mod(); //in shop pricing
 	const char *Get_Name();
+	int Get_Price();
 	int Get_Type();
 	int Get_Weight(); //includes amount of items (count)
 	int Get_Weight_Of_One(); //return weight of only one unit
-
 	bool Is_Armor();
 	bool Is_Lightsource();
+	bool Is_Set(int32u f); //true if this flag is set
 	bool Is_Weapon();
 
+	void Identify(); //set identified
 	int Rate(); //give a rating for item, bigger result is better
 
 	void Set_Location(const Coord &c);

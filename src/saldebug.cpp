@@ -59,13 +59,13 @@ void Debug::Create_Level()
 	GAME_NOTIFYFLAGS|=GAME_DO_REDRAW;
 }
 
-void Debug::Identify()
+void Debug::Identify_Item()
 {
 	player.backpack->Set_Filter(-1);
 	invnode *matti=player.backpack->Get_Handle("Identify what?");
 
 	if (matti)
-		matti->i.status|=ITEM_IDENTIFIED;
+		matti->Identify();
 }
 
 void Debug::Toggle_Light()

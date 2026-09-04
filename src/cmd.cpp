@@ -349,7 +349,7 @@ void run_command(playerinfo *plr, const int command)
 		//debug commands, if built with them
 #ifdef saladir_debug
 		case Cheat_Light: debug->Toggle_Light(); break;
-		case Cheat_Identify_Item: debug->Identify(); break;
+		case Cheat_Identify_Item: debug->Identify_Item(); break;
 		case Debug_Quit: Game.Set_State(gamedata::Debug_Quit); break;
 		case Debug_Test: run_current_test(); break;
 		case Debug_Messages: debug->View_Messages(); break;

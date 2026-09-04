@@ -11,15 +11,6 @@
 #include "roleplay.h"
 #include "storage.h"
 
-item_def::~item_def()
-{
-	if (inv != 0)
-	{
-		delete inv;
-		inv=0;
-	}
-}
-
 void item_def::Age_Food(int luck)
 {
 	if (type!=IS_FOOD)
@@ -132,12 +123,9 @@ void item_def::Clear()
 	pmod1=pmod2=pmod3=pmod4=0;
 	ac=0;
 	dv=0;
-	inv=0;
 	material=-1;
 
 	ench.Clear();
-
-	inv=0;
 }
 
 void item_def::Clone(item_def *c)
@@ -174,10 +162,6 @@ void item_def::Clone(item_def *c)
 	pmod4=c->pmod4;
 
 	ench=c->ench;
-
-	//note: inventory is not cloned, it's set to zero. if the item is
-	//inventory this should be checked and created for inventory
-	inv=0;
 }
 
 bool item_def::Decrease_Turns(int luck)
@@ -235,15 +219,6 @@ void item_def::Save(Tar_Ball &tb)
 	tb.Put(pmod4);
 
 	ench.Save(tb);
-
-	//if this item has no inventory, save zero
-	if (inv==0) tb.Put(0);
-	else
-	{
-		//save 1 and the inventory
-		tb.Put(1);
-		inv->save(tb);
-	}
 }
 
 void item_def::Load(Tar_Ball &tb)
@@ -280,17 +255,6 @@ void item_def::Load(Tar_Ball &tb)
 	pmod4=tb.Get_Next_Value();
 
 	ench.Load(tb);
-
-	const int i=tb.Get_Next_Value();
-
-	//if no inventory, set pointer to zero
-	if (i==0) inv=0;
-	else
-	{
-		//or load the inventory
-		inv=new inventory;
-		inv->load(tb);
-	}
 }
 
 /* Weapon list for Saladir

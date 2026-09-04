@@ -464,7 +464,7 @@ void playerinfo::Noticestuff(level_type *level)
 		{
 			/* do autopickup if required */
 			invnode *ptr=gameview.Get_Item(pc);
-			display->Item_Info(&ptr->i, ptr->i.weight, ptr->count, "You see here");
+			display->Item_Info(ptr, "You see here");
 
 			if (CONFIGVARS.autopickup)
 			{

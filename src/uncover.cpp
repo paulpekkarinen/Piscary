@@ -39,15 +39,15 @@ void Uncover::Inventory_Item(invnode *iptr, int index, int x, int y)
 
 	Item_Data(iptr->i);
 
+	if (iptr->inv!=0)
+		my_printf("[cont] with %d items ", iptr->inv->Get_Linear_Size());
+
 	my_printf(" (%d, %d)", iptr->x, iptr->y);
 }
 
 void Uncover::Item_Data(item_def &item)
 {
 	my_printf("%s ", item.name.c_str());
-
-	if (item.inv!=0)
-		my_printf("[cont] with %d items ", item.inv->Get_Linear_Size());
 
 	bool found=false;
 	int a=0;

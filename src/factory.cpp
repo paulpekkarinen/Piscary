@@ -340,9 +340,9 @@ invnode *Factory::New_Item(const Itempack &ip)
 		if (inode->i.type==IS_CONTAINER)
 		{
 			/* container gets created here! */
-			inode->i.inv = new inventory;
+			inode->inv = new inventory;
 
-			if (!inode->i.inv)
+			if (inode->inv==0)
 			{
 				msg.vnewmsg(CHB_RED, "Failed to initialize container %s.",
 					inode->i.name.c_str());

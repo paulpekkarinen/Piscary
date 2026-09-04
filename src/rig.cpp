@@ -268,12 +268,9 @@ int equipment::equipitem(int slot, playerinfo &plr)
 
 			if (eres >= -1)
 			{
-				/* mark item equipped to disable piling */
-		//	    invnode->i.status |= ITEM_EQUIPPED;
-
 				/* identify item when equipped */
 				if (equipit->Is_Weapon() || equipit->Is_Armor())
-					equipit->i.status |= ITEM_IDENTIFIED;
+					equipit->Identify();
 
 				put_on(equipit, slot);
 
@@ -285,8 +282,7 @@ int equipment::equipitem(int slot, playerinfo &plr)
 					plr.light=equipit->i.pmod1;
 				}
 
-				display->Item_Info(&equipit->i, equipit->Get_Weight(),
-					1, "Equipped");
+				display->Item_Info(equipit, 1, "Equipped");
 
 				return Equipped;
 			}
@@ -317,7 +313,7 @@ int equipment::equipitem(int slot, playerinfo &plr)
 
 		clear_slot(slot);
 
-		display->Item_Info(&equipit->i, equipit->i.weight, 1, "Removed");
+		display->Item_Info(equipit, 1, "Removed");
 
 		return Removed;
 	}
@@ -430,9 +426,7 @@ bool equipment::monster_equip(level_type *level, being *monster, invnode *useite
 
 			string s=monster_sprintf(monster, true, true);
 			s.append(" just equipped");
-			display->Item_Info(&useitem->i, useitem->i.weight,
-				useitem->count,
-				s.c_str());
+			display->Item_Info(useitem, s.c_str());
 		}
 		return true;
 	}
@@ -452,8 +446,7 @@ int equipment::monster_unequip(level_type *level, being *monster, invnode *remov
 	{
 		string s=monster_sprintf(monster, true, true);
 		s.append(" unequipped");
-		display->Item_Info(&removeitem->i, removeitem->i.weight, removeitem->count,
-			s.c_str());
+		display->Item_Info(removeitem, s.c_str());
 	}
 
 	/* remove equipped item from the slot */
@@ -549,12 +542,12 @@ void equipment::show()
 			my_printf(") %-10s ", equip_slotdesc[i]);
 			set_color(C_WHITE);
 			my_printf(": ");
-			item_def *idef=get_item(i);
+			invnode *item=get_inventory_item(i);
 
-			if (idef==0)
+			if (item==0)
 				my_printf("no item");
 			else
-				display->Item_Info(idef, idef->weight, 1, 0);
+				display->Item_Info(item, 1, 0);
 		}
 		else
 		{

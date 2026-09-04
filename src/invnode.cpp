@@ -23,9 +23,18 @@
 #include "storage.h"
 
 invnode::invnode()
-	: x(0), y(0), count(1), slot(-1)
+	: x(0), y(0), count(1), slot(-1), inv(0)
 {
 
+}
+
+invnode::~invnode()
+{
+	if (inv != 0)
+	{
+		delete inv;
+		inv=0;
+	}
 }
 
 Coord invnode::Get_Location()
@@ -55,6 +64,11 @@ const char *invnode::Get_Material_Name()
 	return materials[i.material].name;
 }
 
+int invnode::Get_Price()
+{
+	return i.price;
+}
+
 int invnode::Get_Type()
 {
 	return i.type;
@@ -72,8 +86,8 @@ int invnode::Get_Weight_Of_One()
 	int unit=i.weight;
 
 	//if container, return itself plus container weight
-	if (i.inv!=0)
-		return unit + i.inv->Get_Weight();
+	if (inv!=0)
+		return unit + inv->Get_Weight();
 
 	return unit;
 }
@@ -96,6 +110,11 @@ bool invnode::Is_Lightsource()
 	return false;
 }
 
+bool invnode::Is_Set(int32u f)
+{
+	return i.status & f;
+}
+
 bool invnode::Is_Weapon()
 {
 	const int t=Get_Type();
@@ -105,6 +124,11 @@ bool invnode::Is_Weapon()
 			return true;
 
 	return false;
+}
+
+void invnode::Identify()
+{
+	i.status |= ITEM_IDENTIFIED;
 }
 
 int invnode::Rate()
@@ -130,6 +154,15 @@ void invnode::Save(Tar_Ball &tb)
 	tb.Put(slot);
 
 	i.Save(tb);
+
+	//if this item has no inventory, save zero
+	if (inv==0) tb.Put(0);
+	else
+	{
+		//save 1 and the inventory
+		tb.Put(1);
+		inv->save(tb);
+	}
 }
 
 void invnode::Load(Tar_Ball &tb)
@@ -140,4 +173,15 @@ void invnode::Load(Tar_Ball &tb)
 	slot=tb.Get_Next_Value();
 
 	i.Load(tb);
+
+	const int v=tb.Get_Next_Value();
+
+	//if no inventory, set pointer to zero
+	if (v==0) inv=0;
+	else
+	{
+		//or load the inventory
+		inv=new inventory;
+		inv->load(tb);
+	}
 }

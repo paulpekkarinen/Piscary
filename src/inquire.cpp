@@ -39,7 +39,7 @@
 using std::string;
 
 int search_location(level_type *level, const Coord &c);
-bool scroll_readit(playerinfo *plr, level_type *level, item_def *item);
+bool scroll_readit(playerinfo *plr, level_type *level, invnode *item);
 bool reveal_secret_door(level_type *level, const Coord &c);
 
 void lookdir(playerinfo *plr, level_type *level)
@@ -82,7 +82,7 @@ void read_scroll(playerinfo *plr, level_type *level)
 		}
 
 		if (!(scroll->i.status & ITEM_UNPAID))
-			sres = scroll_readit(plr, level, &scroll->i);
+			sres = scroll_readit(plr, level, scroll);
 		else
 			msg.newmsg("You can't quite make sense of it, the writing "
 				"is oddly blurred here. ", C_MAGENTA);
@@ -99,7 +99,7 @@ void read_scroll(playerinfo *plr, level_type *level)
 		const int sc_group=scroll->i.group;
 
 		/* relabel unknown scroll */
-		if (!(scroll->i.status & ITEM_IDENTIFIED))
+		if (scroll->Is_Set(ITEM_IDENTIFIED)==false)
 		{
 			if (!(list_scroll[sc_group].flags & SCFLAG_AUTOIDENTIFY) &&
 				!(list_scroll[sc_group].flags & SCFLAG_NAMED))
@@ -113,7 +113,7 @@ void read_scroll(playerinfo *plr, level_type *level)
 				{
 					if (is_same_string(newname, list_scroll[sc_group].name))
 					{
-						scroll->i.status |= ITEM_IDENTIFIED;
+						scroll->Identify();
 						list_scroll[sc_group].flags |= SCFLAG_IDENTIFIED;
 
 						int expgain = RANDU(200) + RANDU(200);
@@ -298,17 +298,18 @@ bool search_surroundings(Actor *tonttu, level_type *level, bool automatic)
 	return true;
 }
 
-bool scroll_readit(playerinfo *plr, level_type *level, item_def *item)
+bool scroll_readit(playerinfo *plr, level_type *level, invnode *item)
 {
-	//   item_info *iptr;
-
-	if (item->type!=IS_SCROLL)
+	if (item->Get_Type()!=IS_SCROLL)
 	{
 		msg.newmsg("This item contains no writing.", C_WHITE);
 		return false;
 	}
 
-	if (item->group != SCROLL_BLANK)
+	item_def &i=item->i;
+	const int group=i.group;
+
+	if (group != SCROLL_BLANK)
 		msg.newmsg("The scroll disappears in a huge puff of smoke.",
 			C_WHITE);
 	/*
@@ -320,42 +321,29 @@ bool scroll_readit(playerinfo *plr, level_type *level, item_def *item)
 	 * when they are created!
 	 *
 	 */
-	 //   if( !(item->status & ITEM_SELFSCROLL) ) {
 
-	if (!(item->status & ITEM_IDENTIFIED))
+	if (item->Is_Set(ITEM_IDENTIFIED)==false)
 	{
-		if (list_scroll[item->group].flags & SCFLAG_AUTOIDENTIFY)
+		if (list_scroll[group].flags & SCFLAG_AUTOIDENTIFY)
 		{
-
-			item->status |= ITEM_IDENTIFIED;
-			list_scroll[item->group].flags |= SCFLAG_IDENTIFIED;
-
-			/* now identify all similar items in the current level */
-	   //	 iptr=level->items;
-	   //	 while(iptr) {
-	   //	    if(iptr->i.type == IS_SCROLL &&
-	   //	       iptr->i.group == item->group)
-	   //	       iptr->i.status |= ITEM_IDENTIFIED;
-	   //
-	   //	    iptr=iptr->next;
-	   //
-	   //	 }
+			item->Identify();
+			list_scroll[group].flags |= SCFLAG_IDENTIFIED;
 
 			msg.vadd(C_YELLOW, "This is a scroll of %s.",
-				list_scroll[item->group].name);
+				list_scroll[group].name);
 			showmore(true, true);
 		}
 	}
 
 	/* for magical scrolls */
-	if (item->pmod1==SCROLLGROUP_MAGIC)
+	if (i.pmod1==SCROLLGROUP_MAGIC)
 	{
-		spell_zap(plr, level, item->pmod2, item->pmod3, true);
+		spell_zap(plr, level, i.pmod2, i.pmod3, true);
 	}
 	else
 	{
 		/* for non magical scrolls */
-		switch (item->group)
+		switch (group)
 		{
 			case SCROLL_BLANK:
 				scroll_blank();

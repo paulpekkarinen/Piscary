@@ -211,13 +211,8 @@ struct item_def
 	/* items enchantments */
 	enchantments ench;
 
-	/* inventory for containers */
-	inventory *inv;
-
 	//the compound initializing of 'staff' can't take any kind of
 	//constructor, otherwise it would probably require full constructor
-
-	~item_def();
 
 	bool Decrease_Turns(int luck);
 

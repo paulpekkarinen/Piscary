@@ -785,7 +785,7 @@ bool player_push(playerinfo *plr, level_type *level, int dir)
 
 		if (!moveres)
 		{
-			display->Item_Info(&iptr->i, iptr->i.weight, iptr->count, "You push");
+			display->Item_Info(iptr, "You push");
 
 			/* large items crush */
 			if (iptr->i.weight > 300000)

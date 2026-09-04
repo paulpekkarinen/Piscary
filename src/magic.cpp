@@ -412,7 +412,7 @@ bool spell_identify(level_type *level, Target *target, int skill)
 {
 	if (target->invitem)
 	{
-		if (target->invitem->i.status & ITEM_IDENTIFIED)
+		if (target->invitem->Is_Set(ITEM_IDENTIFIED))
 			return false;
 
 		/* identify scroll */
@@ -421,10 +421,9 @@ bool spell_identify(level_type *level, Target *target, int skill)
 			list_scroll[target->invitem->i.group].flags |= SCFLAG_IDENTIFIED;
 		}
 
-		target->invitem->i.status |= ITEM_IDENTIFIED;
+		target->invitem->Identify();
 
-		display->Item_Info(&target->invitem->i, target->invitem->i.weight,
-			target->invitem->count, "This item is actually");
+		display->Item_Info(target->invitem, "This item is actually");
 	}
 	else
 		return false;

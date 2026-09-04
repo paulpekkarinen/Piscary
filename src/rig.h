@@ -78,7 +78,7 @@ private:
 
 	static const char *equip_slotdesc[];
 	static const Equipment_Event events[Amt_Of_Events];
-	
+
 	int equip_checkfit(int slot, item_def *item);
 	void display_result(int what, int slot);
 	void put_on(invnode *ni, int slot);
@@ -90,12 +90,12 @@ public:
 	equipment();
 
 	bool decide_meleeweapon(bool *useleft, bool *useright);
-	
+
 	const char *get_equipment_name(int slot);
 	item_def *get_item(int slot);
 	invnode *get_inventory_item(int slot);
 	bool Get_Ranged_Gear(int &wpntype, int &mistype, int &bonus);
-	
+
 	bool is_usable(int slot);
 
 	void clear_slot(int slot);
@@ -109,7 +109,7 @@ public:
 	void show();
 
 	void save(Tar_Ball &tb);
-	void load(Tar_Ball &tb, inventory &inv);	
+	void load(Tar_Ball &tb, inventory &inv);
 };
 
 #endif
