@@ -5,7 +5,7 @@
 #ifndef MELEE_H
 #define MELEE_H
 
-struct being;
+class being;
 struct level_type;
 struct playerinfo;
 

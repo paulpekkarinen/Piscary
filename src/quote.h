@@ -7,7 +7,7 @@
 
 #include <string>
 
-struct being;
+class being;
 struct Currency;
 struct level_type;
 

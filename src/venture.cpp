@@ -57,7 +57,7 @@ int Venture::add(being *monster, int quest)
 		return qstat;
 
 	/* create a node */
-	Quest *nq=new Quest(quest, monster->id, world->Get_Dungeon(),
+	Quest *nq=new Quest(quest, monster->Get_Id(), world->Get_Dungeon(),
 		world->Get_Level_Index());
 
 	if (!nq)
@@ -185,16 +185,14 @@ int Venture::nextavail(being *monster)
 	return sq;
 }
 
-/* this is called every time a monster dies
- * removes all quests whose owner dies.
- */
+//This is called when a monster dies removes all quests whose owner dies.
 bool Venture::ownerdied(being *mptr)
 {
 	bool res=false;
 
 	for (qitr ii = quests.begin() ; ii != quests.end() ; ++ii)
 	{
-		if ((*ii)->Check_Giver_Death(mptr->id))
+		if ((*ii)->Check_Giver_Death(mptr->Get_Id()))
 			res=true;
 	}
 
@@ -300,7 +298,7 @@ int Venture::unfinished(being *monster)
 	for (qitr ii = quests.begin() ; ii != quests.end() ; ++ii)
 	{
 		Quest *qptr=(*ii);
-		if (qptr->Is_Unfinished(monster->id))
+		if (qptr->Is_Unfinished(monster->Get_Id()))
 			return qptr->id;
 	}
 

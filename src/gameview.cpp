@@ -200,6 +200,7 @@ bool Gameview::Notice_Something(being *b, bool items_too)
 	bool saw_item=false;
 	const int distance=10;
 	being *otus=0;
+	invnode *item=0;
 
 	//check player's location always, without direction checking
 	if (Cansee(mon, plr, distance))
@@ -219,7 +220,7 @@ bool Gameview::Notice_Something(being *b, bool items_too)
 			//are interested about items
 			if (items_too && saw_item==false)
 			{
-				invnode *item=Get_Item(c);
+				item=Get_Item(c);
 				if (item!=0)
 					saw_item=Cansee(mon, c, distance);
 
@@ -253,9 +254,7 @@ bool Gameview::Notice_Something(being *b, bool items_too)
 
 	if (saw_item)
 	{
-		b->target.Set(d);
-		//note: target type should indicate this
-		b->m.status|=MST_PURSUEITEM;
+		b->Pursue_Item(item, d);
 		return true;
 	}
 

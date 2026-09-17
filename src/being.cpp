@@ -23,6 +23,7 @@
 #include "condit.h"
 #include "damage.h"
 #include "dice.h"
+#include "display.h"
 #include "game.h"
 #include "gameview.h"
 #include "invnode.h"
@@ -30,10 +31,12 @@
 #include "message.h"
 #include "move.h"
 #include "names.h"
+#include "output.h"
 #include "quote.h"
 #include "ranged.h"
 #include "roleplay.h"
 #include "salamath.h"
+#include "skills.h"
 #include "specmon.h"
 #include "storage.h"
 #include "terrain.h"
@@ -41,13 +44,44 @@
 
 using std::string;
 
+//Random monster.
 being::being(int sp)
-	: Actor(sp), base_hp(0), roomnum(-1), sindex(-1), last_room(-1)
 {
-	Reset();
+	Initialize(sp);
 
-	/* set monster id number */
-	id=Game.get_new_monster_id();
+	Npcrace *stdmon=npc_races+sp;
+
+	m.randomize(stdmon);
+
+	if (stdmon->behave & BEHV_ANIMAL)
+	{
+		//note: adds weapons skills for animals???
+		skills.add_new_skill(SKILLGRP_WEAPON, SKILL_HAND, 5+RANDU(20));
+	}
+}
+
+//Special npc.
+being::being(int sp, const monsterdef &mon)
+	: Actor(sp), last_room(-1), roomnum(-1)
+{
+	m=mon;
+	Initialize(sp);
+}
+
+//Shopkeeper.
+being::being(int sp, const monsterdef &mon, const Area &ar)
+	: Actor(sp), last_room(-1), myarea(ar), roomnum(-1)
+{
+	m=mon; //copy static monster data
+	Initialize(sp);
+
+	random_name(m.name, CNAME_MAX-1);
+	m.name[0]=toupper(m.name[0]);
+
+	m.status=MST_SHOPKEEPER;
+
+	/* add initial money purse */
+	inv.Add_Gold(4000+RANDU(4000));
 }
 
 being::~being()
@@ -56,10 +90,36 @@ being::~being()
 	path.clear();
 }
 
+void being::Initialize(int sp)
+{
+	id=Game.get_new_monster_id(); // set monster id number
+	m.race=sp;
+
+	base_hp=npc_races[sp].hp_base;
+	mana.Initialize(npc_races[sp].sp_base);
+}
+
+bool being::Can_Attack(being *b)
+{
+	if ((m.status & MST_ATTACKMODE) &&
+		(b==target.olento))
+			return true;
+
+	return false;
+}
+
 int being::In_Room()
 {
 	Coord c=Get_Location();
 	return gameview.Get_Room_Id(c);
+}
+
+void being::Become_Homeowner(level_type *level, int room_id, Area &ar)
+{
+	roomnum=room_id;
+	level->set_room_owner(roomnum, this);
+
+	myarea=ar; //set movement limits
 }
 
 void being::Checkbody()
@@ -245,6 +305,24 @@ void being::Checkturn(level_type *level)
 	}
 }
 
+//Clear any target that being has right now.
+void being::Clear_Target()
+{
+	if (target.type==Target::Level_Item)
+	{
+		if (m.status & MST_PURSUEITEM)
+			m.status^=MST_PURSUEITEM;
+	}
+
+	if (target.type==Target::Creature)
+	{
+		if (m.status & MST_ATTACKMODE)
+			m.status^=MST_ATTACKMODE;
+	}
+
+	target.Clear();
+}
+
 void being::Damage_Message(Damage &dmg)
 {
 	int gindex;
@@ -389,6 +467,16 @@ void being::Getangry(level_type *level, Actor *kohde, bool always)
 	path.clear();
 }
 
+Actor *being::Get_Target()
+{
+	return target.olento;
+}
+
+Coord being::Get_Target_Location()
+{
+	return target.Get_Location();
+}
+
 void being::Handle_Confusion(Condition *cond)
 {
 	const int v=cond->Get_Value();
@@ -517,12 +605,43 @@ bool being::Pick_Up_Item(level_type *level, invnode *itemptr)
 	return true;
 }
 
+void being::Pursue_Creature(being *b)
+{
+	target.Set(b);
+	m.status|=MST_ATTACKMODE;
+}
+
+void being::Pursue_Item(invnode *i, const Coord &c)
+{
+	target.Set(i, c);
+	m.status|=MST_PURSUEITEM;
+}
+
 void being::Regenerate(level_type *level, int ctime, int slots)
 {
 	if (Regenerate_Health(slots, ctime))
 		Checkstat(level);
 
 	/* monster needs atleast half of it's max health to get out from fleemode */
+}
+
+void being::Remove_Target(being *b)
+{
+	if (target.olento==b)
+	{
+		//if monster is targetting the removed monster, clean
+		target.Clear();
+
+		if (m.status & MST_ATTACKMODE)
+			m.status^=MST_ATTACKMODE;
+		if (m.status & MST_FLEEMODE)
+			m.status^=MST_FLEEMODE;
+	}
+}
+
+void being::Set_Last_Room(int r)
+{
+	last_room=r;
 }
 
 void being::Shouldflee(level_type *level)
@@ -606,6 +725,21 @@ bool being::Useitems(level_type *level)
 	return true;
 }
 
+void being::Show_Debug_List_Info()
+{
+	my_printf("%u: '%s' ", id, Get_Name());
+	buffoon.Debug_Info();
+
+	standend();
+
+	if (roomnum!=-1)
+		my_printf(" Shopkeeper");
+
+	my_printf(" (%d, %d) ", x, y);
+	display->Attribute_As("HP", health);
+	target.Show_Data();
+}
+
 void being::Save(Tar_Ball &tb)
 {
 	Actor::Save(tb);
@@ -617,7 +751,6 @@ void being::Save(Tar_Ball &tb)
 
 	myarea.Save(tb);
 	tb.Put(roomnum);
-	tb.Put(sindex);
 }
 
 void being::Load(Tar_Ball &tb, level_type *lvl)
@@ -632,9 +765,11 @@ void being::Load(Tar_Ball &tb, level_type *lvl)
 	myarea.Load(tb);
 
 	//restore room owner id if monster has one
-	roomnum=tb.Get_Next_Value();
-	if (roomnum!=-1)
-		lvl->set_room_owner(roomnum, this);
-
-	sindex=tb.Get_Next_Value();
+	const int r=tb.Get_Next_Value();
+	if (r!=-1)
+	{
+		Area ar=lvl->rooms[r].Get_Area();
+		ar.Shrink();
+		Become_Homeowner(lvl, r, ar);
+	}
 }

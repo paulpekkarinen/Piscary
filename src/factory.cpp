@@ -68,13 +68,10 @@ Appearlist appearlist[] =
 /* Create a monster */
 void Factory::Add_Monster(level_type *level, int x, int y, int type)
 {
-	being *newptr=New_Empty_Monster(type);
-	level->crew.Add_Monster(newptr);
-	Monster_Initrandom(newptr, type);
+	being *newptr=New_Monster(type);
 
 	Coord c(x, y);
-	Plant_Monster(newptr, c);
-	Monster_Postgeneration(level, newptr);
+	Monster_Postgeneration(level, newptr, c);
 }
 
 void Factory::Add_Random_Monster(level_type *level, const Coord &c)
@@ -100,63 +97,31 @@ void Factory::Add_Shopkeeper(level_type *level, int roomnum)
 	/* get a random shopkeeper template */
 	const int index=RANDU(mucho.num_shopkeepers);
 
-	being *b=New_Empty_Monster(rrace);
-	level->crew.Add_Monster(b);
-
-	/* copy data */
-	b->m=shopkeeper_list[index];
-	b->m.race=rrace;
-
-	random_name(b->m.name, CNAME_MAX-1);
-	b->m.name[0]=toupper(b->m.name[0]);
-
-	/* set movement limits */
 	Area ar=level->rooms[roomnum].Get_Area();
 	ar.Shrink(); //limit inside walls
-	b->myarea=ar;
 
-	b->sindex=0;
+	being *b=New_Shopkeeper(rrace, shopkeeper_list[index], ar);
 
-	level->set_room_owner(roomnum, b);
+	b->Become_Homeowner(level, roomnum, ar);
 
 	/* set initial coordinates to the room in case */
 	Coord c=get_random_location(ar);
-	Plant_Monster(b, c);
-	b->m.status=MST_SHOPKEEPER;
 
-	roleplay.Advance_To_Level(b, b->m.level);
-
-	b->base_hp=npc_races[b->m.race].hp_base;
-	b->mana.Initialize(npc_races[b->m.race].sp_base);
-
-	initialize_class(b, b->m.mclass);
-
-	/* add initial money purse */
-	b->inv.Add_Gold(4000+RANDU(4000));
-
-	/* use items */
-	b->Useitems(level);
+	Monster_Postgeneration(level, b, c);
 }
 
 void Factory::Add_Special_Monsters(level_type *level)
 {
-	monsterdef *monptr=npc_list;
+	int index=0;
 	Appearlist *aptr=appearlist;
 
 	while (aptr->dungeon_type!=-1)
 	{
 		if (world->Is_Matching_Place(aptr->dungeon_type, aptr->LEVEL))
 		{
-			const int sp=monptr->race;
+			const int sp=npc_list[index].race;
 
-			/* create a new node */
-			being *b=New_Empty_Monster(sp);
-			level->crew.Add_Monster(b);
-
-			/* just in case, init a random monster */
-			Monster_Initrandom(b, sp);
-
-			b->m=*monptr; //this should copy values, because mondef has = operator
+			being *b=New_Npc(sp, npc_list[index]);
 
 			Coord c;
 			if (aptr->X==0 || aptr->Y==0)
@@ -164,10 +129,9 @@ void Factory::Add_Special_Monsters(level_type *level)
 			else
 				c.Set_Location(aptr->X, aptr->Y);
 
-			Plant_Monster(b, c);
-			Monster_Postgeneration(level, b);
+			Monster_Postgeneration(level, b, c);
 		}
-		monptr++;
+		index++;
 		aptr++;
 	}
 }
@@ -237,25 +201,15 @@ int Factory::Get_Species_From_Char(char ch)
 	return -1; //failed to find the matching species
 }
 
-/* init monster struct with random data */
-void Factory::Monster_Initrandom(being *newptr, int type)
+void Factory::Monster_Postgeneration(level_type *level, being *mptr, const Coord &c)
 {
-	Npcrace *stdmon=npc_races+type;
+	//move to location and place to gameview for first time
+	mptr->Set_Location(c.x, c.y);
+	gameview.Put_Monster(mptr, c);
 
-	newptr->m.randomize(stdmon, type);
+	//add to level list
+	level->crew.Add_Monster(mptr);
 
-	if (stdmon->behave & BEHV_ANIMAL)
-	{
-		//note: adds weapons skills for animals???
-		newptr->skills.add_new_skill(SKILLGRP_WEAPON, SKILL_HAND, 5+RANDU(20));
-	}
-
-	newptr->base_hp=npc_races[type].hp_base;
-	newptr->mana.Initialize(npc_races[type].sp_base);
-}
-
-void Factory::Monster_Postgeneration(level_type *level, being *mptr)
-{
 	for (int i=0; i<HPSLOT_MAX; i++)
 	{
 		if (npc_races[mptr->m.race].bodyparts[i]==-1)
@@ -264,9 +218,6 @@ void Factory::Monster_Postgeneration(level_type *level, being *mptr)
 			mptr->equips.set_status(slot, EQSTAT_NOLIMB);
 		}
 	}
-
-	mptr->base_hp=npc_races[mptr->m.race].hp_base;
-	mptr->mana.Initialize(npc_races[mptr->m.race].sp_base);
 
 	roleplay.Advance_To_Level(mptr, mptr->m.level);
 
@@ -377,7 +328,7 @@ invnode *Factory::New_Rock()
 	return New_Item(Itempack(IS_WEAPON1H, WEAPONS_ROCK, 1, MAT_STONE));
 }
 
-being *Factory::New_Empty_Monster(int sp)
+being *Factory::New_Monster(int sp)
 {
 	being *b=0;
 
@@ -394,11 +345,36 @@ being *Factory::New_Empty_Monster(int sp)
 	return b;
 }
 
-void Factory::Plant_Monster(being *b, const Coord &c)
+being *Factory::New_Npc(int sp, const monsterdef &mon)
 {
-	//move to location and place to gameview for first time
-	b->Set_Location(c.x, c.y);
-	gameview.Put_Monster(b, c);
+	being *b=0;
+
+	try
+	{
+		b=new being(sp, mon);
+	}
+	catch (const std::bad_alloc& e)
+	{
+		panic_exit("Factory::New_Monster: Out of memory");
+	}
+
+	return b;
+}
+
+being *Factory::New_Shopkeeper(int sp, const monsterdef &mon, const Area &ar)
+{
+	being *b=0;
+
+	try
+	{
+		b=new being(sp, mon, ar);
+	}
+	catch (const std::bad_alloc& e)
+	{
+		panic_exit("Factory::New_Shopkeeper: Out of memory");
+	}
+
+	return b;
 }
 
 /*

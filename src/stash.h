@@ -7,7 +7,6 @@
 
 #include "purse.h"
 
-struct being;
 struct level_type;
 struct Target;
 

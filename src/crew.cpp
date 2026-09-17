@@ -44,18 +44,7 @@ void Crew::Cleantargets(being *remove)
 {
 	for (mon_iter i=monsters.begin(); i!=monsters.end(); ++i)
 	{
-		being *mptr=(*i);
-
-		if (mptr->target.olento==remove)
-		{
-			//if monster is targetting the removed monster, clean
-			mptr->target.Clear();
-
-			if (mptr->m.status & MST_ATTACKMODE)
-				mptr->m.status^=MST_ATTACKMODE;
-			if (mptr->m.status & MST_FLEEMODE)
-				mptr->m.status^=MST_FLEEMODE;
-		}
+		(*i)->Remove_Target(remove);
 	}
 }
 
@@ -250,19 +239,7 @@ void Crew::Full_Debug_List()
 
 	for (mon_iter ii = monsters.begin() ; ii != monsters.end() ; ++ii)
 	{
-		being *b=(*ii);
-
-		my_printf("%u: '%s' ", b->id, b->Get_Name());
-		b->buffoon.Debug_Info();
-
-		standend();
-
-		if (b->roomnum!=-1)
-			my_printf(" Shopkeeper");
-
-		my_printf(" (%d, %d) ", b->x, b->y);
-		display->Attribute_As("HP", b->health);
-		b->target.Show_Data();
+		(*ii)->Show_Debug_List_Info();
 
 		if (list_more(y)==false)
 			break;

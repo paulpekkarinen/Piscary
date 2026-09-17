@@ -7,6 +7,7 @@
 
 #include "types.h"
 
+struct Area;
 struct Itempack;
 
 //Creates item and other object instances.
@@ -15,10 +16,10 @@ class Factory
 private:
 	void Init_Scrollitem(int subtype, item_def *i);
 	void Init_Moneyitem(int subtype, item_def *i);
-	void Monster_Initrandom(being *newptr, int type);
-	void Monster_Postgeneration(level_type *level, being *mptr);
-	being *New_Empty_Monster(int sp);
-	void Plant_Monster(being *b, const Coord &c);
+	void Monster_Postgeneration(level_type *level, being *mptr, const Coord &c);
+	being *New_Monster(int sp);
+	being *New_Npc(int sp, const monsterdef &mon);
+	being *New_Shopkeeper(int sp, const monsterdef &mon, const Area &ar);
 	void Set_Alignment(item_def *i);
 	void Set_Material(item_def *i, int material);
 

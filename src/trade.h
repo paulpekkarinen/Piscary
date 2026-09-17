@@ -6,7 +6,7 @@
 #define TRADE_H
 
 class equipment;
-struct being;
+class being;
 class inventory;
 struct invnode;
 struct level_type;

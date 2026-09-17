@@ -66,21 +66,19 @@ void monsterdef::playerize()
 	status|=MST_KNOWN;
 }
 
-void monsterdef::randomize(Npcrace *stdmon, int monrace)
+void monsterdef::randomize(Npcrace *stdmon)
 {
 	desc=stdmon->name;
-    name.clear(); //clear just in case, if resetting
-    longdesc=0;
+	name.clear(); //clear just in case, if resetting
+	longdesc=0;
 	special=0;
-    weight=stdmon->weight;
+	weight=stdmon->weight;
 
 	/* set alignment */
 	if (stdmon->align==RANDALIGN)
 		align=RANDU(LAWFUL);
 	else
 		align=stdmon->align;
-
-    race=monrace;
 
 	/* class if monster is not animal */
 	if (!(stdmon->behave & BEHV_ANIMAL))
@@ -90,9 +88,9 @@ void monsterdef::randomize(Npcrace *stdmon, int monrace)
 		random_name(name, CNAME_MAX);
 		uppercase_first_letter(name);
 	}
-    else
-    {
-    	mclass=CLASS_NOCLASS;
+	else
+	{
+		mclass=CLASS_NOCLASS;
 	}
 
 	attitude=stdmon->attitude;
@@ -107,7 +105,7 @@ void monsterdef::randomize(Npcrace *stdmon, int monrace)
 	/* generate sex for the creature */
 	if (RANDU(100) > 50)
 		gender=SEX_MALE;
-    else
+	else
 		gender=SEX_FEMALE;
 
 	/* decide some level for the monster based on player's experience level */

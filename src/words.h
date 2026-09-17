@@ -5,7 +5,7 @@
 #ifndef WORDS_H
 #define WORDS_H
 
-struct being;
+class being;
 
 struct wordfilter
 {

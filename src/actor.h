@@ -87,7 +87,7 @@ public:
 	void Handle_Conditions(int slots);
 	virtual void Handle_Confusion(Condition *cond) = 0;
 	bool Regenerate_Health(int slots, int ctime);
-	void Reset(); //resets all data to default values
+	void Reset();
 	virtual void Renew(); //restore health, ailments etc.
 	void Restore_Health();
 	void Set_Location(int dx, int dy);

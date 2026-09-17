@@ -402,7 +402,7 @@ void playerinfo::Jump_To(const Coord &c)
 {
 	Set_Location(c.x, c.y);
 
-	last_room=-1; //"exit" current room if in any
+	Set_Last_Room(-1); //"exit" current room if in any
 	Check_Room(world->Get_Current_Level());
 
 	gameview.Center(c);

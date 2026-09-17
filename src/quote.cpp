@@ -150,7 +150,7 @@ void keeper_greet(level_type *level, being *owner, being *creat)
 	if (creat==owner)
 		return;
 
-	const int ronum=owner->roomnum;
+	const int ronum=owner->Get_Room();
 	const char *shopname=level->rooms[ronum].kauppa.Get_Name();
 	const char *ownername=owner->m.name.c_str();
 
@@ -168,8 +168,7 @@ void keeper_greet(level_type *level, being *owner, being *creat)
 			msg.add_dist(level, owner->x, owner->y, s.c_str(), CH_MAGENTA,
 				"You hear from distance: \"Get out of here...NOW!\".",
 				C_MAGENTA);
-			owner->m.status|=MST_ATTACKMODE;
-			owner->target.Set(creat);
+			owner->Pursue_Creature(creat);
 		}
 		else
 		{
@@ -195,8 +194,8 @@ void keeper_greet(level_type *level, being *owner, being *creat)
 	{
 		if (owner->m.status & MST_HATEPLAYER)
 		{
-			owner->m.status|=MST_ATTACKMODE;
-			owner->target.Clear();
+			//note: not sure if shopkeeper should attack player here
+			owner->Pursue_Creature(creat);
 			msg.newmsg(CH_MAGENTA,
 				"%s yells: \"Get OUT of here, thief!\".",
 				ownername);

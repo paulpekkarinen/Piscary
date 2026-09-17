@@ -5,7 +5,7 @@
 #ifndef VIEWTILE_H
 #define VIEWTILE_H
 
-struct being;
+class being;
 struct invnode;
 
 //One tile of a gameview.

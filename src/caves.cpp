@@ -457,8 +457,10 @@ void level_type::Remove_Trap(const Coord &c)
 
 void level_type::remove_room_owner(being *b)
 {
-	rooms[b->roomnum].owner=0;
-	b->roomnum=-1;
+	const int r=b->In_Room();
+
+	if (r!=-1)
+		rooms[r].owner=0;
 }
 
 void level_type::Reveal_Trap(const Coord &c)
@@ -475,7 +477,6 @@ void level_type::Reveal_Trap(const Coord &c)
 void level_type::set_room_owner(int roomid, being *b)
 {
 	rooms[roomid].owner=b;
-	b->roomnum=roomid;
 }
 
 void level_type::Clear_Object(const Coord &c, int8u flag)

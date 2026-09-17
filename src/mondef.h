@@ -58,7 +58,7 @@ struct monsterdef
 		return *this;
 	}
 
-	void randomize(Npcrace *stdmon, int monrace); //initialize random values for this npc
+	void randomize(Npcrace *stdmon); //initialize random values for this npc
 	void playerize(); //make it the player
 	void steer_alignment(char dir, int amount); //move alignment to some direction
 	const char *Get_Name();

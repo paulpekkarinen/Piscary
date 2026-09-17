@@ -6,7 +6,7 @@
 #define PACK_H
 
 struct Coord;
-struct being;
+class being;
 class equipment;
 class inventory;
 struct invnode;

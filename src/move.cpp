@@ -371,7 +371,7 @@ int move_monster(being *monster, level_type *level)
 	/* players position... :-) */
 
 	/* get coordinates for the target */
-	const Coord t=monster->target.Get_Location();
+	const Coord t=monster->Get_Target_Location();
 	int tx=t.x;
 	int ty=t.y;
 
@@ -486,10 +486,7 @@ int move_monster(being *monster, level_type *level)
 			if (monster_moveAROUNDtarget(level, &nx, &ny,
 				pc.x, pc.y)==5)
 			{
-				monster->target.Clear();
-
-				if (monster->m.status & MST_PURSUEITEM)
-					monster->m.status^=MST_PURSUEITEM;
+				monster->Clear_Target();
 
 				/* make the monster a bit more angry */
 				monster->m.attitude++;
@@ -524,8 +521,7 @@ int move_monster(being *monster, level_type *level)
 
 		if (mptr)
 		{
-			if ((monster->m.status & MST_ATTACKMODE) &&
-				(mptr==monster->target.olento))
+			if (monster->Can_Attack(mptr))
 			{
 				/* do the attack */
 				monster_meleeattack(monster, level, mptr);
@@ -590,8 +586,7 @@ int move_monster(being *monster, level_type *level)
 					iptr=gameview.Get_Item(mc);
 				}
 
-				monster->m.status^=MST_PURSUEITEM;
-				monster->target.Clear();
+				monster->Clear_Target();
 
 				ticks=monster->Calculate_Time(TIME_PICKUP);
 			}
@@ -921,9 +916,10 @@ int shopkeeper_move(level_type *level, being *keeper)
 {
 	int tx, ty;
 	int gx1=-1, gy1=-1, gx2=-1, gy2=-1, gx3=-1, gy3=-1, gx4=-1, gy4=-1;
+	const int keeperoom=keeper->Get_Room();
 
-	int drx=level->rooms[keeper->roomnum].doorx;
-	int dry=level->rooms[keeper->roomnum].doory;
+	int drx=level->rooms[keeperoom].doorx;
+	int dry=level->rooms[keeperoom].doory;
 
 	Coord pc=player.Get_Location();
 	const int player_distance=distance(drx, dry, pc.x, pc.y);
@@ -964,13 +960,12 @@ int shopkeeper_move(level_type *level, being *keeper)
 				drx, dry);
 			if (keeper->m.status & MST_ATTACKMODE)
 				keeper->m.status ^= MST_ATTACKMODE;
-
 		}
 
 		if (drx == keeper->x && dry == keeper->y)
 			keeper->path.clear();
 
-		keeper->target.Clear();
+		keeper->Clear_Target();
 
 		return move_monster(keeper, level);
 
@@ -989,8 +984,7 @@ int shopkeeper_move(level_type *level, being *keeper)
   */
 	}
 
-	const int keeperoom=keeper->roomnum;
-	Coord tarpos=keeper->target.Get_Location();
+	Coord tarpos=keeper->Get_Target_Location();
 
 	/* check for items in the door area */
 	if (keeper->Is_Spotting()==false)
@@ -1008,7 +1002,7 @@ int shopkeeper_move(level_type *level, being *keeper)
 				if (iptr)
 				{
 					if (level->Inside_Room(keeperoom, tc)==false)
-						keeper->target.Set(iptr, tc);
+						keeper->Pursue_Item(iptr, tc);
 					break;
 				}
 			}
@@ -1020,7 +1014,7 @@ int shopkeeper_move(level_type *level, being *keeper)
 
 		if (kc==tarpos)
 		{
-			keeper->target.Clear();
+			keeper->Clear_Target();
 
 			invnode *iptr=gameview.Get_Item(kc);
 			if (iptr)
@@ -1080,7 +1074,7 @@ int shopkeeper_move(level_type *level, being *keeper)
 				if (nx!=gx4 || ny!=gy4)
 					monster_moveTOtarget(level, &nx, &ny, gx4, gy4, true);
 			}
-			if (level->rooms[keeper->roomnum].flags & ROOM_PLAYERHERE)
+			if (level->rooms[keeperoom].flags & ROOM_PLAYERHERE)
 			{
 				if (RANDU(100) < 3)
 				{

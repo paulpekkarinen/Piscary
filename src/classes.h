@@ -5,7 +5,7 @@
 #ifndef CLASSES_H
 #define CLASSES_H
 
-struct being;
+class being;
 
 #define CLASS_NOCLASS		0 /* classless monster */
 #define CLASS_NINJA			1

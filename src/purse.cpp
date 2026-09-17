@@ -123,6 +123,7 @@ bool inventory::builditemarray(Pocket &ptrlist, int filter, int x, int y)
 void inventory::clean_shop_items(level_type *level, being *owner)
 {
 	int32u mask=0xffffffff ^ ITEM_UNPAID;
+	const int rn=owner->Get_Room();
 
 	/* mark all items inside the owners room PAID */
 	for (oitr ii = items.begin() ; ii != items.end() ; ++ii)
@@ -130,7 +131,7 @@ void inventory::clean_shop_items(level_type *level, being *owner)
 		invnode *iptr=(*ii);
 		Coord ic=iptr->Get_Location();
 
-		if (level->rooms[owner->roomnum].Encloses(ic))
+		if (level->rooms[rn].Encloses(ic))
 			iptr->i.status &= mask;
 	}
 }

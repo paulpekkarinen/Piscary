@@ -31,7 +31,7 @@ typedef signed long     int32s;
 
 //some forward declarations here, since we are going to need them anyway
 class Actor;
-struct being;
+class being;
 struct Coord;
 class equipment;
 class inventory;

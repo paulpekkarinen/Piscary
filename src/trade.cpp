@@ -133,7 +133,8 @@ void paybill(playerinfo *plr, level_type *level)
 
 bool shopkeeper_buy(level_type *level, being *keeper, invnode *item)
 {
-	Shoppe &myshop=level->rooms[keeper->roomnum].kauppa;
+	const int rn=keeper->Get_Room();
+	Shoppe &myshop=level->rooms[rn].kauppa;
 
 	if (!keeper)
 	{
