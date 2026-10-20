@@ -36,8 +36,7 @@
 #include "input.h"
 #endif
 
-Actor::Actor(int sp)
-	: buffoon(sp)
+Actor::Actor()
 {
 	Reset();
 }
@@ -516,7 +515,6 @@ void Actor::Save(Tar_Ball &tb)
 {
 	tb.Put(attackbonus);
 	tb.Put(bill);
-	tb.Put(buffoon.Get());
 	conditions.save(tb);
 	tb.Put(exp);
 	health.Save(tb);
@@ -548,7 +546,6 @@ void Actor::Load(Tar_Ball &tb)
 {
 	attackbonus=tb.Get_Next_Value();
 	bill=tb.Get_Next_Value();
-	buffoon.Mutate(tb.Get_Next_Value());
 	conditions.load(tb);
 	exp=tb.Get_Next_Value();
 	health.Load(tb);

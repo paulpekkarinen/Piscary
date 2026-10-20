@@ -261,13 +261,13 @@ bool list_more(int &y)
 {
 	bool rv=true;
 
-	y++;
-	if (y>SCREEN_LINES-1)
+	if (y>=SCREEN_LINES-2)
 	{
-		rv=wait_more(); //ESC to cancel listing
+		rv=wait_more();
 		clear_screen();
 		y=0;
 	}
+	else y++;
 
 	return rv;
 }

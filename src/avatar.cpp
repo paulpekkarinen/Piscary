@@ -357,7 +357,8 @@ void playerinfo::Initialize()
 {
 	Reset();
 	m.playerize();
-	buffoon.Mutate(Species::Human);
+	const int pr=Species::Human;
+	being::Initialize(pr);
 	lastdir=0;
 	color=CH_RED;
 	nutr=FOOD_SATIATED;
@@ -372,10 +373,8 @@ void playerinfo::Initialize()
 	searchmode=false;
 
 	//recalculate hp and mana
-	const int pr=Get_Race();
 	roleplay.Calculate_HP(hpp, npc_races[pr].hp_base, pr);
 	Calculate_Totalhp();
-	mana.Initialize(20);
 
 	/* initialize player stats */
 	for (int i=0; i<STAT_ARRAYSIZE; i++)

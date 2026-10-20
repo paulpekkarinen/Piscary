@@ -7,6 +7,7 @@
 
 #include "actor.h"
 #include "creature.h"
+#include "species.h"
 #include "target.h"
 
 struct Area;
@@ -18,6 +19,7 @@ private:
 	friend class Display;
 	friend class Roleplay;
 
+	Species buffoon; //which type this creature is
 	int32u id; // monster generation ID
 	int base_hp;
 
@@ -26,8 +28,6 @@ private:
 	int last_room; //last room visited
 	Area myarea; //monster location limits, shopkeepers
 	int roomnum; // shopkeeper room index
-
-	void Initialize(int sp);
 
 public:
 	being() { }
@@ -56,6 +56,7 @@ public:
 	void Gain_Experience(int gain) override;
 	void Getangry(level_type *level, Actor *kohde, bool always) override;
 	void Handle_Confusion(Condition *cond) override;
+	void Initialize(int sp);
 	void Move_To(const Coord &c);
 	bool Noticestuff();
 	bool Pick_Up_Item(level_type *level, invnode *itemptr);

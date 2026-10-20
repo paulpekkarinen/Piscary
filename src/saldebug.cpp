@@ -28,6 +28,7 @@
 #include "gameview.h"
 #include "input.h"
 #include "invnode.h"
+#include "lexicon.h"
 #include "messbuff.h"
 #include "node.h"
 #include "output.h"
@@ -68,6 +69,17 @@ void Debug::Identify_Item()
 		matti->Identify();
 }
 
+void Debug::Level_Teleport()
+{
+	display->Redraw(world->Get_Current_Level());
+	gotoxy(0, 0);
+	print_text("Enter level id: ");
+	string s=get_string(false, 3);
+	const int lid=from_string(s);
+
+	world->Debug_Enter_Level(lid);
+}
+
 void Debug::Toggle_Light()
 {
 	if (player.light==0)
@@ -78,7 +90,7 @@ void Debug::Toggle_Light()
 
 void Debug::Menu()
 {
-	Window menuwin("Debug command", 30, 7, 35, 12, CH_GREEN, CH_WHITE);
+	Window menuwin("Debug command", 30, 7, 35, 13, CH_GREEN, CH_WHITE);
 
 	menuwin.Draw(
 		"c - Test colors\n"
@@ -88,6 +100,7 @@ void Debug::Menu()
 		"o - Overview of world\n"
 		"p - Program report\n"
 		"r - Re-create level\n"
+		"t - Level teleport\n"
 		"u - Unalive monsters\n"
 		"v - View level map");
 
@@ -102,6 +115,7 @@ void Debug::Menu()
 		case 'o': Overview(); break;
 		case 'p': uncover.Program_Data(); break;
 		case 'r': Create_Level(); break;
+		case 't': Level_Teleport(); break;
 		case 'u':
 		{
 			level_type *level=world->Get_Current_Level();

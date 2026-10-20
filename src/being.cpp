@@ -62,7 +62,7 @@ being::being(int sp)
 
 //Special npc.
 being::being(int sp, const monsterdef &mon)
-	: Actor(sp), last_room(-1), roomnum(-1)
+	: last_room(-1), roomnum(-1)
 {
 	m=mon;
 	Initialize(sp);
@@ -70,7 +70,7 @@ being::being(int sp, const monsterdef &mon)
 
 //Shopkeeper.
 being::being(int sp, const monsterdef &mon, const Area &ar)
-	: Actor(sp), last_room(-1), myarea(ar), roomnum(-1)
+	: last_room(-1), myarea(ar), roomnum(-1)
 {
 	m=mon; //copy static monster data
 	Initialize(sp);
@@ -94,6 +94,7 @@ void being::Initialize(int sp)
 {
 	id=Game.get_new_monster_id(); // set monster id number
 	m.race=sp;
+	buffoon.Mutate(sp);
 
 	base_hp=npc_races[sp].hp_base;
 	mana.Initialize(npc_races[sp].sp_base);
@@ -744,6 +745,7 @@ void being::Save(Tar_Ball &tb)
 {
 	Actor::Save(tb);
 
+	tb.Put(buffoon.Get());
 	tb.Put(id);
 	tb.Put(base_hp);
 
@@ -757,6 +759,7 @@ void being::Load(Tar_Ball &tb, level_type *lvl)
 {
 	Actor::Load(tb);
 
+	buffoon.Mutate(tb.Get_Next_Value());
 	id=tb.Get_Next_Unsigned();
 	base_hp=tb.Get_Next_Value();
 

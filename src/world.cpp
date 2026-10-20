@@ -34,6 +34,8 @@
 #include "world.h"
 #include "uncover.h"
 
+#include "saldebug.h"
+
 using std::string;
 using std::vector;
 
@@ -213,21 +215,71 @@ int World::Number_Of_Levels(int dung)
 //When entering the game world at the start of game.
 void World::Arrival()
 {
-	index=Find_First_Level_Index(dng::Santhel);
-	player.sight=15;
-	player.delta=6;
+	const int i=Find_First_Level_Index(dng::Santhel);
+	Barge_In(i, -1);
 
+	msg.notice();
+}
+
+//Level entering procedure for all types of entering into a level.
+//'i' is the new index of level.
+void World::Barge_In(int i, int portal_id)
+{
+	bool to_stairs=true; //by default jump to stairs
+	index=i; //set new level index
 	Levelnode *n=Get_Current_Node();
 
-	n->Visit(); //creates new level if needed
+	n->Visit(); //creates new level if not yet created
 
 	//also checks dungeon visits
-	const int dung=n->site.dungeon;
+	const int dung=Get_Dungeon();
 	visited_dungs[dung]=true;
 
-	//use random location for now
 	level_type *level=n->Get_Level();
-	teleport_player(level, false, true);
+	Theme th(n->Get_Theme());
+	th.Set_Visibility(player.delta, player.sight);
+
+	int8u stairsnum;
+
+	if (portal_id==-1)
+		stairsnum=1; //use first stairs in debug entering and arrival
+	else
+		stairsnum=n->Get_Stairs_Number(portal_id);
+
+	if (th.Is_Town())
+	{
+		//use random location for now, if entering from outworld
+		if (stairsnum==1)
+		{
+			teleport_player(level, false, true);
+			to_stairs=false;
+		}
+	}
+	/*else if (th==Theme::Outworld)
+	{
+		if (player.huntmode)
+		{
+			player.huntmode=false;
+			//player.Reset_Location(player.wild.x, player.wild.y); //note: fix later
+		}
+	}*/
+
+	if (to_stairs)
+	{
+		Coord pos;
+
+		//in case stairs are not found, which is a bug, shows this message
+		if (stairsnum==0 || level->Find_Stairs(pos, stairsnum)==false)
+		{
+			msg.newmsg("Huh, what, where am I?!");
+			pos=find_random_location(level, 1);
+		}
+
+		player.Jump_To(pos);
+	}
+
+	/* enable or disable weather notifications */
+	Display_Time_Events(Has_Weather());
 }
 
 void World::Enter_Portal(int8u number)
@@ -264,62 +316,7 @@ void World::Enter_Portal(int8u number)
 			msg.newmsg(C_YELLOW, "You leave %s.", dungeonlist[src_dung].name);
 	}
 
-	index=dest; //change to new level
-	Levelnode *n=Get_Current_Node();
-
-	n->Visit(); //creates new level if needed
-
-	//also checks dungeon visits
-	visited_dungs[dest_dung]=true;
-
-	player.delta=6;
-	level_type *level=n->Get_Level();
-	const int th=n->Get_Theme();
-	bool to_stairs=true;
-	const int8u sn=n->Get_Stairs_Number(p.dest_id);
-
-	if (th==Theme::Town)
-	{
-		player.sight=15;
-		//use random location for now, if entering from outworld
-		if (sn==1)
-		{
-			teleport_player(level, false, true);
-			to_stairs=false;
-		}
-	}
-	else if (th==Theme::Outworld)
-	{
-		player.sight=4;
-		player.delta=2;
-
-		if (player.huntmode)
-		{
-			player.huntmode=false;
-			//player.Reset_Location(player.wild.x, player.wild.y); //note: fix later
-		}
-	}
-	else
-	{
-		player.sight=10;
-	}
-
-	if (to_stairs)
-	{
-		Coord pos;
-
-		//in case stairs are not found, which is a bug, shows this message
-		if (sn==0 || level->Find_Stairs(pos, sn)==false)
-		{
-			msg.newmsg("Huh, what, where am I?!");
-			pos=find_random_location(level, 1);
-		}
-
-		player.Jump_To(pos);
-	}
-
-	/* enable or disable weather notifications */
-	Display_Time_Events(Has_Weather());
+	Barge_In(dest, p.dest_id);
 }
 
 bool World::Leave_Town()
@@ -528,6 +525,26 @@ void World::Display_Location()
 	const int sz=(int)s.size();
 
 	print_text_to(SCREEN_COLS-sz, STATUSROW, s.c_str());
+}
+
+void World::Debug_Enter_Level(int id)
+{
+	const int maxid=(int)levels.size();
+
+	if (id<0 || id>=maxid)
+	{
+		msg.newmsg("That level doesn't exist.");
+		return;
+	}
+
+	if (id==index)
+	{
+		msg.newmsg("You are already in that level.");
+		return;
+	}
+
+	//use -1 to enter the first portal in that level
+	Barge_In(id, -1);
 }
 
 void World::Save(Tar_Ball &tb)

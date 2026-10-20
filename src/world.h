@@ -29,6 +29,7 @@ private:
 
 	typedef std::vector<Levelnode*>::iterator levitr;
 
+	void Barge_In(int i, int portal_id);
 	void Display_Time_Events(bool v);
 	int Find_First_Level_Index(int dung);
 	int Find_Level_By_Portal(int id);
@@ -68,6 +69,8 @@ public:
 	void Display_Levels();
 	void Display_Location();
 	void Display_Return_Message(const char *plrname);
+
+	void Debug_Enter_Level(int id);
 
 	void Save(Tar_Ball &tb);
 	void Load(Tar_Ball &tb);

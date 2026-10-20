@@ -16,6 +16,7 @@ private:
 	bool debug_mode; //shows extra information etc.
 
 	void Create_Level(); //re-create current level
+	void Level_Teleport();
 	void List_Objects(); //list game objects in current level
 	void Overview(); //shows data about game world, current level etc.
 	void View_Level(); //view revealed level map

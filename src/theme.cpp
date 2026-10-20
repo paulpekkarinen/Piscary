@@ -118,3 +118,35 @@ int Theme::Get_Random_Level_Type(int dung, int depth, int max_depth)
 
 	return rv;
 }
+
+bool Theme::Is_Town()
+{
+	if (theme==Town)
+		return true;
+
+	return false;
+}
+
+void Theme::Set_Visibility(int &delta, int &sight)
+{
+	int d, s;
+
+	switch (theme)
+	{
+		case Town:
+			d=6;
+			s=15;
+		break;
+		case Outworld:
+			d=2;
+			s=4;
+		break;
+		default:
+			d=6;
+			s=10;
+		break;
+	}
+
+	delta=d;
+	sight=s;
+}

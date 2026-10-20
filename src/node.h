@@ -23,8 +23,8 @@ class Tar_Ball;
 //Stairs or border exit.
 struct Portal
 {
-	int id;
-	int dest_id;
+	int id; //id of this portal
+	int dest_id; //which portal id it leads to
 	int terrain_type; //TYPE_DARK is border exit, others are stairs etc. type
 
 	Portal(int i, int did, int tt)

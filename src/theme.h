@@ -37,6 +37,10 @@ public:
 	int Get_Basetile(); //returns the tile level is cleared with
 	Plane Get_Random_Level_Size();
 	static int Get_Random_Level_Type(int dung, int depth, int max_depth);
+
+	bool Is_Town();
+
+	void Set_Visibility(int &delta, int &sight);
 };
 
 #endif

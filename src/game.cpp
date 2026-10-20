@@ -288,14 +288,8 @@ void gamedata::run(bool fast)
 {
 	showcursor();
 	initialize(fast);
-
 	attrset(A_NORMAL);
-
 	world->Arrival();
-	level_type *level=world->Get_Current_Level();
-	teleport_player(level, false, true);
-	display->Redraw(level);
-	msg.notice();
 
 	while (state==Running)
 	{
