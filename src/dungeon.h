@@ -15,6 +15,7 @@ namespace dng
 		Thanthol,
 		Abyss,
 		Santhel,
+		Wilderness,
 		Max_Dungeons
 	};
 
@@ -40,6 +41,7 @@ struct Dungeon
 	//portal type and dungeon type to go
 	int portals[32];
 	int danger;			/* danger level of this dungeon */
+	bool is_dark; //not reached by daylight
 
 	int Get_Amount_Of_Levels();
 };

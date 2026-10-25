@@ -347,7 +347,7 @@ void Gameview::Show()
 	const int a=view.width-level->sizex;
 	if (a>0) //smaller than view: center
 	{
-		camera.x=view.x+(a/2);
+		camera.x=-(a/2);
 	}
 	else if (a<0) //bigger than view
 	{
@@ -377,7 +377,7 @@ void Gameview::Show()
 	const int b=view.height-level->sizey;
 	if (b>0)
 	{
-		camera.y=view.y+(b/2);
+		camera.y=-(b/2);
 	}
 	else if (b<0)
 	{
@@ -423,8 +423,7 @@ void Gameview::Show()
 
 		for (c.x=camera.x; c.x<camera.x+view.width; c.x++)
 		{
-			if (level->Is_Outside(c)==false)
-				Show_Tile(c.x, c.y);
+			Show_Tile(c);
 		}
 
 		ny++;
@@ -435,19 +434,25 @@ void Gameview::Show()
 	gotoxy(sc.x, sc.y);
 }
 
-//This routine assumes that the location x, y is inside the level.
-void Gameview::Show_Tile(int x, int y)
+void Gameview::Show_Tile(const Coord &c)
 {
+	//if outside level
+	if (level->Is_Outside(c))
+	{
+		put_char(' ', CH_DGRAY);
+		return;
+	}
+
 	//if not yet explored, show gray slab
-	if (level->Is_Explored(y, x)==false)
+	if (level->Is_Explored(c.y, c.x)==false)
 	{
 		put_char('`', CH_DGRAY);
 		return;
 	}
 
 	//show either object or terrain from level
-	if (data[(y*level->sizex)+x].Show()==false)
-		level->Display_Tile(y, x);
+	if (data[(c.y*level->sizex)+c.x].Show()==false)
+		level->Display_Tile(c.y, c.x);
 }
 
 void Gameview::Land_Item(invnode *item, const Coord &c)

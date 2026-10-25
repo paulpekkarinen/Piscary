@@ -9,6 +9,7 @@
 #include <vector>
 #include "dungeon.h"
 #include "gametime.h"
+#include "geometry.h"
 #include "types.h"
 #include "weather.h"
 
@@ -26,6 +27,7 @@ private:
 	Weather weather;
 	Gametime worldtime;
 	bool visited_dungs[dng::Max_Dungeons]; //keep track of visited dungeons
+	Coord wild; //remember where we entered wilderness
 
 	typedef std::vector<Levelnode*>::iterator levitr;
 
@@ -49,16 +51,17 @@ public:
 	int Get_Level_Type(); //returns current level's type
 
 	bool Has_Weather();
+	bool Is_Hunting();
 	bool Is_Matching_Place(int dung, int depth);
 	bool Is_Night();
-	bool Is_Outside() const;
 	int Num_Levels();
 	int Num_Places();
 
 	void Advance_Time(int ticks);
 	void Arrival();
 	void Enter_Portal(int8u number);
-	bool Leave_Town();
+	void Enter_Wildhunt();
+	void Leave_Town();
 	void Remake_Current_Level();
 	void Show_Birth_Time();
 	void Show_Time();

@@ -60,6 +60,7 @@ string Level::Get_Name()
 			else if (where==dng::Middle) s="Dungeons of Santhel";
 			else s="Deep dungeon";
 		break;
+		case dng::Wilderness: s="Forest"; break;
 		default: s="Strange place"; break;
 	}
 

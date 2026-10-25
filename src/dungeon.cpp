@@ -33,31 +33,39 @@ Dungeon dungeonlist[dng::Max_Dungeons]=
 		TYPE_DUNGEON3, dng::Top, dng::Abyss,
 		TYPE_TOWN1, dng::Top, dng::Santhel,
 		-1, -1, -1
-	}, 0},
+	}, 0, false},
 
 	{"Very primitive dungeon",
 	"Primitive",
 	"This dungeon looks dull and boresome.",
 	4, 4,
-	{-1, -1, -1}, 1},
+	{-1, -1, -1}, 1, true},
 
 	{"Caverns of Tha'nthol",
 	"Caverns",
 	"There are the famous cavers of Tha'nthol, the bored elf wizard.",
 	8, 10,
-	{-1, -1, -1}, 1},
+	{-1, -1, -1}, 1, true},
 
 	{"Ranuan Abyss",
 	"Abyss",
 	"A chaotic place of danger and despair.",
 	7, 8,
-	{-1, -1, -1}, 1},
+	{-1, -1, -1}, 1, true},
 
 	{"Town of Santhel",
 	"Santhel",
 	"A small town with one castle and few houses. Oddly there're only few people here.",
 	3, 3,
-	{-1, -1, -1}, 0},
+	{-1, -1, -1}, 0, false},
+
+	{"Wilderness",
+	"Wilderness",
+	"Forests and hills.",
+	1, 1,
+	{TYPE_DARK, dng::Top, dng::Mountains,
+	-1, -1, -1
+	}, 0, false}
 };
 
 int Dungeon::Get_Amount_Of_Levels()

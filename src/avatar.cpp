@@ -236,13 +236,6 @@ void playerinfo::Gain_Experience(int gain)
 	roleplay.Check_Levelraise(*this);
 }
 
-void playerinfo::Go_Hunting()
-{
-	Set_Location(10, 10); //note: what tf is this location?
-	sight=10;
-	huntmode=true;
-}
-
 void playerinfo::Handle_Confusion(Condition *cond)
 {
 	const int v=cond->Get_Value();
@@ -367,7 +360,6 @@ void playerinfo::Initialize()
 	delta=4;
 	num_kills=0;
 
-	huntmode=false;
 	repeatwalk=false;
 	monsterinsight=false;
 	searchmode=false;
@@ -539,7 +531,6 @@ void playerinfo::Save(Tar_Ball &tb)
 
 	tb.Put(num_kills);
 
-	tb.Put_Bool(huntmode);
 	tb.Put_Bool(repeatwalk);
 	tb.Put_Bool(monsterinsight);
 	tb.Put_Bool(searchmode);
@@ -560,7 +551,6 @@ void playerinfo::Load(Tar_Ball &tb, level_type *level)
 
 	num_kills=tb.Get_Next_Value();
 
-	huntmode=tb.Get_Next_Bool();
 	repeatwalk=tb.Get_Next_Bool();
 	monsterinsight=tb.Get_Next_Bool();
 	searchmode=tb.Get_Next_Bool();

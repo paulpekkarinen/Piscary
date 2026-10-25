@@ -444,7 +444,15 @@ void enter_stairs(level_type *level, char ch)
 	if (num==0)
 	{
 		if (ch=='>')
-			msg.newmsg("You start foolishly digging your way down...");
+		{
+			if (world->Get_Level_Type()==Theme::Outworld)
+			{
+				world->Enter_Wildhunt();
+				return;
+			}
+			else
+				msg.newmsg("You start foolishly digging your way down...");
+		}
 		else
 			msg.newmsg("You jump very hard...");
 		return;

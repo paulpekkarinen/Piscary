@@ -104,6 +104,7 @@ void Feature_Level::Create(int dtype)
 		case Theme::Roomy: Roomylevel(); break;
 		case Theme::Roomy_Doors: Roomylevel2(); break;
 		case Theme::Town: Generate_Town(); break;
+		case Theme::Wildhunt: Generate_Wildhunt(); break;
 		default:
 			// if all else fails, we create a ROOMY level
 			Roomylevel();
@@ -204,12 +205,7 @@ void Feature_Level::Generate_Town()
 
 void Feature_Level::Generate_Wildhunt()
 {
-	//note: wildhunt is never used, but if it's used again the level needs to be
-	//created the same way as in Levelnode::Visit with size above and TYPE_GRASS
-	//as basetile
-
 	create_random_terrain(this, TYPE_TREE, 150);
-	player.Go_Hunting();
 }
 
 void Feature_Level::Roomylevel()

@@ -237,10 +237,11 @@ void gamedata::Passturn(bool playervis, bool foodsub)
 	int spdadd=player.stat[STAT_SPD].Get();
 	int ptime=player.stat[STAT_SPD].Get(); //note: should this be something else?
 
-	if (world->Is_Outside() && !player.huntmode)
-	{
-		spdadd = spdadd / TIMEMOD_OUTSIDE;
-	}
+	//note: let's remove this for now and give equal time in everywhere
+	//if (world->Is_Outside())
+	//{
+	//	spdadd = spdadd / TIMEMOD_OUTSIDE;
+	//}
 
 	/* calculate the number of used "time slots" taken by player move */
 	int difft = ((int)BASE_TIMENEED - player.timetaken) / spdadd;

@@ -38,7 +38,7 @@ public:
 	Plane Get_Random_Level_Size();
 	static int Get_Random_Level_Type(int dung, int depth, int max_depth);
 
-	bool Is_Town();
+	bool Random_Entrance();
 
 	void Set_Visibility(int &delta, int &sight);
 };

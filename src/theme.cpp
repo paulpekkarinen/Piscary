@@ -31,6 +31,7 @@ int Theme::Get_Basetile()
 	{
 		case Outworld:
 		case Town:
+		case Wildhunt:
 			rv=TYPE_GRASS;
 		break;
 		default:
@@ -64,6 +65,11 @@ Plane Theme::Get_Random_Level_Size()
 			// ensure that level x and y are not even (for maze type levels)
 			if (!(sx % 2)) sx++;
 			if (!(sy % 2)) sy++;
+		break;
+		case Wildhunt:
+			//width is Y+some to get visually roughly square sized level
+			sx=MINSIZEY+15;
+			sy=MINSIZEY;
 		break;
 		default: break;
 	}
@@ -113,15 +119,19 @@ int Theme::Get_Random_Level_Type(int dung, int depth, int max_depth)
 			if (depth==0) rv=Town;
 			else rv=Get_Roomy();
 		break;
+		case dng::Wilderness:
+			rv=Wildhunt;
+		break;
 		default: rv=Roomy; break;
 	}
 
 	return rv;
 }
 
-bool Theme::Is_Town()
+//Jumps to random location in level when entered.
+bool Theme::Random_Entrance()
 {
-	if (theme==Town)
+	if (theme==Town || theme==Wildhunt)
 		return true;
 
 	return false;

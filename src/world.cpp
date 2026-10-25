@@ -225,6 +225,12 @@ void World::Arrival()
 //'i' is the new index of level.
 void World::Barge_In(int i, int portal_id)
 {
+	const int old_dung=Get_Dungeon();
+
+	//remember location of outworld in case we enter wilderness
+	if (old_dung==dng::Mountains)
+		wild=player.Get_Location();
+
 	bool to_stairs=true; //by default jump to stairs
 	index=i; //set new level index
 	Levelnode *n=Get_Current_Node();
@@ -242,27 +248,24 @@ void World::Barge_In(int i, int portal_id)
 	int8u stairsnum;
 
 	if (portal_id==-1)
-		stairsnum=1; //use first stairs in debug entering and arrival
+		stairsnum=1; //use first stairs in debug entering etc.
 	else
 		stairsnum=n->Get_Stairs_Number(portal_id);
 
-	if (th.Is_Town())
+	if (th.Random_Entrance())
 	{
-		//use random location for now, if entering from outworld
 		if (stairsnum==1)
 		{
 			teleport_player(level, false, true);
 			to_stairs=false;
 		}
 	}
-	/*else if (th==Theme::Outworld)
+	else if (old_dung==dng::Wilderness)
 	{
-		if (player.huntmode)
-		{
-			player.huntmode=false;
-			//player.Reset_Location(player.wild.x, player.wild.y); //note: fix later
-		}
-	}*/
+		//returning from wilderness we use saved location
+		player.Jump_To(wild);
+		to_stairs=false;
+	}
 
 	if (to_stairs)
 	{
@@ -296,12 +299,17 @@ void World::Enter_Portal(int8u number)
 	if (src_dung!=dest_dung)
 	{
 		const char *txt;
-		if (dest_dung==dng::Mountains)
-			txt="outside";
-		else
-			txt=dungeonlist[dest_dung].name;
 
-		msg.vnewmsg(C_GREEN, "Entering %s!", txt);
+		//show "Entering..." only if leaving somewhere else than wilderness
+		if (src_dung!=dng::Wilderness)
+		{
+			if (dest_dung==dng::Mountains)
+				txt="outside";
+			else
+				txt=dungeonlist[dest_dung].name;
+
+			msg.vnewmsg(C_GREEN, "Entering %s!", txt);
+		}
 
 		if (visited_dungs[dest_dung]==false)
 			msg.newmsg(dungeonlist[dest_dung].desc, C_WHITE);
@@ -319,7 +327,13 @@ void World::Enter_Portal(int8u number)
 	Barge_In(dest, p.dest_id);
 }
 
-bool World::Leave_Town()
+void World::Enter_Wildhunt()
+{
+	const int i=Find_First_Level_Index(dng::Wilderness);
+	Barge_In(i, -1);
+}
+
+void World::Leave_Town()
 {
 	string s("Do you want to leave ");
 	s.append(Get_Level_Name());
@@ -328,10 +342,7 @@ bool World::Leave_Town()
 	{
 		player.lastdir=0;
 		Enter_Portal(1);
-		return true;
 	}
-
-	return false;
 }
 
 void World::Advance_Time(int ticks)
@@ -378,7 +389,16 @@ int World::Get_Level_Type()
 
 bool World::Has_Weather()
 {
-	if (Get_Dungeon()==dng::Mountains || Get_Level_Type()==Theme::Town)
+	const int d=Get_Dungeon();
+	if (d==dng::Mountains || d==dng::Wilderness || Get_Level_Type()==Theme::Town)
+		return true;
+
+	return false;
+}
+
+bool World::Is_Hunting()
+{
+	if (Get_Dungeon()==dng::Wilderness)
 		return true;
 
 	return false;
@@ -400,16 +420,14 @@ bool World::Is_Night()
 	const int dung=Get_Dungeon();
 
 	/* night is always present in the dungeons */
-	if (dung!=dng::Mountains && lvltype!=Theme::Town)
-		return true;
+	if (dungeonlist[dung].is_dark)
+	{
+		//town is an exception
+		if (lvltype!=Theme::Town)
+			return true;
+	}
 
 	return worldtime.is_night();
-}
-
-bool World::Is_Outside() const
-{
-	if (levels[index]->site.dungeon==dng::Mountains) return true;
-	return false;
 }
 
 //Return number of levels visited.
@@ -511,13 +529,13 @@ void World::Display_Location()
 {
 	string s;
 
-	if (player.huntmode)
-		s="Wilderness";
-	else
-	{
-		const int dung=Get_Dungeon();
+	const int dung=Get_Dungeon();
 
-		s.append(dungeonlist[dung].name);
+	s.append(dungeonlist[dung].name);
+
+	//show level name if this dungeon has levels
+	if (dungeonlist[dung].max_levels>1)
+	{
 		s.append(" Lvl:");
 		s.append(Get_Level_Name());
 	}
@@ -560,6 +578,8 @@ void World::Save(Tar_Ball &tb)
 
 	for (int t=0; t<dng::Max_Dungeons; t++)
 		tb.Put_Bool(visited_dungs[t]);
+
+	wild.Save(tb);
 }
 
 void World::Load(Tar_Ball &tb)
@@ -582,4 +602,6 @@ void World::Load(Tar_Ball &tb)
 	{
 		visited_dungs[t]=tb.Get_Next_Bool();
 	}
+
+	wild.Load(tb);
 }

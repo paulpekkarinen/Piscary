@@ -21,7 +21,6 @@ struct playerinfo : public being
 	int delta; //note: unused line of sight distance
 	int num_kills;
 
-	bool huntmode;
 	bool repeatwalk;
 	bool monsterinsight;
 	bool searchmode;
@@ -46,7 +45,6 @@ struct playerinfo : public being
 	void Eat_Addnutr(item_def *item, int weight);
 	void Gain_Experience(int gain) override;
 
-	void Go_Hunting(); //wildhunt
 	void Handle_Confusion(Condition *cond) override;
 	void Handlestatus(level_type *level, int slots);
 	void Hitwall();

@@ -36,7 +36,7 @@ private:
 	void Clamp_Camera_X();
 	void Clamp_Camera_Y();
 	void Clamp_Camera();
-	void Show_Tile(int x, int y);
+	void Show_Tile(const Coord &c);
 
 public:
 	Gameview();

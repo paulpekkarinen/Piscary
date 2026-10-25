@@ -620,34 +620,24 @@ int moveplayer(playerinfo *plr, int dir, level_type *level, bool autowalk)
 	ny+=move_dy[dir];
 	const bool is_outside=level->Is_Outside(nx, ny);
 
-	if (world->Get_Level_Type()==Theme::Town)
-	{
-		if (is_outside)
-		{
-			if (world->Leave_Town())
-				return 0;
-		}
-	}
-
-	if (plr->huntmode)
-	{
-		if (is_outside)
-		{
-			if (confirm_yn("Leave this encounter", false, true))
-			{
-				//note: return to outworld
-				//world->Player_Go_Outworld();
-			}
-			return 0;
-		}
-	}
-
 	if (is_outside)
 	{
-		msg.newmsg("Are you going to the void?", C_RED);
-		msg.newmsg("I wouldn't mind but it would cause some nasty pagefaults!",
-			C_RED);
-		msg.newmsg("So leave it!", C_RED);
+		if (world->Get_Level_Type()==Theme::Town)
+		{
+			world->Leave_Town();
+		}
+		else if (world->Is_Hunting())
+		{
+			if (confirm_yn("Leave this encounter", false, true))
+				world->Enter_Portal(1);
+		}
+		else
+		{
+			msg.newmsg("Are you going to the void?", C_RED);
+			msg.newmsg("I wouldn't mind but it would cause some nasty pagefaults!",
+				C_RED);
+			msg.newmsg("So leave it!", C_RED);
+		}
 		return 0;
 	}
 
